@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { CalendarDays, ChevronLeft, EyeOff, Inbox, Lock, MapPin, MessageSquare, Tag } from "lucide-react";
 import { ButtonLink, Card, buttonClass } from "@/components/ui";
 import { ContentMenu } from "@/components/community/ContentMenu";
+import { PinMap, type MapPin as PinMapPin } from "@/components/map/PinMap";
 import { PostStatusBadge } from "@/components/community/PostStatusBadge";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { postImageUrl, UUID_RE, type LostPost, type PostComment } from "@/lib/community";
@@ -31,9 +32,14 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const res = await loadPost(id).catch(() => null);
   if (!res?.post) return { title: "분실 커뮤니티" };
   const p = res.post;
+  const description = `${typeLabel(p.type)}${p.color ? ` · ${p.color}` : ""}${p.lost_area ? ` · ${p.lost_area}` : ""} — 보셨다면 댓글로 알려주세요.`;
+  // 카카오톡 등 공유 미리보기에 제목·설명이 나오도록 (사진 카드는 opengraph-image.tsx 가 만들어요)
+  const status = p.status === "resolved" ? "[찾았어요]" : "[찾는 중]";
   return {
     title: p.title,
-    description: `${typeLabel(p.type)}${p.color ? ` · ${p.color}` : ""}${p.lost_area ? ` · ${p.lost_area}` : ""} — 보셨다면 댓글로 알려주세요.`,
+    description,
+    openGraph: { title: `${status} ${p.title}`, description, type: "article" },
+    twitter: { title: `${status} ${p.title}`, description },
   };
 }
 
@@ -73,6 +79,24 @@ export default async function PostPage({ params }: Params) {
   if (isAuthor && post.vehicle_id) {
     const { data: v } = await supabase.from("vehicles").select("sticker_spot").eq("id", post.vehicle_id).maybeSingle();
     stickerSpot = v?.sticker_spot ?? "";
+  }
+
+  // 지도 핀: 잃어버린 곳 + 볼 수 있는 댓글 중 위치를 남긴 것 (비밀 댓글은 볼 수 있는 사람에게만)
+  const pins: PinMapPin[] = [];
+  if (post.lost_lat != null && post.lost_lng != null) {
+    pins.push({ lat: post.lost_lat, lng: post.lost_lng, mark: "분실", label: `잃어버린 곳${post.lost_area ? `: ${post.lost_area}` : ""}`, color: "rose" });
+  }
+  let seen = 0;
+  for (const c of comments) {
+    if (!c.can_view || c.latitude == null || c.longitude == null) continue;
+    seen += 1;
+    pins.push({
+      lat: c.latitude,
+      lng: c.longitude,
+      mark: `본 곳${seen}`,
+      label: `${c.is_secret ? "🔒 " : ""}${c.author_name}님이 본 곳${c.location_text ? `: ${c.location_text}` : ""} (${timeAgo(c.created_at)})`,
+      color: c.is_secret ? "orange" : "brand",
+    });
   }
 
   const facts: [string, string | null][] = [
@@ -158,6 +182,13 @@ export default async function PostPage({ params }: Params) {
           <p className="whitespace-pre-line text-[15px] leading-relaxed text-ink">{post.body}</p>
         </div>
       </Card>
+
+      {pins.length > 0 && (
+        <section aria-label="지도" className="space-y-1.5">
+          <PinMap pins={pins} className="h-60" />
+          <p className="text-[12px] text-ink-muted">빨간 핀은 잃어버린 곳, 파란·주황 핀은 댓글로 알려준 본 곳이에요. 핀을 누르면 설명이 보여요.</p>
+        </section>
+      )}
 
       {post.has_sticker && post.status === "open" && (
         <div className="flex items-start gap-3 rounded-2xl bg-brand-50 p-4 text-[14px] leading-relaxed text-brand-900 ring-1 ring-brand-100">

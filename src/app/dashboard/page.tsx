@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Bike, Play, Plus, Printer } from "lucide-react";
+import { Bike, ChartColumn, Flag, Play, Plus, Printer } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { WelcomeGuide } from "@/components/onboarding/WelcomeGuide";
 import { partsNeedingCare, type VehiclePart } from "@/lib/parts";
@@ -82,9 +82,17 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       ))}
 
       {profile?.is_admin && (
-        <ButtonLink href="/admin/stickers" variant="secondary" full icon={<Printer aria-hidden className="h-4 w-4" />}>
-          🏷️ 스티커 관리 (관리자)
-        </ButtonLink>
+        <div className="grid gap-2 sm:grid-cols-3">
+          <ButtonLink href="/admin" variant="secondary" icon={<ChartColumn aria-hidden className="h-4 w-4" />}>
+            운영 통계
+          </ButtonLink>
+          <ButtonLink href="/admin/stickers" variant="secondary" icon={<Printer aria-hidden className="h-4 w-4" />}>
+            스티커 관리
+          </ButtonLink>
+          <ButtonLink href="/admin/reports" variant="secondary" icon={<Flag aria-hidden className="h-4 w-4" />}>
+            신고 처리
+          </ButtonLink>
+        </div>
       )}
 
       {list.length === 0 ? (

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LogOut, MessagesSquare, QrCode, Route, Settings, ShieldCheck } from "lucide-react";
+import { MessagesSquare, QrCode, Route, Settings, ShieldCheck } from "lucide-react";
+import { LogoutButton } from "./LogoutButton";
 import { site } from "@/config/site";
 import { buttonClass } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
@@ -40,12 +41,7 @@ export async function Header() {
             <Link href="/settings" className={cn(buttonClass("ghost"), "h-10 w-10 px-0")} aria-label="설정" title="설정">
               <Settings aria-hidden className="h-4 w-4" />
             </Link>
-            <form action="/auth/signout" method="post">
-              <button type="submit" className={cn(buttonClass("ghost"), "h-10 gap-1.5 px-2.5 text-sm")} aria-label="로그아웃" title="로그아웃">
-                <LogOut aria-hidden className="h-4 w-4" />
-                <span className="sm:hidden">로그아웃</span>
-              </button>
-            </form>
+            <LogoutButton />
           </>
         ) : (
           <Link href="/login" className={cn(buttonClass("primary"), "h-10 px-4 text-sm")}>

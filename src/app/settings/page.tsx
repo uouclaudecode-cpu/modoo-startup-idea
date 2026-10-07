@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+import { PushSettings } from "@/components/push/PushSettings";
+import { BlockedUsers } from "@/components/settings/BlockedUsers";
+import { Card } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { DeleteAccount } from "./DeleteAccount";
 import { NicknameForm } from "./NicknameForm";
@@ -34,9 +37,20 @@ export default async function SettingsPage() {
         <NicknameForm initial={profile?.nickname ?? ""} />
       </SettingsSection>
 
+      {/* 알림 카드는 자체 제목·설명을 가진 카드라 그대로 넣어요 */}
+      <PushSettings
+        notify_reports={profile?.notify_reports ?? true}
+        notify_comments={profile?.notify_comments ?? true}
+        notify_maintenance={profile?.notify_maintenance ?? true}
+      />
+
       <SettingsSection title="비밀번호 변경">
         <PasswordForm />
       </SettingsSection>
+
+      <Card>
+        <BlockedUsers />
+      </Card>
 
       <SettingsSection title="회원 탈퇴" description="계정과 등록한 이동수단·라이딩·정비 기록·커뮤니티 글과 댓글이 모두 지워지고 되돌릴 수 없어요." danger>
         <DeleteAccount email={user.email ?? ""} />
