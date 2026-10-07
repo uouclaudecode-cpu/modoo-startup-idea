@@ -194,3 +194,43 @@ export function ScanResultSkeleton() {
     </SkeletonScreen>
   );
 }
+
+// 관리자 통계 막대 자리: 높이가 들쭉날쭉해야 차트처럼 보여요 (Tailwind 가 찾도록 클래스 전체 이름으로)
+const ADMIN_BAR_HEIGHTS = ["h-[40%]", "h-[65%]", "h-[30%]", "h-[80%]", "h-[55%]", "h-[70%]", "h-[45%]", "h-[90%]"];
+
+/** 관리자 운영 통계 (숫자 카드 · 주별 막대 차트 · 묶음 표) */
+export function AdminStatsSkeleton() {
+  return (
+    <SkeletonScreen className="mx-auto max-w-xl space-y-5">
+      <Heading />
+      <div className="grid grid-cols-2 gap-2">
+        <Skeleton className="h-11 rounded-xl" />
+        <Skeleton className="h-11 rounded-xl" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        {Array.from({ length: 6 }, (_, i) => (
+          <div key={i} className="space-y-3 rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-8 w-8 rounded-lg" />
+              <Skeleton className="h-3.5 w-16" />
+            </div>
+            <Skeleton className="h-7 w-20" />
+            <Skeleton className="h-3 w-24 max-w-full" />
+          </div>
+        ))}
+      </div>
+      <Skeleton className="h-6 w-32" />
+      {Array.from({ length: 2 }, (_, i) => (
+        <div key={i} className="space-y-3 rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70">
+          <Skeleton className="h-5 w-1/3" />
+          <div className="flex h-28 items-end gap-1.5 border-b border-line pt-5">
+            {ADMIN_BAR_HEIGHTS.map((h, j) => (
+              <Skeleton key={j} className={`flex-1 rounded-t-md rounded-b-none ${h}`} />
+            ))}
+          </div>
+        </div>
+      ))}
+      <SkeletonPanel lines={4} />
+    </SkeletonScreen>
+  );
+}
