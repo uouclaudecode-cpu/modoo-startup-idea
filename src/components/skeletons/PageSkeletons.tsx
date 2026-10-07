@@ -194,3 +194,53 @@ export function ScanResultSkeleton() {
     </SkeletonScreen>
   );
 }
+
+/** 라이딩 기록: 통계 카드(요약 + 막대그래프) · 배지 · 목록 */
+export function RidesSkeleton() {
+  // 막대 높이를 들쭉날쭉하게 해서 그래프 자리처럼 보이게 해요 (고정값이라 그릴 때마다 같아요)
+  const bars = [35, 60, 20, 75, 45, 90, 55, 70];
+  return (
+    <SkeletonScreen className="mx-auto max-w-xl space-y-4">
+      <div className="flex items-center justify-between gap-3">
+        <Skeleton className="h-8 w-36" />
+        <Skeleton className="h-11 w-28 rounded-xl" />
+      </div>
+      <div className="space-y-4 rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-9 w-28 rounded-xl" />
+        </div>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {Array.from({ length: 4 }, (_, i) => (
+            <Skeleton key={i} className="h-[60px] rounded-xl" />
+          ))}
+        </div>
+        <Skeleton className="h-4 w-40" />
+        <div className="flex h-40 items-end gap-1 border-b border-line">
+          {bars.map((h, i) => (
+            <div key={i} className="flex flex-1 justify-center" style={{ height: `${h}%` }}>
+              <Skeleton className="h-full w-full max-w-[32px] rounded-b-none rounded-t-md" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="space-y-4 rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70">
+        <div className="flex justify-between">
+          <Skeleton className="h-6 w-16" />
+          <Skeleton className="h-4 w-24" />
+        </div>
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+          {Array.from({ length: 3 }, (_, i) => (
+            <Skeleton key={i} className="h-[104px] rounded-2xl" />
+          ))}
+        </div>
+        <Skeleton className="h-11 rounded-xl" />
+      </div>
+      <div className="space-y-3">
+        {Array.from({ length: 3 }, (_, i) => (
+          <SkeletonRow key={i} />
+        ))}
+      </div>
+    </SkeletonScreen>
+  );
+}

@@ -4,15 +4,54 @@ import { notFound, redirect } from "next/navigation";
 import { ChevronLeft, PartyPopper, Wrench } from "lucide-react";
 import { ButtonLink, Card } from "@/components/ui";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
+import { NewBadgesNotice } from "@/components/ride/BadgeGrid";
 import { RideMap } from "@/components/ride/RideMap";
 import { UUID_RE } from "@/lib/community";
 import { formatDateTime } from "@/lib/format";
 import { partsNeedingCare, type VehiclePart } from "@/lib/parts";
+import { computeTotals, newlyEarned, type Badge, type BadgeRide } from "@/lib/ride/badges";
+import { fetchAllPages } from "@/lib/ride/fetchAll";
 import { averageSpeed, formatDistance, formatDuration, fromPathJson } from "@/lib/ride/geo";
 import { createClient } from "@/lib/supabase/server";
 import { DeleteRideButton } from "./DeleteRideButton";
 
 export const metadata: Metadata = { title: "라이딩 결과" };
+
+type ServerClient = Awaited<ReturnType<typeof createClient>>;
+
+/** 이 라이딩 뒤로 점검·교체가 필요한 소모품 (알림) */
+async function loadCare(supabase: ServerClient, vehicleId: string) {
+  const { data: parts, error } = await supabase
+    .from("vehicle_parts")
+    .select("id, vehicle_id, kind, interval_km, interval_days, distance_m, last_serviced_at, enabled")
+    .eq("vehicle_id", vehicleId);
+  if (error) console.error(error);
+  return partsNeedingCare((parts ?? []) as VehiclePart[]);
+}
+
+/**
+ * 이번 라이딩으로 새로 받은 배지.
+ * '이 라이딩보다 먼저 시작한 기록'과 '거기에 이 라이딩을 더한 기록'의 배지를 비교해요.
+ * 시작 시각 기준이라 결과 화면을 새로고침하거나 나중에 다시 열어도 같은 배지가 나와요.
+ * 배지 알림은 덤이라, 불러오기에 실패하면 조용히 빈 목록으로 넘어가요.
+ */
+async function loadNewBadges(supabase: ServerClient, userId: string, ride: BadgeRide): Promise<Badge[]> {
+  const { data: prev, error } = await fetchAllPages<BadgeRide>((from, to) =>
+    supabase
+      .from("rides")
+      .select("started_at, distance_m")
+      .eq("owner_id", userId)
+      .lt("started_at", ride.started_at)
+      .order("started_at", { ascending: true })
+      .range(from, to),
+  );
+  if (error) {
+    console.error(error);
+    return [];
+  }
+  const self: BadgeRide = { started_at: ride.started_at, distance_m: ride.distance_m };
+  return newlyEarned(computeTotals(prev), computeTotals([...prev, self]));
+}
 
 export default async function RideDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ done?: string }> }) {
   const { id } = await params;
@@ -33,16 +72,11 @@ export default async function RideDetailPage({ params, searchParams }: { params:
   if (!ride) notFound();
   const vehicle = ride.vehicle as unknown as { id: string; name: string; odometer_m: number; deleted_at: string | null } | null;
 
-  // 이 라이딩 뒤로 점검·교체가 필요한 소모품 (알림)
-  let care: ReturnType<typeof partsNeedingCare<VehiclePart>> = [];
-  if (vehicle && !vehicle.deleted_at) {
-    const { data: parts, error: pErr } = await supabase
-      .from("vehicle_parts")
-      .select("id, vehicle_id, kind, interval_km, interval_days, distance_m, last_serviced_at, enabled")
-      .eq("vehicle_id", vehicle.id);
-    if (pErr) console.error(pErr);
-    care = partsNeedingCare((parts ?? []) as VehiclePart[]);
-  }
+  // 소모품 알림과 새 배지 계산은 서로 상관없어서 동시에 받아요.
+  const [care, earned] = await Promise.all([
+    vehicle && !vehicle.deleted_at ? loadCare(supabase, vehicle.id) : Promise.resolve([]),
+    done ? loadNewBadges(supabase, user.id, ride) : Promise.resolve<Badge[]>([]),
+  ]);
 
   const path = fromPathJson(ride.path);
   const stats: [string, string][] = [
@@ -67,6 +101,8 @@ export default async function RideDetailPage({ params, searchParams }: { params:
           </p>
         </div>
       )}
+
+      <NewBadgesNotice badges={earned} />
 
       <RideMap path={path} fit className="h-[40vh] min-h-[240px]" />
 
