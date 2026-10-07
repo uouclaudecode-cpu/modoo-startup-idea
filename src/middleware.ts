@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const needsLogin = path.startsWith("/dashboard") || path.startsWith("/vehicles") || path === "/community/new" || path.startsWith("/stickers") || path.startsWith("/admin") || path === "/ride" || path.startsWith("/rides");
+  const needsLogin = path.startsWith("/dashboard") || path.startsWith("/vehicles") || path === "/community/new" || path.startsWith("/stickers") || path.startsWith("/admin") || path === "/ride" || path.startsWith("/rides") || path.startsWith("/settings");
   if (needsLogin && !user) {
     const login = request.nextUrl.clone();
     login.pathname = "/login";
@@ -56,5 +56,5 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   // 이미지·정적 파일은 건너뜁니다.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|sw.js|manifest.webmanifest|icons/|icon|apple-icon|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|sw.js|manifest.webmanifest|robots.txt|sitemap.xml|icons/|icon|apple-icon|.*opengraph-image|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };

@@ -6,6 +6,8 @@ import { displayStatus } from "@/lib/status";
 import type { Report } from "@/lib/types";
 import { getOwnedVehicle } from "@/lib/vehicles";
 import { ReportCard } from "./ReportCard";
+import { PinMap, type MapPin } from "@/components/map/PinMap";
+import { formatDateTime } from "@/lib/format";
 
 export const metadata: Metadata = { title: "발견 제보" };
 
@@ -34,6 +36,16 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
   }
 
   const found = reports.filter((r) => r.kind === "found").length;
+  // 위치가 있는 제보를 지도 핀으로 (최신이 1번)
+  const pins: MapPin[] = reports
+    .filter((r) => r.latitude != null && r.longitude != null)
+    .map((r, i) => ({
+      lat: r.latitude!,
+      lng: r.longitude!,
+      mark: String(i + 1),
+      label: `${i + 1}. ${formatDateTime(r.created_at)} · ${r.location_text || (r.kind === "found" ? "발견 제보" : "연락 요청")}`,
+      color: i === 0 ? "rose" : "orange",
+    }));
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
@@ -62,6 +74,13 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
           }
         />
       ) : (
+        <>
+        {pins.length > 0 && (
+          <section aria-label="제보 위치 지도" className="space-y-1.5">
+            <PinMap pins={pins} className="h-64" />
+            <p className="text-[12px] text-ink-muted">핀 번호는 최신 제보부터예요. 핀을 누르면 시간과 장소가 보여요.</p>
+          </section>
+        )}
         <ul className="space-y-3">
           {reports.map((r) => (
             <li key={r.id}>
@@ -69,6 +88,7 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
             </li>
           ))}
         </ul>
+        </>
       )}
     </div>
   );

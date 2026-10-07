@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Send, Siren } from "lucide-react";
 import { Button, Card, Input, Textarea, useToast } from "@/components/ui";
 import { PhotoPicker } from "@/components/ui/PhotoPicker";
+import { LocationPicker, type PickedLocation } from "@/components/map/LocationPicker";
 import { cn } from "@/lib/cn";
 import { friendlyError } from "@/lib/format";
 import { uploadPhoto, vehicleImageUrl } from "@/lib/images";
@@ -69,6 +70,8 @@ export function NewPostForm({ vehicles, initialVehicleId }: { vehicles: VehicleO
     }),
   );
   const [photo, setPhoto] = useState<File | null>(null);
+  // 지도에서 고른 잃어버린 위치 (선택)
+  const [pin, setPin] = useState<PickedLocation | null>(null);
   const [alsoSearch, setAlsoSearch] = useState(true);
   const [errors, setErrors] = useState<Partial<Record<keyof Form | "photo" | "form", string>>>({});
   const [loading, setLoading] = useState(false);
@@ -125,6 +128,8 @@ export function NewPostForm({ vehicles, initialVehicleId }: { vehicles: VehicleO
           body: form.body.trim(),
           lost_area: form.lost_area.trim(),
           lost_on: form.lost_on || null,
+          lost_lat: pin?.lat ?? null,
+          lost_lng: pin?.lng ?? null,
           brand: form.brand.trim() || null,
           model: form.model.trim() || null,
           color: form.color.trim() || null,
@@ -245,6 +250,7 @@ export function NewPostForm({ vehicles, initialVehicleId }: { vehicles: VehicleO
           />
           <Input label="잃어버린 날" type="date" max={todayKst()} value={form.lost_on} onChange={set("lost_on")} error={errors.lost_on} />
         </div>
+        <LocationPicker label="지도에 잃어버린 곳 표시 (선택)" value={pin} onChange={setPin} />
         <div className="grid grid-cols-3 gap-3">
           <Input label="색상" placeholder="검정" value={form.color} onChange={set("color")} maxLength={30} />
           <Input label="브랜드" placeholder="삼천리" value={form.brand} onChange={set("brand")} maxLength={40} />

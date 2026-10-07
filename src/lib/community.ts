@@ -13,6 +13,9 @@ export type LostPost = {
   body: string;
   lost_area: string | null;
   lost_on: string | null;
+  /** 지도에서 고른 잃어버린 위치 (선택) */
+  lost_lat: number | null;
+  lost_lng: number | null;
   brand: string | null;
   model: string | null;
   color: string | null;

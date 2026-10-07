@@ -15,7 +15,10 @@ export type NMap = {
   destroy(): void;
 };
 export type NPolyline = { setPath(path: NLatLng[]): void; setMap(map: NMap | null): void };
-export type NMarker = { setPosition(p: NLatLng): void; setMap(map: NMap | null): void };
+export type NMarker = { setPosition(p: NLatLng): void; getPosition(): NLatLng; setMap(map: NMap | null): void };
+export type NInfoWindow = { open(map: NMap, anchor: NMarker): void; close(): void; getMap(): NMap | null };
+/** 지도 클릭 이벤트: 누른 곳의 좌표 */
+export type NPointerEvent = { coord: NLatLng };
 
 export type NaverMaps = {
   Map: new (el: HTMLElement, opts: Record<string, unknown>) => NMap;
@@ -23,8 +26,9 @@ export type NaverMaps = {
   LatLngBounds: new (sw: NLatLng, ne: NLatLng) => NLatLngBounds;
   Polyline: new (opts: Record<string, unknown>) => NPolyline;
   Marker: new (opts: Record<string, unknown>) => NMarker;
+  InfoWindow: new (opts: Record<string, unknown>) => NInfoWindow;
   Point: new (x: number, y: number) => unknown;
-  Event: { addListener(target: unknown, name: string, fn: () => void): unknown; removeListener(listener: unknown): void };
+  Event: { addListener(target: unknown, name: string, fn: (e: NPointerEvent) => void): unknown; removeListener(listener: unknown): void };
   Position: Record<string, unknown>;
 };
 

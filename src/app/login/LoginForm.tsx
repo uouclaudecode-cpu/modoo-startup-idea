@@ -66,6 +66,11 @@ export function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+        <div className="-mt-2 text-right">
+          <Link href="/forgot-password" className="text-[13px] font-semibold text-ink-muted underline-offset-2 hover:text-brand-700 hover:underline">
+            비밀번호를 잊었어요
+          </Link>
+        </div>
         {error && (
           <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
             {error}

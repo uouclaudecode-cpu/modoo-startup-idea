@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Bike, Play, Plus, Printer } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
+import { WelcomeGuide } from "@/components/onboarding/WelcomeGuide";
 import { partsNeedingCare, type VehiclePart } from "@/lib/parts";
 import { ButtonLink, EmptyState, ErrorState } from "@/components/ui";
 import { VehicleCard } from "@/components/vehicle/VehicleCard";
@@ -12,7 +13,8 @@ import type { Vehicle } from "@/lib/types";
 
 export const metadata: Metadata = { title: "내 이동수단" };
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ welcome?: string }> }) {
+  const { welcome } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -54,6 +56,9 @@ export default async function DashboardPage() {
     .filter((x) => x.items.length > 0);
 
   const nickname = profile?.nickname || user.email?.split("@")[0] || "회원";
+  // 시작 안내: 스티커를 연결했거나 부착 위치를 적었으면 붙이기 단계 완료로 봐요
+  const { count: stickerCount } = await supabase.from("stickers").select("code", { count: "exact", head: true });
+  const hasSticker = (stickerCount ?? 0) > 0 || list.some((v) => Boolean(v.sticker_spot));
 
   return (
     <div className="space-y-6">
@@ -63,6 +68,8 @@ export default async function DashboardPage() {
           <Bike aria-hidden className="h-4 w-4" />내 이동수단 {list.length}개
         </p>
       </div>
+
+      <WelcomeGuide nickname={nickname} hasVehicle={list.length > 0} hasSticker={hasSticker} fresh={welcome === "1"} />
 
       {list.length > 0 && (
         <ButtonLink href="/ride" full size="lg" icon={<Play aria-hidden className="h-5 w-5" />}>

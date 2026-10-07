@@ -10,12 +10,14 @@ import { createClient } from "@/lib/supabase/client";
 import { friendlyError } from "@/lib/format";
 
 type Form = { email: string; password: string; confirm: string; nickname: string };
+type Errors = Partial<Record<keyof Form | "agree" | "form", string>>;
 
 export function SignupForm({ next = "/dashboard" }: { next?: string }) {
   const router = useRouter();
   const toast = useToast();
   const [form, setForm] = useState<Form>({ email: "", password: "", confirm: "", nickname: "" });
-  const [errors, setErrors] = useState<Partial<Record<keyof Form | "form", string>>>({});
+  const [errors, setErrors] = useState<Errors>({});
+  const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState("");
 
@@ -28,6 +30,7 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
     if (form.confirm !== form.password) errs.confirm = "비밀번호가 서로 달라요.";
     if (!form.nickname.trim()) errs.nickname = "닉네임을 입력해 주세요.";
     else if (form.nickname.trim().length > 20) errs.nickname = "닉네임은 20자 이하로 정해 주세요.";
+    if (!agree) errs.agree = "약관과 개인정보처리방침에 동의해 주세요.";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   }
@@ -58,7 +61,7 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
     if (data.session) {
       // 이메일 확인을 쓰지 않는 설정이면 바로 로그인됩니다.
       toast.success("가입되었습니다! 환영해요.");
-      router.replace(next);
+      router.replace(next === "/dashboard" ? "/dashboard?welcome=1" : next);
       router.refresh();
     } else {
       setSentTo(form.email.trim());
@@ -124,6 +127,36 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
           hint="인사말과 커뮤니티 글·댓글에 보여요. 실명·전화번호는 쓰지 마세요."
           required
         />
+        <div className="space-y-1.5">
+          <label className="flex cursor-pointer items-start gap-2.5 rounded-xl bg-slate-50 p-3 text-[14px] leading-relaxed text-ink-soft">
+            <input
+              type="checkbox"
+              checked={agree}
+              onChange={(e) => {
+                setAgree(e.target.checked);
+                setErrors((x) => ({ ...x, agree: undefined }));
+              }}
+              className="mt-1 h-4 w-4 flex-none accent-brand-600"
+              aria-invalid={errors.agree ? true : undefined}
+            />
+            <span>
+              (필수) 만 14세 이상이며,{" "}
+              <Link href="/terms" target="_blank" className="font-semibold text-brand-700 underline">
+                이용약관
+              </Link>
+              ·
+              <Link href="/privacy" target="_blank" className="font-semibold text-brand-700 underline">
+                개인정보처리방침
+              </Link>
+              ·
+              <Link href="/location-terms" target="_blank" className="font-semibold text-brand-700 underline">
+                위치정보 이용약관
+              </Link>
+              에 동의해요.
+            </span>
+          </label>
+          {errors.agree && <p className="text-[13px] text-rose-600">{errors.agree}</p>}
+        </div>
         {errors.form && (
           <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
             {errors.form}
