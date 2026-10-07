@@ -10,6 +10,9 @@ create index if not exists profiles_created_idx on public.profiles (created_at);
 create index if not exists reports_created_idx on public.reports (created_at);
 create index if not exists rides_started_idx on public.rides (started_at);
 
+-- 찾았어요로 바꾼 시각 (011_merge_fixes.sql의 트리거가 채워요)
+alter table public.lost_posts add column if not exists resolved_at timestamptz;
+
 create or replace function public.admin_stats()
 returns jsonb
 language plpgsql
@@ -50,13 +53,11 @@ begin
     where deleted_at is null and created_at >= v_from
     group by 1
   ),
-  -- '찾았어요'로 바꾼 시각을 따로 저장하지 않아서, 회수 완료 글의 마지막 수정 시각(updated_at)으로 셉니다.
-  -- 주의: lost_posts_before_write 가 댓글 수가 바뀔 때도 updated_at 을 새로 찍어서,
-  --       회수 뒤에 글을 고치거나 댓글이 달리면 그 주로 옮겨져요. (정확히 하려면 resolved_at 열이 필요)
+  -- '찾았어요'로 바꾼 시각(resolved_at, 011에서 채움)으로 셉니다. 예전 글은 마지막 수정 시각으로 대신해요.
   resolved as (
-    select date_trunc('week', updated_at at time zone 'Asia/Seoul')::date as wk, count(*) as n
+    select date_trunc('week', coalesce(resolved_at, updated_at) at time zone 'Asia/Seoul')::date as wk, count(*) as n
     from public.lost_posts
-    where deleted_at is null and status = 'resolved' and updated_at >= v_from
+    where deleted_at is null and status = 'resolved' and coalesce(resolved_at, updated_at) >= v_from
     group by 1
   ),
   ride_weeks as (
