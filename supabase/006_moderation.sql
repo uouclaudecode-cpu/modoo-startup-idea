@@ -193,7 +193,7 @@ create policy "anyone reads posts" on public.lost_posts for select to anon, auth
     or (
       deleted_at is null
       and (hidden_at is null or (select public.is_admin()))
-      and author_id <> all ((select public.my_blocked_ids()))
+      and author_id <> all (coalesce((select public.my_blocked_ids()), '{}'::uuid[]))
     )
   );
 
@@ -204,7 +204,7 @@ create policy "read visible comments" on public.post_comments for select to anon
     deleted_at is null
     and public.can_view_comment(post_comments)
     and (hidden_at is null or author_id = auth.uid() or (select public.is_admin()))
-    and author_id <> all ((select public.my_blocked_ids()))
+    and author_id <> all (coalesce((select public.my_blocked_ids()), '{}'::uuid[]))
   );
 
 -- 댓글 목록: 003과 같은 열·순서 + 맨 끝에 hidden_at (내 댓글이 숨겨졌는지 알려주기용)
