@@ -7,6 +7,7 @@ import { AuthCard } from "@/components/auth/AuthCard";
 import { Button, Input, useToast } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
 import { friendlyError } from "@/lib/format";
+import { safeNext as toSafeNext } from "@/lib/safeNext";
 
 export function LoginForm() {
   const router = useRouter();
@@ -19,8 +20,7 @@ export function LoginForm() {
   );
   const [loading, setLoading] = useState(false);
 
-  const next = params.get("next");
-  const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
+  const safeNext = toSafeNext(params.get("next"));
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();

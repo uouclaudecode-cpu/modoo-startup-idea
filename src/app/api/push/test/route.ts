@@ -23,7 +23,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "로그인이 필요해요." }, { status: 401 });
   }
 
-  const { data: subs, error } = await supabase.from("push_subscriptions").select("endpoint, p256dh, auth").eq("user_id", user.id);
+  // 테스트 알림은 1분에 한 번만 (반복 호출로 알림 서버를 괴롭히지 않게)
+  const { data: allowed, error: limitErr } = await supabase.rpc("claim_test_push");
+  if (limitErr) {
+    console.error(limitErr);
+    return NextResponse.json({ error: "잠시 후 다시 시도해 주세요." }, { status: 500 });
+  }
+  if (!allowed) {
+    return NextResponse.json({ error: "테스트 알림은 1분에 한 번 보낼 수 있어요." }, { status: 429 });
+  }
+
+  const { data: subs, error } = await supabase
+    .from("push_subscriptions")
+    .select("endpoint, p256dh, auth")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(10);
   if (error) {
     console.error(error);
     return NextResponse.json({ error: "알림 기기 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요." }, { status: 500 });

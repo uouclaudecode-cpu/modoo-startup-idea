@@ -87,6 +87,11 @@ export default async function PostOgImage({ params }: { params: Promise<{ id: st
         </div>
       </div>
     ),
-    { ...OG_SIZE, fonts: await ogFonts() },
+    {
+      ...OG_SIZE,
+      fonts: await ogFonts(),
+      // 찾았어요·숨김·삭제가 몇 분 안에 미리보기에도 반영되도록 짧게 캐시
+      headers: { "cache-control": "public, max-age=0, s-maxage=300, stale-while-revalidate=600" },
+    },
   );
 }

@@ -19,6 +19,8 @@ type Props = {
   loggedIn: boolean;
   /** 로그인한 뒤 돌아올 주소 (예: /community/글ID) */
   nextPath: string;
+  /** 댓글 작성자가 글쓴이인지 (글쓴이를 차단하면 글 자체가 안 보여서 목록으로 보내요) */
+  authorIsPostAuthor?: boolean;
   className?: string;
 };
 
@@ -26,7 +28,7 @@ type Props = {
  * 글·댓글의 "⋯" 메뉴: 신고하기 / 이 사용자 차단.
  * 작성자 ID는 화면에 없어서 차단은 글·댓글 ID로 서버가 작성자를 찾아요.
  */
-export function ContentMenu({ target, targetId, authorName, loggedIn, nextPath, className }: Props) {
+export function ContentMenu({ target, targetId, authorName, loggedIn, nextPath, authorIsPostAuthor = false, className }: Props) {
   const router = useRouter();
   const toast = useToast();
   const [open, setOpen] = useState(false);
@@ -110,7 +112,9 @@ export function ContentMenu({ target, targetId, authorName, loggedIn, nextPath, 
     }
     setOpen(false);
     toast.success(`${authorName}님을 차단했어요. 이제 이 사람의 글과 댓글이 보이지 않아요.`);
-    leaveOrRefresh();
+    // 글쓴이를 차단하면(글에서든 글쓴이 댓글에서든) 이 글이 보이지 않으니 목록으로
+    if (target === "post" || authorIsPostAuthor) router.replace("/community");
+    router.refresh();
   }
 
   const title = view === "report" ? `${what} 신고하기` : view === "block" ? "이 사용자 차단" : "더 보기";

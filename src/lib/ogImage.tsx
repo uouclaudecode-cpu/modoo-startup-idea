@@ -31,7 +31,8 @@ export async function fetchAsDataUrl(url: string | null) {
     const r = await fetch(url, { cache: "force-cache" });
     if (!r.ok) return null;
     const type = r.headers.get("content-type") ?? "image/jpeg";
-    if (!/^image\/(jpeg|png|webp)/.test(type)) return null;
+    // 이미지 생성기(Satori)는 webp를 못 읽어요. jpeg·png만 넣고 나머지는 사진 없이 그려요.
+    if (!/^image\/(jpeg|png)/.test(type)) return null;
     const buf = Buffer.from(await r.arrayBuffer());
     return `data:${type};base64,${buf.toString("base64")}`;
   } catch (e) {

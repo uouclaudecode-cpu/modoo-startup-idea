@@ -46,7 +46,7 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3.4 · Supabas
 - 이 PC가 Node 18이라 Next.js 16 / Tailwind 4 / 최신 supabase-js 대신 Node 18에서 동작하는 버전을 고정했습니다. Vercel(Node 22)에서도 동작합니다.
 
 ## 처음 설정
-1. Supabase 프로젝트를 만들고 **SQL Editor**에서 [`supabase/schema.sql`](supabase/schema.sql) → [`002_community.sql`](supabase/002_community.sql) → [`003_stickers.sql`](supabase/003_stickers.sql) → [`004_rides_maintenance.sql`](supabase/004_rides_maintenance.sql) → [`005_review_fixes.sql`](supabase/005_review_fixes.sql) 순서로 실행합니다.
+1. Supabase 프로젝트를 만들고 **SQL Editor**에서 [`supabase/schema.sql`](supabase/schema.sql) → [`002_community.sql`](supabase/002_community.sql) → [`003_stickers.sql`](supabase/003_stickers.sql) → [`004_rides_maintenance.sql`](supabase/004_rides_maintenance.sql) → [`005_review_fixes.sql`](supabase/005_review_fixes.sql) → `006_moderation.sql` → `007_admin_stats.sql` → `008_push.sql` → `009_account.sql` → `010_post_location.sql` → `011_merge_fixes.sql` 순서로 실행합니다. (011은 006·009가 바꾼 트리거를 최종본으로 합쳐요)
    관리자 지정: `update public.profiles set is_admin = true where email = '관리자 이메일';`
 2. Supabase → Authentication → Sign In / Providers → **Confirm email** 끄기 (MVP: 가입 즉시 로그인)
 3. `.env.example`을 복사해 `.env.local`을 만들고 값을 채웁니다.
@@ -59,6 +59,17 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3.4 · Supabas
    npm install
    npm run dev        # http://localhost:3000
    ```
+
+## 환경 변수
+| 이름 | 용도 | 공개 여부 |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase 연결 | 공개 값 |
+| `NEXT_PUBLIC_SITE_URL` | QR·공유 미리보기·사이트맵의 기준 주소 | 공개 값 |
+| `NEXT_PUBLIC_NAVER_MAP_CLIENT_ID` | 네이버 지도 (NCP Maps Dynamic Map) | 공개 값 |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | 웹 푸시 공개 키 | 공개 값 |
+| `VAPID_PRIVATE_KEY` | 웹 푸시 서명 키 | **비밀** |
+| `PUSH_WEBHOOK_SECRET` | DB → `/api/push` 호출 확인용 (`app_private.push_config.secret`과 같아야 함) | **비밀** |
+| `NEXT_PUBLIC_OPERATOR_NAME`, `NEXT_PUBLIC_CONTACT_EMAIL` | 약관·방침·문의하기의 운영자·연락처 | 공개 값 |
 
 ## 배포 (Vercel)
 1. Vercel → Add New → Project → 이 저장소 Import
@@ -79,6 +90,20 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3.4 · Supabas
 - 저장(`complete_ride`)하면 기록 + 이동수단 누적 거리 + 소모품 거리를 한 번에 반영. 기록 삭제(`delete_ride`)는 그 라이딩 뒤로 정비하지 않은 소모품에서만 거리를 뺍니다.
 - 기본 주기: 타이어 공기압 14일 · 체인 윤활 250km · 브레이크 패드 2,000km · 체인 3,500km · 타이어 3,500km (킥보드는 체인 항목 없음). 마모율 80% 점검 필요, 100% 교체 권장.
 - 정비 완료(`service_part`): 날짜·비용·정비소·메모를 다이어리에 남기고 거리 0km부터 다시 셉니다.
+
+## 커뮤니티 안전 · 회원 관리
+- **신고·차단**: 글·댓글 ⋯ 메뉴에서 신고(서로 다른 3명이면 자동 숨김)·차단(그 사람 글·댓글이 나에게 안 보임). 관리자는 `/admin/reports`에서 숨기기·다시 보이기·삭제.
+- **설정** `/settings`: 닉네임 변경(지난 글·댓글 이름도 바뀜), 알림, 비밀번호 변경, 차단 목록, 회원 탈퇴(사진 정리 후 계정·연결 데이터 삭제).
+- **비밀번호 찾기** `/forgot-password` → 메일 링크 → `/auth/callback` → `/reset-password`. 기본 메일 서버는 시간당 보낼 수 있는 양이 적어서, 출시 후에는 Supabase에 직접 SMTP(예: Resend)를 연결하는 걸 권장해요(연결하면 메일 문구도 한국어로 바꿀 수 있어요).
+- **약관**: `/terms`, `/privacy`, `/location-terms`, `/contact` 초안. 출시 전 법률 검토와 위치정보사업 신고·등록 필요 여부 확인을 권장해요.
+
+## 푸시 알림
+- 발견 제보·연락 요청, 내 분실 글 댓글, 내 댓글 답글, 정비 시기(매일 09시)에 알림. 설정 화면에서 켜고 끄고, 종류별로 고를 수 있어요.
+- 흐름: DB 트리거 → `send_push`(pg_net) → `/api/push`(비밀값 확인 후 web-push로 발송). 끝난 기기 구독은 자동으로 지워요. 아이폰은 '홈 화면에 추가'한 앱에서만 받을 수 있어요.
+
+## 운영 · 분석
+- `/admin` 운영 통계(가입자, 이동수단, 스티커 등록률, 회수율, 발견 제보, 라이딩, 주별 그래프, 스티커 묶음별 등록률). 관리자만.
+- 카카오톡 공유 미리보기: 사이트 기본 카드와 분실 글 카드(`opengraph-image`), `robots.txt`, `sitemap.xml`, 기본 보안 헤더.
 
 ## 로딩 화면
 - 데이터를 불러오는 모든 화면은 `loading.tsx` 스켈레톤(shimmer)으로, 버튼 제출 대기만 버튼 안 인라인 스피너로 통일했습니다. 커뮤니티 탭·검색 전환도 목록 자리에 스켈레톤이 나옵니다.

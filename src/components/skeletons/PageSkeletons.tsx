@@ -332,3 +332,21 @@ export function AdminStatsSkeleton() {
     </SkeletonScreen>
   );
 }
+
+/** 약관·방침·문의처럼 글 위주 화면 */
+export function DocSkeleton() {
+  return (
+    <SkeletonScreen className="mx-auto max-w-2xl space-y-6 rounded-2xl bg-white p-5 shadow-card ring-1 ring-line/70 sm:p-8">
+      <div className="space-y-2 border-b border-line pb-4">
+        <Skeleton className="h-7 w-40" />
+        <Skeleton className="h-4 w-56" />
+      </div>
+      {Array.from({ length: 4 }, (_, i) => (
+        <div key={i} className="space-y-2">
+          <Skeleton className="h-5 w-32" />
+          <SkeletonText lines={3} />
+        </div>
+      ))}
+    </SkeletonScreen>
+  );
+}

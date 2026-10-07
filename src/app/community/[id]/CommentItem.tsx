@@ -156,6 +156,7 @@ function CommentBody({ comment: c, imageUrl, canDelete, loggedIn, postId, reply 
             target="comment"
             targetId={c.id}
             authorName={c.author_name}
+            authorIsPostAuthor={c.is_post_author}
             loggedIn={loggedIn}
             nextPath={`/community/${postId}`}
             className="-my-2 -mr-2"

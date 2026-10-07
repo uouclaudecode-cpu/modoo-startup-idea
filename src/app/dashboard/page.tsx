@@ -57,7 +57,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
   const nickname = profile?.nickname || user.email?.split("@")[0] || "회원";
   // 시작 안내: 스티커를 연결했거나 부착 위치를 적었으면 붙이기 단계 완료로 봐요
-  const { count: stickerCount } = await supabase.from("stickers").select("code", { count: "exact", head: true });
+  const liveIds = list.map((v) => v.id);
+  const { count: stickerCount } = liveIds.length
+    ? await supabase.from("stickers").select("code", { count: "exact", head: true }).eq("claimed_by", user.id).in("vehicle_id", liveIds)
+    : { count: 0 };
   const hasSticker = (stickerCount ?? 0) > 0 || list.some((v) => Boolean(v.sticker_spot));
 
   return (

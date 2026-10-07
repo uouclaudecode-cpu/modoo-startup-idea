@@ -134,8 +134,9 @@ export async function unsubscribePush(): Promise<void> {
   const sub = reg ? await reg.pushManager.getSubscription() : null;
   if (!sub) return;
 
-  const { error } = await createClient().from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
-  // 지우지 못해도 브라우저 구독을 끝내면 서버가 다음 알림 때 '끝난 구독'으로 알고 지워요.
-  if (error) console.error("알림 기기 삭제 실패", error);
+  const endpoint = sub.endpoint;
+  // 브라우저 구독을 먼저 끝내요. 네트워크가 느려 아래 삭제가 늦어도, 끝난 구독은 서버가 다음 알림 때 알아서 지워요.
   await sub.unsubscribe();
+  const { error } = await createClient().from("push_subscriptions").delete().eq("endpoint", endpoint);
+  if (error) console.error("알림 기기 삭제 실패", error);
 }

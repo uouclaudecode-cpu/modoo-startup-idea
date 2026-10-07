@@ -72,6 +72,15 @@ function str(v: unknown, max: number, { allowEmpty = false } = {}): string | nul
   return v;
 }
 
+/** 알림 문구: 너무 길면 거절하지 않고 글자 단위(이모지 포함)로 잘라요. */
+function text(v: unknown, max: number, { allowEmpty = false } = {}): string | null {
+  if (typeof v !== "string") return null;
+  const chars = Array.from(v);
+  const out = chars.length > max ? chars.slice(0, max - 1).join("") + "…" : v;
+  if (!allowEmpty && out.length === 0) return null;
+  return out;
+}
+
 /** 사이트 안 경로만 (//다른사이트, /\다른사이트 같은 바깥 주소 막기) */
 function safePath(v: unknown) {
   const s = str(v, 300);
@@ -95,8 +104,8 @@ function parseBody(raw: unknown) {
     subscriptions.push({ endpoint, p256dh, auth });
   }
 
-  const title = str(b.title, 100);
-  const body = str(b.body, 300, { allowEmpty: true });
+  const title = text(b.title, 100);
+  const body = text(b.body, 300, { allowEmpty: true });
   const url = safePath(b.url);
   if (!title || body === null || !url) return null;
 

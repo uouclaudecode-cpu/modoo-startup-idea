@@ -9,7 +9,7 @@ import { friendlyError } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
 
 /** 가입한 이메일로 비밀번호 재설정 링크 보내기 */
-export function ForgotPasswordForm() {
+export function ForgotPasswordForm({ expired = false }: { expired?: boolean }) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ export function ForgotPasswordForm() {
         <EmptyState
           icon={<MailCheck className="h-7 w-7" />}
           title="메일을 확인해 주세요"
-          description={`${sent}로 가입했다면 비밀번호를 다시 정하는 링크를 보냈어요. 메일함(스팸함 포함)을 확인해 주세요. 링크는 1시간 동안만 쓸 수 있어요.`}
+          description={`${sent}로 가입했다면 비밀번호를 다시 정하는 링크를 보냈어요. 메일함(스팸함 포함)을 확인하고, 지금 쓰는 이 브라우저에서 링크를 열어 주세요. 링크는 1시간 동안만 쓸 수 있어요.`}
           action={
             <ButtonLink href="/login" full>
               로그인 화면으로
@@ -61,6 +61,11 @@ export function ForgotPasswordForm() {
         </Link>
       }
     >
+      {expired && (
+        <p role="alert" className="mb-4 rounded-xl bg-amber-50 px-3 py-2.5 text-sm leading-relaxed text-amber-900">
+          링크가 만료됐거나 다른 브라우저에서 열렸어요. 다시 요청한 뒤, <b>요청한 것과 같은 휴대폰·브라우저</b>에서 메일 링크를 눌러 주세요.
+        </p>
+      )}
       <form onSubmit={onSubmit} noValidate className="space-y-4">
         <Input label="이메일" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} error={error} />
         <Button type="submit" full size="lg" loading={loading} loadingText="보내는 중..." disabled={!email.trim()}>

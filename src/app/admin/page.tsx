@@ -7,6 +7,7 @@ import { RATE_TEXT, RateBar, rateTone } from "@/components/admin/RateBar";
 import { StatCard } from "@/components/admin/StatCard";
 import { ButtonLink, Card, EmptyState, ErrorState } from "@/components/ui";
 import { requireAdmin } from "@/lib/admin";
+import { CleanupQueue } from "./CleanupQueue";
 import {
   formatCount,
   formatPercent,
@@ -57,6 +58,9 @@ export default async function AdminHomePage() {
   }
 
   const s = normalizeAdminStats(data);
+  // 지운 글·댓글·제보의 사진 중 아직 저장소에 남은 것 (012_review_fixes.sql)
+  const { count: cleanupCount, error: cleanupErr } = await supabase.from("storage_cleanup_queue").select("path", { count: "exact", head: true });
+  if (cleanupErr) console.error(cleanupErr);
   const stickerRate = ratio(s.stickers_claimed, s.stickers_total);
 
   return (
@@ -67,6 +71,7 @@ export default async function AdminHomePage() {
       <NowStrip s={s} />
       <WeeklyCharts weekly={s.weekly} />
       <BatchTable batches={s.batches} />
+      <CleanupQueue count={cleanupCount ?? 0} />
     </div>
   );
 }
@@ -264,7 +269,7 @@ function WeeklyCharts({ weekly }: { weekly: WeeklyPoint[] }) {
       <BarChart title="분실 글" data={series("lost_posts")} unit="건" tone="amber" highlightLast />
       <BarChart
         title="회수 완료"
-        description="'찾았어요'로 바뀐 글을 마지막 수정 시각으로 셉니다. 그 뒤에 글을 고치거나 댓글이 달리면 그 주로 옮겨질 수 있어요."
+        description="'찾았어요'로 바꾼 시각 기준으로 셉니다. 다시 '찾는 중'으로 돌리면 빠져요."
         data={series("resolved_posts")}
         unit="건"
         tone="emerald"

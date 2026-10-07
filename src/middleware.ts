@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { safeNext } from "@/lib/safeNext";
 
 /**
  * 모든 요청마다 로그인 상태(쿠키)를 새로 고칩니다.
@@ -38,11 +39,8 @@ export async function middleware(request: NextRequest) {
   }
   // 이미 로그인했는데 로그인·회원가입 화면에 오면 가려던 곳(없으면 내 이동수단)으로
   if (user && (path === "/login" || path === "/signup")) {
-    const next = request.nextUrl.searchParams.get("next");
-    const dest = request.nextUrl.clone();
-    dest.pathname = next && next.startsWith("/") && !next.startsWith("//") ? next.split("?")[0] : "/dashboard";
-    dest.search = next && next.includes("?") ? next.slice(next.indexOf("?")) : "";
-    return NextResponse.redirect(dest);
+    const next = safeNext(request.nextUrl.searchParams.get("next"));
+    return NextResponse.redirect(new URL(next, request.nextUrl.origin));
   }
   // 개발용 디자인 확인 화면은 실제 사이트에서 숨김
   if (path.startsWith("/styleguide") && process.env.NODE_ENV === "production") {

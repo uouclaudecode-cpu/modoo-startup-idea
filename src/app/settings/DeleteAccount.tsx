@@ -40,7 +40,15 @@ export function DeleteAccount({ email }: { email: string }) {
         if (rmErr) console.error(rmErr);
       }
     }
-    // 2) 계정 지우기 (연결된 데이터는 데이터베이스가 함께 지움)
+    // 2) 내 이동수단이 받은 발견 제보 사진 지우기 (제보한 사람의 사진이라 계정과 함께 정리)
+    const { data: reportRows, error: repErr } = await supabase.from("reports").select("image_path").not("image_path", "is", null);
+    if (repErr) console.error(repErr);
+    const reportPaths = (reportRows ?? []).map((r) => r.image_path as string).filter(Boolean);
+    if (reportPaths.length) {
+      const { error: rmErr } = await supabase.storage.from("report-images").remove(reportPaths);
+      if (rmErr) console.error(rmErr);
+    }
+    // 3) 계정 지우기 (연결된 데이터는 데이터베이스가 함께 지움, 남은 사진은 정리 대기열로)
     const { error: delErr } = await supabase.rpc("delete_my_account");
     if (delErr) {
       console.error(delErr);
