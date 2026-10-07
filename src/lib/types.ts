@@ -21,6 +21,8 @@ export type Vehicle = {
   color: string | null;
   description: string | null;
   image_path: string | null;
+  /** 주인만 아는 스티커 부착 위치 (주인에게만 보임) */
+  sticker_spot: string | null;
   qr_token: string;
   status: VehicleStatus;
   deleted_at: string | null;

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft, MessagesSquare, Pencil, PenSquare, QrCode } from "lucide-react";
+import { ChevronLeft, EyeOff, MessagesSquare, Pencil, PenSquare, QrCode, ScanLine, Tag } from "lucide-react";
 import { ButtonLink, Card, StatusBadge } from "@/components/ui";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { formatDate } from "@/lib/format";
@@ -12,8 +12,15 @@ import { StatusActions } from "./StatusActions";
 
 export const metadata: Metadata = { title: "이동수단 상세" };
 
-export default async function VehicleDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function VehicleDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ sticker?: string }>;
+}) {
   const { id } = await params;
+  const { sticker: justClaimed } = await searchParams;
   const { supabase, vehicle } = await getOwnedVehicle(id, `/vehicles/${id}`);
   const { count } = await supabase
     .from("reports")
@@ -30,6 +37,10 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+  const { count: stickerCount } = await supabase
+    .from("stickers")
+    .select("code", { count: "exact", head: true })
+    .eq("vehicle_id", vehicle.id);
   const status = displayStatus(vehicle.status, count ?? 0);
 
   const rows: [string, string | null][] = [
@@ -68,6 +79,43 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
         </div>
       </Card>
 
+      {justClaimed && (
+        <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 p-4 text-emerald-800 ring-1 ring-emerald-200">
+          <Tag aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
+          <p className="text-[15px] leading-relaxed">
+            <b>스티커를 연결했어요!</b> 주인만 아는 곳에 붙여 주세요. 이제 누가 이 스티커를 찍으면 이 화면의 이동수단 정보가 보이고, 발견 제보가 나에게 와요.
+          </p>
+        </div>
+      )}
+
+      <Card className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <p className="flex items-center gap-2 font-bold">
+            <Tag aria-hidden className="h-4 w-4 text-brand-600" />
+            QR 스티커
+          </p>
+          <span className="text-sm text-ink-muted">{stickerCount ? `받은 스티커 ${stickerCount}장 연결됨` : "연결한 스티커 없음"}</span>
+        </div>
+        <p className="flex items-start gap-2 rounded-xl bg-slate-50 p-3 text-[14px] leading-relaxed text-ink-soft">
+          <EyeOff aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
+          {vehicle.sticker_spot ? (
+            <span>
+              붙인 위치 (나만 보기): <b className="text-ink">{vehicle.sticker_spot}</b>
+            </span>
+          ) : (
+            <span>붙인 위치를 적어 두면, 커뮤니티에서 &ldquo;이건가요?&rdquo;라고 묻는 사람에게 비밀 답글로 바로 알려줄 수 있어요.</span>
+          )}
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          <ButtonLink href="/scan" variant="secondary" icon={<ScanLine aria-hidden className="h-4 w-4" />}>
+            스티커 연결
+          </ButtonLink>
+          <ButtonLink href={`/vehicles/${vehicle.id}/edit`} variant="secondary" icon={<EyeOff aria-hidden className="h-4 w-4" />}>
+            위치 적기
+          </ButtonLink>
+        </div>
+      </Card>
+
       <StatusActions vehicleId={vehicle.id} status={vehicle.status} foundReports={count ?? 0} totalReports={total ?? 0} />
 
       {openPost ? (
@@ -84,7 +132,7 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
 
       <div className="grid grid-cols-2 gap-2">
         <ButtonLink href={`/vehicles/${vehicle.id}/qr`} variant="secondary" size="lg" icon={<QrCode aria-hidden className="h-5 w-5" />}>
-          QR 보기
+          QR 보기·저장
         </ButtonLink>
         <ButtonLink href={`/vehicles/${vehicle.id}/edit`} variant="secondary" size="lg" icon={<Pencil aria-hidden className="h-5 w-5" />}>
           정보 수정

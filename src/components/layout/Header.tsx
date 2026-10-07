@@ -12,7 +12,7 @@ import { getUser } from "@/lib/supabase/server";
 export async function Header() {
   const user = await getUser().catch(() => null);
   return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-white/90 pt-[env(safe-area-inset-top)] backdrop-blur">
+    <header className="sticky top-0 z-40 print:hidden border-b border-line/80 bg-white/90 pt-[env(safe-area-inset-top)] backdrop-blur">
       <div className="mx-auto flex h-14 max-w-3xl items-center gap-1 px-4">
         <Link href={user ? "/dashboard" : "/"} className="mr-auto flex items-center gap-2 whitespace-nowrap font-extrabold tracking-tight text-ink">
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 text-white">

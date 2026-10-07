@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bike, Camera, ChevronRight, Lock, MapPinned, MessagesSquare, QrCode, ScanLine, Siren, Sticker } from "lucide-react";
+import { Bike, Camera, ChevronRight, EyeOff, Lock, MapPinned, MessagesSquare, ScanLine, Tag } from "lucide-react";
 import { site } from "@/config/site";
 import { ButtonLink, Card, StatusBadge } from "@/components/ui";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
@@ -7,13 +7,12 @@ import { POST_LIST_COLUMNS } from "@/lib/community";
 import { createClient } from "@/lib/supabase/server";
 
 const STEPS = [
-  { icon: Bike, title: "이동수단 등록", text: "자전거·킥보드의 사진과 특징을 등록해요." },
-  { icon: QrCode, title: "고유 QR 생성", text: "예측할 수 없는 나만의 QR이 자동으로 만들어져요." },
-  { icon: Sticker, title: "QR 부착", text: "QR 이미지를 저장해 이동수단에 붙여 두세요." },
-  { icon: Siren, title: "분실 시 수색 중으로", text: "잃어버리면 버튼 하나로 '수색 중'으로 바꿔요." },
-  { icon: ScanLine, title: "주변 사람이 스캔", text: "발견한 사람이 로그인 없이 QR을 스캔해요." },
-  { icon: MapPinned, title: "발견 위치 제보", text: "발견 위치와 사진이 소유자에게만 전달돼요." },
-  { icon: MessagesSquare, title: "커뮤니티에 분실 글", text: "QR이 없어도 분실 글을 올리면 본 사람이 댓글·비밀 댓글로 알려줘요." },
+  { icon: Tag, title: "스티커 받기", text: "학교·편의점에 놓인 B-LOCK QR 스티커를 받아요. 없으면 앱에서 QR을 만들어 출력해도 돼요." },
+  { icon: ScanLine, title: "찍어서 내 자전거에 등록", text: "스티커를 찍어 내 자전거·킥보드에 연결해요. 앱에서도 같은 QR을 확인·저장할 수 있어요." },
+  { icon: EyeOff, title: "주인만 아는 곳에 부착", text: "안장 밑처럼 눈에 안 띄는 곳에 붙이고, 붙인 위치는 나만 보이게 적어 둬요." },
+  { icon: MessagesSquare, title: "잃어버리면 커뮤니티에", text: "분실 글을 올리면 '수색 중'으로 바뀌고, 본 사람들이 댓글로 알려줘요." },
+  { icon: Lock, title: "비밀 답글로 스티커 위치", text: "“이건가요?”라는 비밀 댓글에 주인이 비밀 답글로 스티커 위치를 알려줘요." },
+  { icon: MapPinned, title: "스티커를 찍어 제보", text: "발견한 사람이 스티커를 찍으면 위치·사진이 주인에게만 전달돼요." },
 ];
 
 /** 최근 '찾는 중' 글 3개 (불러오지 못해도 첫 화면은 그대로 보여요) */
@@ -46,7 +45,7 @@ export default async function HomePage() {
           디지털 신분증을 만들어주세요.
         </h1>
         <p className="mt-4 text-[15px] leading-relaxed text-brand-50/90">
-          QR 하나로 등록하고, 잃어버렸을 때 주변 사람의 제보를 받을 수 있습니다.
+          QR 스티커 하나로 등록하고, 잃어버렸을 때 주변 사람의 제보를 받을 수 있습니다.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <ButtonLink href="/vehicles/new" size="lg" full variant="light" icon={<Bike aria-hidden className="h-5 w-5" />}>

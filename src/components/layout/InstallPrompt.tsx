@@ -93,8 +93,8 @@ export function InstallPrompt() {
   return (
     <>
       {/* 고정된 버튼이 마지막 내용을 가리지 않도록 자리 확보 */}
-      <div aria-hidden className="h-20" />
-      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 px-3 pb-2 sm:bottom-0 sm:pb-4">
+      <div aria-hidden className="h-20 print:hidden" />
+      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 print:hidden px-3 pb-2 sm:bottom-0 sm:pb-4">
         <div className="mx-auto flex max-w-md items-center gap-3 rounded-2xl bg-ink p-2.5 pl-3 text-white shadow-lift">
           <span aria-hidden className="grid h-10 w-10 flex-none place-items-center rounded-xl bg-brand-600">
             <Download className="h-5 w-5" />

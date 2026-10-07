@@ -36,8 +36,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="min-h-dvh pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-0">
         <ToastProvider>
           <Header />
-          <main className="mx-auto w-full max-w-3xl px-4 pb-16 pt-6">{children}</main>
-          <footer className="mx-auto max-w-3xl px-4 pb-10 text-center text-xs text-ink-faint">
+          <main className="mx-auto w-full max-w-3xl px-4 pb-16 pt-6 print:max-w-none print:p-0">{children}</main>
+          <footer className="mx-auto max-w-3xl px-4 pb-10 print:hidden text-center text-xs text-ink-faint">
             © {new Date().getFullYear()} {site.name} · 발견 위치 제보 서비스 (실시간 위치 추적 아님)
           </footer>
           <InstallPrompt />

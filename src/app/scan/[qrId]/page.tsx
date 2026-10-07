@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Lock, MapPinned, MessageCircle, MessagesSquare, Siren } from "lucide-react";
+import { BadgeCheck, Lock, MapPinned, MessageCircle, MessagesSquare, Siren } from "lucide-react";
 import { ButtonLink, Card, ErrorState, StatusBadge } from "@/components/ui";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { vehicleImageUrl } from "@/lib/images";
 import { createClient } from "@/lib/supabase/server";
 import { typeEmoji, typeLabel, type PublicVehicle } from "@/lib/types";
+import { NewSticker } from "./NewSticker";
 
 export const metadata: Metadata = { title: "QR 확인", robots: { index: false } };
 
@@ -24,8 +25,39 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
     return <ErrorState title="인터넷 연결을 확인해주세요." description="QR 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요." />;
   }
   const v = (data as PublicVehicle[] | null)?.[0];
-  if (!v) return <ErrorState title="⚠️ 등록되지 않은 QR입니다." description="QR이 훼손됐거나 잘못된 주소일 수 있어요." />;
+  if (!v) {
+    // 아직 아무 이동수단에도 등록하지 않은 새 스티커인지 확인
+    const { data: stickerStatus, error: stickerErr } = await supabase.rpc("get_sticker_status", { p_code: token });
+    if (stickerErr) console.error(stickerErr);
+    if (stickerStatus === "unclaimed") return <NewSticker code={token} />;
+    return <ErrorState title="⚠️ 등록되지 않은 QR입니다." description="QR이 훼손됐거나 잘못된 주소일 수 있어요." />;
+  }
   if (!v.available) return <ErrorState title="⚠️ 현재 사용할 수 없는 QR입니다." description="소유자가 이 이동수단의 등록을 해제했어요." />;
+
+  // 로그인한 주인이 자기 스티커·QR을 찍었는지 (주인 확인용). RLS 때문에 본인 것만 찾아져요.
+  let ownVehicleId: string | null = null;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) {
+    const [{ data: ownByQr }, { data: ownBySticker }] = await Promise.all([
+      supabase.from("vehicles").select("id").eq("qr_token", token).maybeSingle(),
+      supabase.from("stickers").select("vehicle_id").eq("code", token).maybeSingle(),
+    ]);
+    ownVehicleId = ownByQr?.id ?? ownBySticker?.vehicle_id ?? null;
+  }
+  const ownerBanner = ownVehicleId && (
+    <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 p-4 text-emerald-800 ring-1 ring-emerald-200">
+      <BadgeCheck aria-hidden className="h-6 w-6 flex-none" />
+      <p className="flex-1 text-[15px] leading-snug">
+        <b>✅ 내 이동수단이에요</b>
+        <span className="block text-[13px] text-emerald-700">이 QR은 내 계정에 등록돼 있어요.</span>
+      </p>
+      <ButtonLink href={`/vehicles/${ownVehicleId}`} variant="secondary" className="h-10 flex-none px-3 text-sm">
+        관리
+      </ButtonLink>
+    </div>
+  );
 
   const reportHref = `/report/${encodeURIComponent(token)}`;
   const facts: [string, string | null][] = [
@@ -69,6 +101,7 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
     if (postErr) console.error(postErr);
     return (
       <div className="mx-auto max-w-md space-y-4">
+        {ownerBanner}
         <div role="alert" className="rounded-3xl bg-rose-600 p-6 text-white shadow-lift">
           <Siren aria-hidden className="h-9 w-9" />
           <h1 className="mt-3 text-2xl font-extrabold leading-snug">🚨 현재 분실/도난 수색 중입니다.</h1>
@@ -92,6 +125,7 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
 
   return (
     <div className="mx-auto max-w-md space-y-4">
+        {ownerBanner}
       <Card className="space-y-3 text-center">
         <p className="text-4xl" aria-hidden>
           {typeEmoji(v.type)}

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button, Card, Input, Textarea, buttonClass, useToast } from "@/components/ui";
 import { PhotoPicker } from "@/components/ui/PhotoPicker";
+import { StickerSpotInput } from "@/components/vehicle/StickerSpotInput";
 import { cn } from "@/lib/cn";
 import { friendlyError } from "@/lib/format";
 import { prepareImage, vehicleImageUrl } from "@/lib/images";
@@ -13,8 +14,11 @@ import { VEHICLE_TYPES, type Vehicle, type VehicleType } from "@/lib/types";
 
 type Form = { type: VehicleType; name: string; brand: string; model: string; color: string; description: string };
 
-/** 이동수단 등록 폼. vehicle을 넘기면 정보 수정 폼이 됩니다. (QR은 바뀌지 않음) */
-export function VehicleForm({ vehicle }: { vehicle?: Vehicle } = {}) {
+/**
+ * 이동수단 등록 폼. vehicle을 넘기면 정보 수정 폼이 됩니다. (QR은 바뀌지 않음)
+ * stickerCode를 넘기면 등록하면서 그 스티커를 함께 연결합니다.
+ */
+export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stickerCode?: string } = {}) {
   const router = useRouter();
   const toast = useToast();
   const editing = Boolean(vehicle);
@@ -27,6 +31,7 @@ export function VehicleForm({ vehicle }: { vehicle?: Vehicle } = {}) {
     description: vehicle?.description ?? "",
   });
   const [photo, setPhoto] = useState<File | null>(null);
+  const [spot, setSpot] = useState(vehicle?.sticker_spot ?? "");
   // 수정할 때: 지금 사진을 지우기로 했는지
   const [removeCurrent, setRemoveCurrent] = useState(false);
   const currentImage = vehicle?.image_path && !removeCurrent ? vehicleImageUrl(vehicle.image_path) : null;
@@ -84,6 +89,7 @@ export function VehicleForm({ vehicle }: { vehicle?: Vehicle } = {}) {
         model: form.model.trim() || null,
         color: form.color.trim() || null,
         description: form.description.trim() || null,
+        sticker_spot: spot.trim() || null,
       };
 
       if (vehicle) {
@@ -101,7 +107,20 @@ export function VehicleForm({ vehicle }: { vehicle?: Vehicle } = {}) {
       const { data, error } = await supabase.from("vehicles").insert({ ...fields, image_path: imagePath }).select("id").single();
       if (error) throw error;
 
-      toast.success("등록되었습니다! 고유 QR이 만들어졌어요.");
+      // 오프라인에서 받은 스티커를 함께 연결 (앱에서 만든 QR도 그대로 쓸 수 있어요)
+      if (stickerCode) {
+        const { error: claimErr } = await supabase.rpc("claim_sticker", { p_code: stickerCode, p_vehicle: data.id, p_spot: null });
+        if (claimErr) {
+          console.error(claimErr);
+          toast.error(friendlyError(claimErr, "등록은 됐지만 스티커를 연결하지 못했어요. 스티커를 다시 찍어 주세요."));
+          router.replace(`/vehicles/${data.id}`);
+          router.refresh();
+          return;
+        }
+        toast.success("등록하고 스티커도 연결했어요!");
+      } else {
+        toast.success("등록되었습니다! 고유 QR이 만들어졌어요.");
+      }
       router.replace(`/vehicles/${data.id}/qr?new=1`);
       router.refresh();
     } catch (err) {
@@ -163,6 +182,14 @@ export function VehicleForm({ vehicle }: { vehicle?: Vehicle } = {}) {
           maxLength={500}
           rows={4}
         />
+      </Card>
+      <Card className="space-y-3">
+        <p className="text-[13px] leading-relaxed text-ink-muted">
+          {stickerCode
+            ? "🏷️ 받은 스티커가 이 이동수단에 연결돼요. 주인만 아는 곳에 붙이고 위치를 적어 두세요."
+            : "QR 스티커(받은 스티커나 직접 출력한 QR)를 붙였다면 위치를 적어 두세요. 커뮤니티에서 비밀 답글로 알려줄 때 써요."}
+        </p>
+        <StickerSpotInput value={spot} onChange={setSpot} />
       </Card>
       <Card>
         {currentImage && !photo ? (

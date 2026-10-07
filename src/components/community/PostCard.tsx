@@ -23,6 +23,7 @@ export type PostListItem = Pick<
   | "image_path"
   | "status"
   | "comment_count"
+  | "has_sticker"
   | "created_at"
 >;
 
@@ -37,6 +38,11 @@ export function PostCard({ post: p }: { post: PostListItem }) {
         <div className="min-w-0 flex-1 py-0.5">
           <div className="flex items-center gap-2">
             <PostStatusBadge status={p.status} />
+            {p.has_sticker && (
+              <span className="flex-none text-[12px] font-semibold text-brand-700" title="B-LOCK QR 스티커가 붙어 있어요">
+                🏷️ 스티커
+              </span>
+            )}
             <span className="truncate text-[13px] text-ink-muted">{spec}</span>
           </div>
           <p className="mt-1.5 line-clamp-2 font-bold leading-snug text-ink">{p.title}</p>

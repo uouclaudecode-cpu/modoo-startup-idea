@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, ChevronLeft, Inbox, Lock, MapPin, MessageSquare } from "lucide-react";
+import { CalendarDays, ChevronLeft, Inbox, Lock, MapPin, MessageSquare, Tag } from "lucide-react";
 import { ButtonLink, Card, buttonClass } from "@/components/ui";
 import { PostStatusBadge } from "@/components/community/PostStatusBadge";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
@@ -11,7 +11,7 @@ import { publicImageUrl } from "@/lib/images";
 import { createClient } from "@/lib/supabase/server";
 import { typeLabel } from "@/lib/types";
 import { CommentForm } from "./CommentForm";
-import { CommentItem } from "./CommentItem";
+import { CommentThread } from "./CommentItem";
 import { PostActions } from "./PostActions";
 import { ShareButton } from "./ShareButton";
 
@@ -59,8 +59,20 @@ export default async function PostPage({ params }: Params) {
     if (error) console.error(error);
     for (const u of urls ?? []) if (u.path && u.signedUrl) signed.set(u.path, u.signedUrl);
   }
-  const imageOf = (c: PostComment) =>
-    !c.image_path ? null : c.is_secret ? (signed.get(c.image_path) ?? null) : publicImageUrl("community-images", c.image_path);
+  const imageOf: Record<string, string | null> = {};
+  for (const c of comments) {
+    imageOf[c.id] = !c.image_path ? null : c.is_secret ? (signed.get(c.image_path) ?? null) : publicImageUrl("community-images", c.image_path);
+  }
+  // 댓글과 답글 묶기 (답글은 한 단계)
+  const topLevel = comments.filter((c) => !c.parent_id);
+  const repliesOf = (id: string) => comments.filter((c) => c.parent_id === id);
+
+  // 글쓴이에게만: 연결한 이동수단의 스티커 위치 (비밀 답글에 넣기용)
+  let stickerSpot: string | null = null;
+  if (isAuthor && post.vehicle_id) {
+    const { data: v } = await supabase.from("vehicles").select("sticker_spot").eq("id", post.vehicle_id).maybeSingle();
+    stickerSpot = v?.sticker_spot ?? "";
+  }
 
   const facts: [string, string | null][] = [
     ["종류", typeLabel(post.type)],
@@ -118,6 +130,23 @@ export default async function PostPage({ params }: Params) {
         </div>
       </Card>
 
+      {post.has_sticker && post.status === "open" && (
+        <div className="flex items-start gap-3 rounded-2xl bg-brand-50 p-4 text-[14px] leading-relaxed text-brand-900 ring-1 ring-brand-100">
+          <Tag aria-hidden className="mt-0.5 h-5 w-5 flex-none text-brand-600" />
+          {isAuthor ? (
+            <p>
+              <b>🏷️ QR 스티커가 붙은 이동수단이에요.</b> &ldquo;이건가요?&rdquo;라는 비밀 댓글이 오면 <b>비밀 답글</b>로 스티커 위치를 알려주세요. 그
+              사람이 스티커를 찍으면 위치·사진이 나에게 와요. 스티커 위치는 공개 댓글에 쓰지 마세요.
+            </p>
+          ) : (
+            <p>
+              <b>🏷️ 이 자전거에는 B-LOCK QR 스티커가 숨겨져 있어요.</b> 비슷한 자전거를 봤다면 <b>비밀 댓글</b>로 &ldquo;이건가요?&rdquo;라고
+              물어보세요. 주인이 스티커 위치를 알려주면, 그 스티커를 찍어서 위치와 사진을 주인에게 바로 보낼 수 있어요.
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="grid grid-cols-[1fr_auto] gap-2">
         {isAuthor ? (
           <PostActions postId={post.id} status={post.status} vehicleId={post.vehicle_id} />
@@ -146,10 +175,18 @@ export default async function PostPage({ params }: Params) {
             아직 댓글이 없어요. 비슷한 {typeLabel(post.type)}를 봤다면 알려주세요.
           </p>
         )}
-        <ul className="space-y-2">
-          {comments.map((c) => (
+        <ul className="space-y-3">
+          {topLevel.map((c) => (
             <li key={c.id}>
-              <CommentItem comment={c} imageUrl={imageOf(c)} canDelete={c.is_mine || isAuthor} />
+              <CommentThread
+                comment={c}
+                replies={repliesOf(c.id)}
+                imageOf={imageOf}
+                viewerIsAuthor={isAuthor}
+                postId={post.id}
+                stickerSpot={stickerSpot}
+                loggedIn={Boolean(user)}
+              />
             </li>
           ))}
         </ul>

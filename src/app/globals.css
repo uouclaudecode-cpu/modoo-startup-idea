@@ -13,3 +13,18 @@
     @apply outline-none ring-2 ring-brand-500 ring-offset-2;
   }
 }
+
+/* 스티커 인쇄: A4, 한 묶음(40칸)마다 새 페이지 */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  body {
+    background: #fff;
+    padding: 0 !important;
+  }
+  .sticker-page {
+    break-after: page;
+  }
+}

@@ -3,15 +3,69 @@
 /* eslint-disable @next/next/no-img-element -- Supabase 저장소 사진이라 기본 img 사용 */
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ExternalLink, Lock, MapPin, Trash2 } from "lucide-react";
+import { CornerDownRight, ExternalLink, Lock, MapPin, MessageSquareReply, Trash2 } from "lucide-react";
 import { Button, Modal, useToast } from "@/components/ui";
 import type { PostComment } from "@/lib/community";
 import { cn } from "@/lib/cn";
 import { formatDateTime, friendlyError, timeAgo } from "@/lib/format";
 import { kakaoMapLink } from "@/lib/map";
 import { createClient } from "@/lib/supabase/client";
+import { ReplyForm } from "./ReplyForm";
 
-export function CommentItem({ comment: c, imageUrl, canDelete }: { comment: PostComment; imageUrl: string | null; canDelete: boolean }) {
+type Thread = {
+  comment: PostComment;
+  replies: PostComment[];
+  imageOf: Record<string, string | null>;
+  /** 지금 보는 사람이 글쓴이인지 */
+  viewerIsAuthor: boolean;
+  postId: string;
+  /** 글쓴이에게만: 연결한 이동수단의 스티커 위치 */
+  stickerSpot: string | null;
+  loggedIn: boolean;
+};
+
+/** 댓글 하나 + 답글들 + 답글 쓰기 */
+export function CommentThread({ comment, replies, imageOf, viewerIsAuthor, postId, stickerSpot, loggedIn }: Thread) {
+  const [replying, setReplying] = useState(false);
+  // 답글은 글쓴이(주인)와 원래 댓글 쓴 사람이 주고받아요
+  const canReply = loggedIn && comment.can_view && (viewerIsAuthor || comment.is_mine);
+
+  return (
+    <div className="space-y-2">
+      <CommentBody comment={comment} imageUrl={imageOf[comment.id] ?? null} canDelete={comment.is_mine || viewerIsAuthor} />
+      {(replies.length > 0 || replying) && (
+        <div className="space-y-2 border-l-2 border-line pl-3">
+          {replies.map((r) => (
+            <CommentBody key={r.id} comment={r} imageUrl={imageOf[r.id] ?? null} canDelete={r.is_mine || viewerIsAuthor} reply />
+          ))}
+          {replying && (
+            <ReplyForm
+              postId={postId}
+              parent={comment}
+              stickerSpot={viewerIsAuthor ? stickerSpot : null}
+              onDone={() => setReplying(false)}
+            />
+          )}
+        </div>
+      )}
+      {canReply && !replying && (
+        <button
+          type="button"
+          onClick={() => setReplying(true)}
+          className={cn(
+            "ml-1 inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] font-semibold hover:bg-slate-100",
+            viewerIsAuthor && comment.is_secret ? "text-amber-800" : "text-ink-muted",
+          )}
+        >
+          <MessageSquareReply aria-hidden className="h-4 w-4" />
+          {viewerIsAuthor && comment.is_secret ? "비밀 답글 (스티커 위치 알려주기)" : "답글"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function CommentBody({ comment: c, imageUrl, canDelete, reply }: { comment: PostComment; imageUrl: string | null; canDelete: boolean; reply?: boolean }) {
   const router = useRouter();
   const toast = useToast();
   const [confirm, setConfirm] = useState(false);
@@ -35,8 +89,8 @@ export function CommentItem({ comment: c, imageUrl, canDelete }: { comment: Post
   if (!c.can_view) {
     return (
       <div className="flex items-center gap-2 rounded-2xl bg-slate-100 px-4 py-3 text-sm text-ink-muted">
-        <Lock aria-hidden className="h-4 w-4" />
-        비밀 댓글입니다. 글쓴이와 댓글 쓴 사람만 볼 수 있어요.
+        {reply ? <CornerDownRight aria-hidden className="h-4 w-4" /> : <Lock aria-hidden className="h-4 w-4" />}
+        {reply ? "비밀 답글입니다." : "비밀 댓글입니다. 글쓴이와 댓글 쓴 사람만 볼 수 있어요."}
         <span className="ml-auto text-[13px] text-ink-faint">{timeAgo(c.created_at)}</span>
       </div>
     );
@@ -45,12 +99,19 @@ export function CommentItem({ comment: c, imageUrl, canDelete }: { comment: Post
   const hasCoords = c.latitude != null && c.longitude != null;
 
   return (
-    <div className={cn("space-y-2.5 rounded-2xl bg-white p-4 ring-1", c.is_secret ? "ring-amber-300 bg-amber-50/40" : "ring-line/70")}>
+    <div className={cn("space-y-2.5 rounded-2xl p-4 ring-1", c.is_secret ? "bg-amber-50/60 ring-amber-300" : "bg-white ring-line/70")}>
       <div className="flex items-center gap-2">
-        <span aria-hidden className="grid h-8 w-8 place-items-center rounded-full bg-brand-50 text-sm font-bold text-brand-700">
+        <span
+          aria-hidden
+          className={cn(
+            "grid h-8 w-8 place-items-center rounded-full text-sm font-bold",
+            c.is_post_author ? "bg-brand-600 text-white" : "bg-brand-50 text-brand-700",
+          )}
+        >
           {c.author_name.slice(0, 1)}
         </span>
-        <span className="text-sm font-semibold">{c.author_name}</span>
+        <span className="min-w-0 truncate text-sm font-semibold">{c.author_name}</span>
+        {c.is_post_author && <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[12px] font-semibold text-brand-700">글쓴이</span>}
         {c.is_mine && <span className="text-[12px] text-ink-faint">(나)</span>}
         {c.is_secret && (
           <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[12px] font-semibold text-amber-800">
@@ -58,7 +119,7 @@ export function CommentItem({ comment: c, imageUrl, canDelete }: { comment: Post
             비밀
           </span>
         )}
-        <time className="ml-auto text-[13px] text-ink-faint" dateTime={c.created_at} title={formatDateTime(c.created_at)}>
+        <time className="ml-auto flex-none text-[13px] text-ink-faint" dateTime={c.created_at} title={formatDateTime(c.created_at)}>
           {timeAgo(c.created_at)}
         </time>
       </div>
@@ -120,7 +181,7 @@ export function CommentItem({ comment: c, imageUrl, canDelete }: { comment: Post
           </>
         }
       >
-        이 댓글을 지울까요? 되돌릴 수 없어요.
+        {reply ? "이 답글을 지울까요? 되돌릴 수 없어요." : "이 댓글을 지울까요? 답글도 함께 사라지고, 되돌릴 수 없어요."}
       </Modal>
     </div>
   );

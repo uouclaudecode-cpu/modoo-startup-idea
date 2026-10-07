@@ -20,6 +20,7 @@ export type LostPost = {
   image_path: string | null;
   status: PostStatus;
   comment_count: number;
+  has_sticker: boolean;
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
@@ -28,10 +29,12 @@ export type LostPost = {
 /** get_post_comments 결과. 볼 수 없는 비밀 댓글은 내용·위치·사진이 비어 있어요. */
 export type PostComment = {
   id: string;
+  parent_id: string | null;
   author_name: string;
   is_secret: boolean;
   can_view: boolean;
   is_mine: boolean;
+  is_post_author: boolean;
   body: string | null;
   latitude: number | null;
   longitude: number | null;
@@ -47,7 +50,7 @@ export const POST_STATUS_META: Record<PostStatus, { label: string; emoji: string
 
 /** 목록에서 쓰는 열 (본문 전체는 상세에서만) */
 export const POST_LIST_COLUMNS =
-  "id, author_name, type, title, lost_area, lost_on, color, brand, model, image_bucket, image_path, status, comment_count, created_at";
+  "id, author_name, type, title, lost_area, lost_on, color, brand, model, image_bucket, image_path, status, comment_count, has_sticker, created_at";
 
 export function postImageUrl(p: Pick<LostPost, "image_bucket" | "image_path">) {
   if (!p.image_path) return null;

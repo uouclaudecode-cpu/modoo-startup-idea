@@ -25,6 +25,8 @@
 | `/community` | **분실 커뮤니티**: 찾는 중/찾았어요, 종류 필터, 지역·색상 검색 | - |
 | `/community/new` | 분실 글 쓰기 (내 이동수단 연결 시 정보·사진 자동 채움 + 수색 중 전환) | 필요 |
 | `/community/[id]` | 글 상세, 댓글(본 위치·사진), 🔒 비밀 댓글, 찾았어요, 공유 | 댓글은 필요 |
+| `/stickers/[code]` | 새 B-LOCK 스티커를 내 이동수단에 등록 (주인만 아는 부착 위치 기록) | 필요 |
+| `/admin/stickers` | 관리자: 빈 스티커 묶음 만들기, A4 40칸 인쇄·PDF, CSV | 관리자 |
 | `/vehicles/[id]/edit` | 이동수단 정보·사진 수정 (QR은 그대로) | 필요 |
 
 ## 보안 설계
@@ -41,7 +43,8 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3.4 · Supabas
 - 이 PC가 Node 18이라 Next.js 16 / Tailwind 4 / 최신 supabase-js 대신 Node 18에서 동작하는 버전을 고정했습니다. Vercel(Node 22)에서도 동작합니다.
 
 ## 처음 설정
-1. Supabase 프로젝트를 만들고 **SQL Editor**에서 [`supabase/schema.sql`](supabase/schema.sql), 이어서 [`supabase/002_community.sql`](supabase/002_community.sql)을 실행합니다.
+1. Supabase 프로젝트를 만들고 **SQL Editor**에서 [`supabase/schema.sql`](supabase/schema.sql) → [`002_community.sql`](supabase/002_community.sql) → [`003_stickers.sql`](supabase/003_stickers.sql) 순서로 실행합니다.
+   관리자 지정: `update public.profiles set is_admin = true where email = '관리자 이메일';`
 2. Supabase → Authentication → Sign In / Providers → **Confirm email** 끄기 (MVP: 가입 즉시 로그인)
 3. `.env.example`을 복사해 `.env.local`을 만들고 값을 채웁니다.
    ```
@@ -59,6 +62,12 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3.4 · Supabas
 2. Environment Variables에 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` 추가 후 Deploy
 3. 배포 주소가 나오면 `NEXT_PUBLIC_SITE_URL`에 그 주소를 넣고 다시 배포 (QR에 들어가는 주소가 고정됩니다)
 4. Supabase → Authentication → URL Configuration → Site URL에 배포 주소 입력
+
+## QR 스티커 흐름
+1. 관리자가 `/admin/stickers`에서 빈 스티커 묶음을 만들고 인쇄 → 학교·편의점에 배치
+2. 사용자가 스티커를 찍으면 '새 스티커' 화면 → 내 이동수단에 등록(또는 새로 등록하며 연결), 주인만 아는 부착 위치 기록
+3. 앱이 만든 QR도 그대로 쓰이고, QR 화면에서 등록한 스티커 QR도 확인·저장 가능 (주인 확인용). 주인이 로그인한 채 찍으면 '내 이동수단이에요' 표시
+4. 분실 → 커뮤니티 글(🏷️ 스티커 표시) → '이건가요?' 비밀 댓글 → 주인이 비밀 답글로 스티커 위치(📍 버튼) → 발견자가 스티커를 찍어 위치·사진 제보
 
 ## 앱 설치 (PWA)
 - `src/app/manifest.ts`(앱 정보), `src/app/icons/[file]`(앱 아이콘을 코드로 그림), `public/sw.js`(설치 조건 + 오프라인 안내 화면만 저장, 개인 화면은 저장 안 함)

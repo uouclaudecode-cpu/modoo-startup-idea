@@ -8,7 +8,18 @@ import { copyText } from "@/lib/clipboard";
 import { scanUrl } from "@/lib/qr";
 
 /** 화면용 QR + 부착용 스티커 이미지(PNG) 저장 + 공유 */
-export function QrCard({ token, vehicleName, siteName }: { token: string; vehicleName: string; siteName: string }) {
+export function QrCard({
+  token,
+  vehicleName,
+  siteName,
+  caption,
+}: {
+  token: string;
+  vehicleName: string;
+  siteName: string;
+  /** 카드 위쪽 설명 (예: 앱 QR / 스티커 QR) */
+  caption?: string;
+}) {
   const toast = useToast();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [url, setUrl] = useState("");
@@ -67,7 +78,7 @@ export function QrCard({ token, vehicleName, siteName }: { token: string; vehicl
       const blob = await stickerBlob();
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `${siteName}-QR-${vehicleName}.png`;
+      a.download = `${siteName}-QR-${vehicleName}-${token.slice(-4)}.png`;
       a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 1000);
       toast.success("QR 이미지를 저장했어요.");
@@ -104,7 +115,10 @@ export function QrCard({ token, vehicleName, siteName }: { token: string; vehicl
 
   return (
     <Card className="space-y-5 p-6 text-center">
-      <p className="text-sm font-semibold text-brand-700">{vehicleName}</p>
+      <div>
+        <p className="text-sm font-semibold text-brand-700">{vehicleName}</p>
+        {caption && <p className="mt-0.5 text-[13px] text-ink-muted">{caption}</p>}
+      </div>
       <div className="mx-auto w-full max-w-[320px] rounded-2xl bg-white p-3 ring-1 ring-line">
         <canvas ref={canvasRef} className="h-auto w-full" style={{ imageRendering: "pixelated" }} aria-label="QR 코드" />
       </div>
