@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, ChevronLeft, Inbox, Lock, MapPin, MessageSquare, Tag } from "lucide-react";
+import { CalendarDays, ChevronLeft, EyeOff, Inbox, Lock, MapPin, MessageSquare, Tag } from "lucide-react";
 import { ButtonLink, Card, buttonClass } from "@/components/ui";
+import { ContentMenu } from "@/components/community/ContentMenu";
 import { PostStatusBadge } from "@/components/community/PostStatusBadge";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { postImageUrl, UUID_RE, type LostPost, type PostComment } from "@/lib/community";
@@ -87,11 +88,39 @@ export default async function PostPage({ params }: Params) {
         커뮤니티
       </Link>
 
+      {/* 숨긴 글은 글쓴이와 관리자에게만 보여요 (정책에서 걸러짐). 왜 숨겨졌는지 알려 줘요. */}
+      {post.hidden_at && (
+        <div role="status" className="flex items-start gap-3 rounded-2xl bg-amber-50 p-4 text-[14px] leading-relaxed text-amber-900 ring-1 ring-amber-200">
+          <EyeOff aria-hidden className="mt-0.5 h-5 w-5 flex-none text-amber-600" />
+          {isAuthor ? (
+            <p>
+              <b>신고가 많아 다른 사람에게는 숨겨졌어요.</b> 운영자가 내용을 확인한 뒤 문제가 없으면 다시 보이게 해요.
+            </p>
+          ) : (
+            <p>
+              <b>숨김 처리된 글이에요.</b> 지금은 관리자와 글쓴이에게만 보여요.
+            </p>
+          )}
+        </div>
+      )}
+
       <Card className="overflow-hidden p-0">
         <VehicleImage src={postImageUrl(post)} type={post.type} alt={post.title} className="aspect-[4/3]" />
         <div className="space-y-4 p-5">
           <div className="space-y-2">
-            <PostStatusBadge status={post.status} />
+            <div className="flex items-center justify-between gap-2">
+              <PostStatusBadge status={post.status} />
+              {user && !isAuthor && (
+                <ContentMenu
+                  target="post"
+                  targetId={post.id}
+                  authorName={post.author_name}
+                  loggedIn
+                  nextPath={`/community/${post.id}`}
+                  className="-my-2 -mr-2"
+                />
+              )}
+            </div>
             <h1 className="text-xl font-extrabold leading-snug tracking-tight sm:text-2xl">{post.title}</h1>
             <p className="text-[13px] text-ink-muted">
               {post.author_name} · <time dateTime={post.created_at} title={formatDateTime(post.created_at)}>{timeAgo(post.created_at)}</time>

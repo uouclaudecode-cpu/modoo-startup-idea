@@ -3,8 +3,9 @@
 /* eslint-disable @next/next/no-img-element -- Supabase 저장소 사진이라 기본 img 사용 */
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CornerDownRight, ExternalLink, Lock, MapPin, MessageSquareReply, Trash2 } from "lucide-react";
+import { CornerDownRight, ExternalLink, EyeOff, Lock, MapPin, MessageSquareReply, Trash2 } from "lucide-react";
 import { Button, Modal, useToast } from "@/components/ui";
+import { ContentMenu } from "@/components/community/ContentMenu";
 import type { PostComment } from "@/lib/community";
 import { cn } from "@/lib/cn";
 import { formatDateTime, friendlyError, timeAgo } from "@/lib/format";
@@ -32,11 +33,25 @@ export function CommentThread({ comment, replies, imageOf, viewerIsAuthor, postI
 
   return (
     <div className="space-y-2">
-      <CommentBody comment={comment} imageUrl={imageOf[comment.id] ?? null} canDelete={comment.is_mine || viewerIsAuthor} />
+      <CommentBody
+        comment={comment}
+        imageUrl={imageOf[comment.id] ?? null}
+        canDelete={comment.is_mine || viewerIsAuthor}
+        loggedIn={loggedIn}
+        postId={postId}
+      />
       {(replies.length > 0 || replying) && (
         <div className="space-y-2 border-l-2 border-line pl-3">
           {replies.map((r) => (
-            <CommentBody key={r.id} comment={r} imageUrl={imageOf[r.id] ?? null} canDelete={r.is_mine || viewerIsAuthor} reply />
+            <CommentBody
+              key={r.id}
+              comment={r}
+              imageUrl={imageOf[r.id] ?? null}
+              canDelete={r.is_mine || viewerIsAuthor}
+              loggedIn={loggedIn}
+              postId={postId}
+              reply
+            />
           ))}
           {replying && (
             <ReplyForm
@@ -65,7 +80,17 @@ export function CommentThread({ comment, replies, imageOf, viewerIsAuthor, postI
   );
 }
 
-function CommentBody({ comment: c, imageUrl, canDelete, reply }: { comment: PostComment; imageUrl: string | null; canDelete: boolean; reply?: boolean }) {
+type BodyProps = {
+  comment: PostComment;
+  imageUrl: string | null;
+  canDelete: boolean;
+  /** 신고·차단 메뉴: 로그인 안 했으면 로그인 안내를 보여줘요 */
+  loggedIn: boolean;
+  postId: string;
+  reply?: boolean;
+};
+
+function CommentBody({ comment: c, imageUrl, canDelete, loggedIn, postId, reply }: BodyProps) {
   const router = useRouter();
   const toast = useToast();
   const [confirm, setConfirm] = useState(false);
@@ -122,7 +147,26 @@ function CommentBody({ comment: c, imageUrl, canDelete, reply }: { comment: Post
         <time className="ml-auto flex-none text-[13px] text-ink-faint" dateTime={c.created_at} title={formatDateTime(c.created_at)}>
           {timeAgo(c.created_at)}
         </time>
+        {/* 내 댓글이 아닐 때만 신고·차단 (내 댓글은 아래 '삭제'로) */}
+        {!c.is_mine && (
+          <ContentMenu
+            target="comment"
+            targetId={c.id}
+            authorName={c.author_name}
+            loggedIn={loggedIn}
+            nextPath={`/community/${postId}`}
+            className="-my-2 -mr-2"
+          />
+        )}
       </div>
+
+      {/* 숨긴 댓글은 쓴 사람·관리자에게만 와요 */}
+      {c.hidden_at && (
+        <p role="status" className="flex items-start gap-1.5 rounded-xl bg-amber-50 px-3 py-2 text-[13px] leading-relaxed text-amber-900 ring-1 ring-amber-200">
+          <EyeOff aria-hidden className="mt-0.5 h-3.5 w-3.5 flex-none text-amber-600" />
+          {c.is_mine ? "신고가 많아 다른 사람에게는 숨겨졌어요." : "숨김 처리된 댓글이에요. 관리자와 쓴 사람에게만 보여요."}
+        </p>
+      )}
 
       <p className="whitespace-pre-line text-[15px] leading-relaxed">{c.body}</p>
 
