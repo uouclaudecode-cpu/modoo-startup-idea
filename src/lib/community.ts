@@ -22,6 +22,8 @@ export type LostPost = {
   comment_count: number;
   has_sticker: boolean;
   deleted_at: string | null;
+  /** 신고가 쌓였거나 관리자가 숨긴 시각. 숨긴 글은 글쓴이·관리자에게만 보여요. */
+  hidden_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -41,6 +43,8 @@ export type PostComment = {
   location_text: string | null;
   image_path: string | null;
   created_at: string;
+  /** 숨긴 댓글은 쓴 사람·관리자에게만 와요 (그 외에는 늘 null) */
+  hidden_at: string | null;
 };
 
 export const POST_STATUS_META: Record<PostStatus, { label: string; emoji: string }> = {

@@ -194,3 +194,51 @@ export function ScanResultSkeleton() {
     </SkeletonScreen>
   );
 }
+
+/** 관리자 신고 목록 (배지 + 내용 + 이유 + 버튼 2개 카드) */
+export function ReportListSkeleton({ rows = 3 }: { rows?: number }) {
+  return (
+    <SkeletonScreen className="mx-auto max-w-xl space-y-5">
+      <Heading />
+      <div className="space-y-3">
+        {Array.from({ length: rows }, (_, i) => (
+          <div key={i} className="space-y-3 rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70">
+            <div className="flex gap-1.5">
+              <Skeleton className="h-7 w-12 rounded-full" />
+              <Skeleton className="h-7 w-20 rounded-full" />
+              <Skeleton className="h-7 w-16 rounded-full" />
+            </div>
+            <Skeleton className="h-5 w-4/5" />
+            <Skeleton className="h-3.5 w-24" />
+            <div className="flex gap-1.5">
+              <Skeleton className="h-6 w-16 rounded-full" />
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Skeleton className="h-11 rounded-xl" />
+              <Skeleton className="h-11 rounded-xl" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </SkeletonScreen>
+  );
+}
+
+/** 차단한 사용자 목록 (설정 화면 안에서 불러오는 동안) */
+export function BlockedUsersSkeleton({ rows = 3 }: { rows?: number }) {
+  return (
+    <SkeletonScreen label="차단 목록 불러오는 중" className="space-y-2">
+      {Array.from({ length: rows }, (_, i) => (
+        <div key={i} className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70">
+          <Skeleton className="h-10 w-10 flex-none rounded-full" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-3.5 w-32" />
+          </div>
+          <Skeleton className="h-11 w-24 rounded-xl" />
+        </div>
+      ))}
+    </SkeletonScreen>
+  );
+}
