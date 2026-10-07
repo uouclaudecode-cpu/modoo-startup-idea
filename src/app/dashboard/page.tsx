@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Bike, Plus } from "lucide-react";
+import { Bike, Plus, Printer } from "lucide-react";
 import { ButtonLink, EmptyState, ErrorState } from "@/components/ui";
 import { VehicleCard } from "@/components/vehicle/VehicleCard";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
@@ -18,7 +18,7 @@ export default async function DashboardPage() {
   if (!user) redirect("/login?next=/dashboard");
 
   const [{ data: profile }, { data: vehicles, error }, { data: myPosts }] = await Promise.all([
-    supabase.from("profiles").select("nickname").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("nickname, is_admin").eq("id", user.id).maybeSingle(),
     supabase.from("vehicles").select("*").is("deleted_at", null).order("created_at", { ascending: false }),
     supabase
       .from("lost_posts")
@@ -53,6 +53,12 @@ export default async function DashboardPage() {
           <Bike aria-hidden className="h-4 w-4" />내 이동수단 {list.length}개
         </p>
       </div>
+
+      {profile?.is_admin && (
+        <ButtonLink href="/admin/stickers" variant="secondary" full icon={<Printer aria-hidden className="h-4 w-4" />}>
+          🏷️ 스티커 관리 (관리자)
+        </ButtonLink>
+      )}
 
       {list.length === 0 ? (
         <EmptyState
