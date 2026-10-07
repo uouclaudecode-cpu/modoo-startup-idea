@@ -52,9 +52,14 @@ const config: Config = {
           from: { opacity: "0", transform: "translateY(8px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        // 스켈레톤 반짝임 (왼쪽 → 오른쪽)
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       animation: {
         "toast-in": "toast-in 0.18s ease-out",
+        shimmer: "shimmer 1.4s infinite",
       },
     },
   },

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MessagesSquare, PenSquare, Search } from "lucide-react";
+import { Suspense } from "react";
 import { ButtonLink, EmptyState, ErrorState } from "@/components/ui";
+import { ListRows } from "@/components/skeletons/PageSkeletons";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
 import { POST_LIST_COLUMNS } from "@/lib/community";
 import { cn } from "@/lib/cn";
@@ -30,18 +32,6 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   const q = (sp.q ?? "").replace(/[,()%*\\.:]/g, " ").trim().slice(0, 40);
   const page = Math.max(1, Math.min(50, Number(sp.page) || 1));
 
-  const supabase = await createClient();
-  let query = supabase
-    .from("lost_posts")
-    .select(POST_LIST_COLUMNS)
-    .is("deleted_at", null)
-    .order("created_at", { ascending: false })
-    .range(0, page * PAGE_SIZE); // 한 개 더 불러와서 '더 보기' 여부 판단
-  if (status !== "all") query = query.eq("status", status);
-  if (type) query = query.eq("type", type);
-  if (q) query = query.or(`title.ilike.%${q}%,lost_area.ilike.%${q}%,body.ilike.%${q}%,color.ilike.%${q}%,brand.ilike.%${q}%`);
-  const { data, error } = await query;
-
   const href = (patch: Partial<Search>) => {
     const next = new URLSearchParams();
     const merged = { q, status, type, ...patch };
@@ -52,9 +42,6 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
     const s = next.toString();
     return s ? `/community?${s}` : "/community";
   };
-
-  const posts = (data ?? []) as PostListItem[];
-  const hasMore = posts.length > page * PAGE_SIZE;
 
   return (
     <div className="space-y-5">
@@ -118,6 +105,34 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
         </div>
       </div>
 
+      {/* 탭·검색을 바꿀 때마다 목록 자리에 스켈레톤을 보여줘요 */}
+      <Suspense key={`${status}|${type}|${q}|${page}`} fallback={<ListRows rows={4} />}>
+        <PostResults q={q} status={status} type={type} page={page} moreHref={href({ page: String(page + 1) })} />
+      </Suspense>
+    </div>
+  );
+}
+
+/** 목록 불러오기 (Suspense 안에서 따로 불러와요) */
+async function PostResults({ q, status, type, page, moreHref }: { q: string; status: string; type: string; page: number; moreHref: string }) {
+  const supabase = await createClient();
+  let query = supabase
+    .from("lost_posts")
+    .select(POST_LIST_COLUMNS)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .range(0, page * PAGE_SIZE); // 한 개 더 불러와서 '더 보기' 여부 판단
+  if (status !== "all") query = query.eq("status", status);
+  if (type) query = query.eq("type", type);
+  if (q) query = query.or(`title.ilike.%${q}%,lost_area.ilike.%${q}%,body.ilike.%${q}%,color.ilike.%${q}%,brand.ilike.%${q}%`);
+  const { data, error } = await query;
+  if (error) console.error(error);
+
+  const posts = (data ?? []) as PostListItem[];
+  const hasMore = posts.length > page * PAGE_SIZE;
+
+  return (
+    <>
       {error ? (
         <ErrorState title="글을 불러오지 못했어요" description="인터넷 연결을 확인하고 새로고침해 주세요." />
       ) : posts.length === 0 ? (
@@ -141,12 +156,12 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
             ))}
           </ul>
           {hasMore && (
-            <ButtonLink href={href({ page: String(page + 1) })} variant="secondary" full scroll={false}>
+            <ButtonLink href={moreHref} variant="secondary" full scroll={false}>
               더 보기
             </ButtonLink>
           )}
         </>
       )}
-    </div>
+    </>
   );
 }

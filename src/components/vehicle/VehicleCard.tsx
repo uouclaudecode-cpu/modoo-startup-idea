@@ -5,6 +5,7 @@ import { cn } from "@/lib/cn";
 import { vehicleImageUrl } from "@/lib/images";
 import { displayStatus, STATUS_META } from "@/lib/status";
 import { typeLabel, type Vehicle } from "@/lib/types";
+import { formatDistance } from "@/lib/ride/geo";
 import { VehicleImage } from "./VehicleImage";
 
 /** 대시보드의 이동수단 카드. 수색 중이면 테두리와 안내 띠로 확실히 구분합니다. */
@@ -31,6 +32,7 @@ export function VehicleCard({ vehicle, foundReports }: { vehicle: Vehicle; found
               {vehicle.brand ? ` · ${vehicle.brand}` : ""}
               {vehicle.color ? ` · ${vehicle.color}` : ""}
             </p>
+            {vehicle.odometer_m > 0 && <p className="text-[13px] text-ink-muted">누적 {formatDistance(vehicle.odometer_m)}</p>}
           </div>
           <StatusBadge status={status} />
         </div>

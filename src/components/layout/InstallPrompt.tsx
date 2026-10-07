@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Download, MoreVertical, Share, SquarePlus, X } from "lucide-react";
 import { site } from "@/config/site";
@@ -35,6 +36,7 @@ export function InstallPrompt() {
   const [event, setEvent] = useState<InstallEvent | null>(null);
   const [platform, setPlatform] = useState<Platform>("other");
   const [guide, setGuide] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     // 서비스 워커 등록 (앱 설치 조건 + 오프라인 안내)
@@ -88,7 +90,8 @@ export function InstallPrompt() {
     }
   }
 
-  if (!visible) return null;
+  // 라이딩 화면에서는 시작·종료 버튼을 가리지 않도록 숨김
+  if (!visible || pathname === "/ride") return null;
 
   return (
     <>

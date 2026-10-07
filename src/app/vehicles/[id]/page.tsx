@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft, EyeOff, MessagesSquare, Pencil, PenSquare, QrCode, ScanLine, Tag } from "lucide-react";
+import { ChevronLeft, EyeOff, MessagesSquare, Pencil, PenSquare, QrCode, ScanLine, Tag, Wrench } from "lucide-react";
+import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
+import { partsNeedingCare, type VehiclePart } from "@/lib/parts";
+import { formatDistance } from "@/lib/ride/geo";
 import { ButtonLink, Card, StatusBadge } from "@/components/ui";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { formatDate } from "@/lib/format";
@@ -37,6 +40,13 @@ export default async function VehicleDetailPage({
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+  const { data: parts, error: partsErr } = await supabase
+    .from("vehicle_parts")
+    .select("id, vehicle_id, kind, interval_km, interval_days, distance_m, last_serviced_at, enabled")
+    .eq("vehicle_id", vehicle.id);
+  if (partsErr) console.error(partsErr);
+  const now = Date.now();
+  const care = partsNeedingCare((parts ?? []) as VehiclePart[], now);
   const { count: stickerCount } = await supabase
     .from("stickers")
     .select("code", { count: "exact", head: true })
@@ -87,6 +97,23 @@ export default async function VehicleDetailPage({
           </p>
         </div>
       )}
+
+      <MaintenanceAlert vehicleId={vehicle.id} vehicleName={vehicle.name} items={care} now={now} />
+
+      <Card className="flex items-center gap-3 p-4">
+        <span aria-hidden className="grid h-11 w-11 flex-none place-items-center rounded-xl bg-brand-50 text-brand-600">
+          <Wrench className="h-5 w-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-bold">소모품·정비</p>
+          <p className="text-[13px] text-ink-muted">
+            누적 주행 {formatDistance(vehicle.odometer_m ?? 0)} · {care.length ? `알림 ${care.length}건` : "모두 양호"}
+          </p>
+        </div>
+        <ButtonLink href={`/vehicles/${vehicle.id}/maintenance`} variant="secondary" className="flex-none">
+          보기
+        </ButtonLink>
+      </Card>
 
       <Card className="space-y-3">
         <div className="flex items-center justify-between gap-3">

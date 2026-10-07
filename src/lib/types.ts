@@ -24,6 +24,8 @@ export type Vehicle = {
   /** 주인만 아는 스티커 부착 위치 (주인에게만 보임) */
   sticker_spot: string | null;
   qr_token: string;
+  /** 라이딩으로 쌓인 누적 주행거리 (m) */
+  odometer_m: number;
   status: VehicleStatus;
   deleted_at: string | null;
   created_at: string;

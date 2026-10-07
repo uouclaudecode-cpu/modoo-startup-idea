@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bike, Home, MessagesSquare, ScanLine } from "lucide-react";
+import { Bike, Home, MessagesSquare, Route, ScanLine } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const TABS = [
   { href: "/", label: "홈", icon: Home, match: (p: string) => p === "/" },
   { href: "/community", label: "커뮤니티", icon: MessagesSquare, match: (p: string) => p.startsWith("/community") },
+  { href: "/ride", label: "라이딩", icon: Route, match: (p: string) => p.startsWith("/ride") },
   { href: "/scan", label: "QR 스캔", icon: ScanLine, match: (p: string) => p.startsWith("/scan") },
   { href: "/dashboard", label: "내 이동수단", icon: Bike, match: (p: string) => p.startsWith("/dashboard") || p.startsWith("/vehicles") },
 ];
@@ -20,7 +21,7 @@ export function BottomNav() {
       aria-label="주요 메뉴"
       className="fixed inset-x-0 bottom-0 z-40 print:hidden border-t border-line bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:hidden"
     >
-      <ul className="mx-auto grid h-16 max-w-md grid-cols-4">
+      <ul className="mx-auto grid h-16 max-w-md grid-cols-5">
         {TABS.map((t) => {
           const active = t.match(pathname);
           return (

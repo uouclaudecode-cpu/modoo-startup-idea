@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bike, Camera, ChevronRight, EyeOff, Lock, MapPinned, MessagesSquare, ScanLine, Tag } from "lucide-react";
+import { Bike, Camera, ChevronRight, EyeOff, Lock, MapPinned, MessagesSquare, Route, ScanLine, Tag, Wrench } from "lucide-react";
 import { site } from "@/config/site";
 import { ButtonLink, Card, StatusBadge } from "@/components/ui";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
@@ -77,6 +77,25 @@ export default async function HomePage() {
             </li>
           ))}
         </ol>
+      </section>
+
+      {/* 라이딩 기록 → 소모품 정비 알림 */}
+      <section>
+        <Card className="flex flex-col gap-4 bg-gradient-to-br from-emerald-50 to-white sm:flex-row sm:items-center">
+          <span aria-hidden className="grid h-14 w-14 flex-none place-items-center rounded-2xl bg-emerald-600 text-white">
+            <Route className="h-7 w-7" />
+          </span>
+          <div className="flex-1">
+            <h2 className="text-lg font-bold">라이딩을 기록하면 정비 시기를 알려드려요</h2>
+            <p className="mt-1 text-sm leading-relaxed text-ink-muted">
+              지도에 달린 길을 그리고 거리·속도를 재요. 달린 거리는 체인 윤활·브레이크 패드·타이어 같은 소모품 수명에 자동으로 더해지고, 점검할 때가 되면
+              알려드려요. 정비 이력은 다이어리로 남아요.
+            </p>
+          </div>
+          <ButtonLink href="/ride" className="flex-none" icon={<Wrench aria-hidden className="h-4 w-4" />}>
+            라이딩 시작
+          </ButtonLink>
+        </Card>
       </section>
 
       {/* 분실 커뮤니티 */}

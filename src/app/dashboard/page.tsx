@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Bike, Plus, Printer } from "lucide-react";
+import { Bike, Play, Plus, Printer } from "lucide-react";
+import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
+import { partsNeedingCare, type VehiclePart } from "@/lib/parts";
 import { ButtonLink, EmptyState, ErrorState } from "@/components/ui";
 import { VehicleCard } from "@/components/vehicle/VehicleCard";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
@@ -17,7 +19,7 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/dashboard");
 
-  const [{ data: profile }, { data: vehicles, error }, { data: myPosts }] = await Promise.all([
+  const [{ data: profile }, { data: vehicles, error }, { data: myPosts }, { data: allParts, error: partsErr }] = await Promise.all([
     supabase.from("profiles").select("nickname, is_admin").eq("id", user.id).maybeSingle(),
     supabase.from("vehicles").select("*").is("deleted_at", null).order("created_at", { ascending: false }),
     supabase
@@ -27,7 +29,9 @@ export default async function DashboardPage() {
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(5),
+    supabase.from("vehicle_parts").select("id, vehicle_id, kind, interval_km, interval_days, distance_m, last_serviced_at, enabled"),
   ]);
+  if (partsErr) console.error(partsErr);
 
   if (error) {
     console.error(error);
@@ -43,6 +47,12 @@ export default async function DashboardPage() {
     for (const r of reports ?? []) counts.set(r.vehicle_id, (counts.get(r.vehicle_id) ?? 0) + 1);
   }
 
+  // 이동수단별 정비 알림 (점검 필요·교체 권장)
+  const now = Date.now();
+  const careByVehicle = list
+    .map((v) => ({ v, items: partsNeedingCare(((allParts ?? []) as VehiclePart[]).filter((p) => p.vehicle_id === v.id), now) }))
+    .filter((x) => x.items.length > 0);
+
   const nickname = profile?.nickname || user.email?.split("@")[0] || "회원";
 
   return (
@@ -53,6 +63,16 @@ export default async function DashboardPage() {
           <Bike aria-hidden className="h-4 w-4" />내 이동수단 {list.length}개
         </p>
       </div>
+
+      {list.length > 0 && (
+        <ButtonLink href="/ride" full size="lg" icon={<Play aria-hidden className="h-5 w-5" />}>
+          라이딩 시작
+        </ButtonLink>
+      )}
+
+      {careByVehicle.map(({ v, items }) => (
+        <MaintenanceAlert key={v.id} vehicleId={v.id} vehicleName={v.name} items={items} now={now} />
+      ))}
 
       {profile?.is_admin && (
         <ButtonLink href="/admin/stickers" variant="secondary" full icon={<Printer aria-hidden className="h-4 w-4" />}>

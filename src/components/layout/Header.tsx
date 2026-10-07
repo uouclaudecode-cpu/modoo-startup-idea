@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogOut, MessagesSquare, QrCode, ShieldCheck } from "lucide-react";
+import { LogOut, MessagesSquare, QrCode, Route, ShieldCheck } from "lucide-react";
 import { site } from "@/config/site";
 import { buttonClass } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
@@ -23,6 +23,10 @@ export async function Header() {
         <Link href="/community" className={cn(buttonClass("ghost"), "hidden h-10 px-2.5 text-sm sm:inline-flex")}>
           <MessagesSquare aria-hidden className="h-4 w-4" />
           커뮤니티
+        </Link>
+        <Link href="/ride" className={cn(buttonClass("ghost"), "hidden h-10 px-2.5 text-sm sm:inline-flex")}>
+          <Route aria-hidden className="h-4 w-4" />
+          라이딩
         </Link>
         <Link href="/scan" className={cn(buttonClass("ghost"), "hidden h-10 px-2.5 text-sm sm:inline-flex")}>
           <QrCode aria-hidden className="h-4 w-4" />

@@ -7,3 +7,4 @@ export { EmptyState, ErrorState } from "./States";
 export { Badge } from "./Badge";
 export { ToastProvider, useToast } from "./Toast";
 export { StatusBadge } from "./StatusBadge";
+export { Skeleton, SkeletonText, SkeletonScreen, SkeletonCard, SkeletonRow, SkeletonPanel } from "./Skeleton";
