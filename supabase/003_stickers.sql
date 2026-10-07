@@ -157,7 +157,7 @@ begin
   insert into public.sticker_batches (label, quantity) values (btrim(p_label), p_quantity) returning id into v_batch;
   for i in 1..p_quantity loop
     insert into public.stickers (code, batch_id)
-    values (replace(replace(replace(encode(gen_random_bytes(15), 'base64'), '+', '-'), '/', '_'), '=', ''), v_batch)
+    values (replace(replace(replace(encode(extensions.gen_random_bytes(15), 'base64'), '+', '-'), '/', '_'), '=', ''), v_batch)
     on conflict do nothing;
   end loop;
   return v_batch;
