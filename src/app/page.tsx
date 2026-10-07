@@ -32,10 +32,16 @@ async function recentPosts() {
   return (data ?? []) as PostListItem[];
 }
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ bye?: string }> }) {
+  const { bye } = await searchParams;
   const [posts, user] = await Promise.all([recentPosts(), getUser()]);
   return (
     <div className="space-y-12">
+      {bye === "1" && !user && (
+        <p role="status" className="rounded-2xl bg-slate-100 p-4 text-[15px] leading-relaxed text-ink-soft">
+          탈퇴가 끝났어요. 계정과 기록을 모두 지웠어요. 그동안 {site.name}를 이용해 주셔서 고마워요.
+        </p>
+      )}
       {/* 첫 화면: 무엇을 하는 서비스인지 바로 이해되도록 */}
       <section className="rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 px-6 py-10 text-white shadow-lift">
         <p className="text-sm font-semibold text-brand-100">{site.tagline}</p>

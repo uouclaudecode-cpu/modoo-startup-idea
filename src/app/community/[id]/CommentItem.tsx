@@ -116,7 +116,10 @@ function CommentBody({ comment: c, imageUrl, canDelete, loggedIn, postId, reply 
       <div className="flex items-center gap-2 rounded-2xl bg-slate-100 px-4 py-3 text-sm text-ink-muted">
         {reply ? <CornerDownRight aria-hidden className="h-4 w-4" /> : <Lock aria-hidden className="h-4 w-4" />}
         {reply ? "비밀 답글입니다." : "비밀 댓글입니다. 글쓴이와 댓글 쓴 사람만 볼 수 있어요."}
-        <span className="ml-auto text-[13px] text-ink-faint">{timeAgo(c.created_at)}</span>
+        <span className="ml-auto text-[13px] text-ink-faint" suppressHydrationWarning>
+          {/* "N분 전"은 서버와 브라우저 시각이 조금 달라 1분 차이가 날 수 있어요 */}
+          {timeAgo(c.created_at)}
+        </span>
       </div>
     );
   }
@@ -144,7 +147,7 @@ function CommentBody({ comment: c, imageUrl, canDelete, loggedIn, postId, reply 
             비밀
           </span>
         )}
-        <time className="ml-auto flex-none text-[13px] text-ink-faint" dateTime={c.created_at} title={formatDateTime(c.created_at)}>
+        <time className="ml-auto flex-none text-[13px] text-ink-faint" dateTime={c.created_at} title={formatDateTime(c.created_at)} suppressHydrationWarning>
           {timeAgo(c.created_at)}
         </time>
         {/* 내 댓글이 아닐 때만 신고·차단 (내 댓글은 아래 '삭제'로) */}

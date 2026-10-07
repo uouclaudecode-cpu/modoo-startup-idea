@@ -79,7 +79,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
               role="tab"
               aria-selected={status === t.value}
               className={cn(
-                "rounded-lg px-3 py-1.5 text-sm font-semibold",
+                "whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-semibold",
                 status === t.value ? "bg-white text-ink shadow-card" : "text-ink-muted hover:text-ink",
               )}
             >
@@ -87,14 +87,14 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
             </Link>
           ))}
         </div>
-        <div className="flex gap-1.5">
+        <div className="-mx-4 flex max-w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 pb-1 sm:mx-0 sm:max-w-none sm:px-0">
           {[{ value: "", label: "전체", emoji: "" }, ...VEHICLE_TYPES].map((t) => (
             <Link
               key={t.value || "all"}
               href={href({ type: t.value, page: "1" })}
               aria-current={type === t.value ? "true" : undefined}
               className={cn(
-                "rounded-full px-3 py-1.5 text-sm font-semibold ring-1 ring-inset",
+                "flex-none whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold ring-1 ring-inset",
                 type === t.value ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink-soft ring-line hover:bg-slate-50",
               )}
             >

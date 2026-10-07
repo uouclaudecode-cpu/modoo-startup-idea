@@ -3,7 +3,8 @@
  * 이미지 생성기(Satori)에는 한글 글꼴이 없어서 Pretendard를 받아서 넘겨줘요.
  */
 
-const FONT_URL = "https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/public/static/Pretendard-Bold.otf";
+// woff(약 1.1MB): 이미지 생성기가 읽을 수 있는 형식 중 가장 작아요. (woff2는 지원 안 함)
+const FONT_URL = "https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff/Pretendard-Bold.woff";
 let fontPromise: Promise<ArrayBuffer> | null = null;
 
 export function loadKoreanFont() {

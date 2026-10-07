@@ -52,6 +52,8 @@ export function PinMap({ pins, className }: { pins: MapPin[]; className?: string
           zoom: 16,
           scaleControl: false,
           mapDataControl: false,
+          // 화면을 스크롤하다가 지도가 확대·축소되지 않게 (확대 버튼·두 손가락 확대는 그대로)
+          scrollWheel: false,
           zoomControl: true,
           zoomControlOptions: { position: maps.Position.TOP_RIGHT },
         });
