@@ -6,3 +6,4 @@ export { Spinner, Loading } from "./Spinner";
 export { EmptyState, ErrorState } from "./States";
 export { Badge } from "./Badge";
 export { ToastProvider, useToast } from "./Toast";
+export { StatusBadge } from "./StatusBadge";
