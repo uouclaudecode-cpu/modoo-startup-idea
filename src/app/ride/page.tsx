@@ -38,5 +38,5 @@ export default async function RidePage() {
       />
     );
   }
-  return <RideTracker vehicles={vehicles} />;
+  return <RideTracker vehicles={vehicles} userId={user.id} />;
 }

@@ -5,9 +5,12 @@ import { cn } from "@/lib/cn";
  * 빈 화면이나 가운데 스피너 대신 항상 이것을 씁니다. (버튼 안 제출 대기만 인라인 스피너)
  * 움직임 줄이기 설정을 켠 사람에게는 반짝임 없이 회색 자리만 보여요.
  */
-export function Skeleton({ className }: { className?: string }) {
+export function Skeleton({ className = "" }: { className?: string }) {
+  // cn은 Tailwind 클래스 충돌을 합치지 않아서, 부르는 쪽이 모서리·위치를 정하면 기본값을 빼요.
+  const hasRounded = /(^|\s)rounded(-|\s|$)/.test(className);
+  const hasPosition = /(^|\s)(absolute|fixed|sticky)(\s|$)/.test(className);
   return (
-    <div aria-hidden className={cn("relative overflow-hidden rounded-lg bg-slate-200/70", className)}>
+    <div aria-hidden className={cn("overflow-hidden bg-slate-200/70", !hasPosition && "relative", !hasRounded && "rounded-lg", className)}>
       <span className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/70 to-transparent motion-reduce:hidden" />
     </div>
   );

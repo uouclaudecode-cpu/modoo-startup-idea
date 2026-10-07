@@ -160,13 +160,18 @@ export function RideMap({ path, current = null, follow = false, fit = false, cla
   }
 
   return (
-    <div className={cn("relative overflow-hidden rounded-2xl bg-slate-100 ring-1 ring-line", className)}>
+    // isolate: 지도 안 버튼(확대·축소)의 z-index가 바깥 창·메뉴 위로 올라오지 않게 가둬요.
+    <div className={cn("relative isolate overflow-hidden rounded-2xl bg-slate-100 ring-1 ring-line", className)}>
       {/* 네이버 지도가 그려지는 자리 (대체 화면일 때는 숨김).
           네이버 지도가 이 요소의 position을 relative로 바꿔서, 바깥 틀로 크기를 잡고 안쪽은 100%로 채워요. */}
       <div className={cn("absolute inset-0", mode !== "naver" && "invisible")}>
         <div ref={elRef} className="h-full w-full" aria-label="라이딩 경로 지도" role="img" />
       </div>
-      {mode === "loading" && <Skeleton className="absolute inset-0 rounded-none" />}
+      {mode === "loading" && (
+        <div className="absolute inset-0">
+          <Skeleton className="h-full w-full rounded-none" />
+        </div>
+      )}
       {mode === "fallback" && <PathSketch path={path} current={current} reason={why} />}
       {mode === "naver" && follow && current && !tracking && (
         <button

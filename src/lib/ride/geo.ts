@@ -33,6 +33,8 @@ export const FILTER = {
   maxSpeedKmh: 65,
   /** 이 속도보다 느리면 '멈춤'으로 보고 거리·이동 시간에 넣지 않음 (신호 대기 떨림 방지) */
   stopSpeedKmh: 2.5,
+  /** 문턱을 넘어 움직였을 때 이 속도 이상이면 이동 시간으로 셈 (자전거를 끌고 걷는 경우 포함) */
+  walkSpeedKmh: 1,
   /** 한 번에 이만큼 이상 움직여야 이동으로 인정 (제자리 떨림 방지) */
   minStep: 4,
 } as const;
@@ -73,7 +75,8 @@ export function evaluateFix(last: Fix | null, next: Fix): StepResult {
   if (deviceSpeedKmh != null && deviceSpeedKmh < FILTER.stopSpeedKmh && meters < avgAccuracy * 1.5) {
     return { kind: "hold", stopped: true };
   }
-  const moving = speedKmh >= FILTER.stopSpeedKmh;
+  // 문턱을 넘어 실제로 움직였으니, 끌고 걷는 정도(시속 1km 이상)도 이동 시간으로 셉니다.
+  const moving = speedKmh >= FILTER.walkSpeedKmh;
   return { kind: "move", meters, seconds, speedKmh, moving };
 }
 

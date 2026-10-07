@@ -20,9 +20,11 @@ export function MaintenanceDiary({ logs }: { logs: MaintenanceLog[] }) {
   const [deleting, setDeleting] = useState<MaintenanceLog | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const shown = filter === "all" ? logs : logs.filter((l) => l.kind === filter);
-  const total = shown.reduce((a, l) => a + (l.cost ?? 0), 0);
   const kinds = PART_ORDER.filter((k) => logs.some((l) => l.kind === k));
+  // 고른 항목의 기록을 모두 지웠다면 다시 전체로 (필터가 빈 항목에 갇히지 않게)
+  const active = filter !== "all" && kinds.includes(filter as PartKind) ? filter : "all";
+  const shown = active === "all" ? logs : logs.filter((l) => l.kind === active);
+  const total = shown.reduce((a, l) => a + (l.cost ?? 0), 0);
 
   async function remove() {
     if (!deleting) return;
@@ -47,7 +49,7 @@ export function MaintenanceDiary({ logs }: { logs: MaintenanceLog[] }) {
         </h2>
         {logs.length > 0 && (
           <p className="text-[13px] text-ink-muted">
-            {filter === "all" ? "총" : labelOf(filter)} 비용 <b className="text-ink">{won(total)}</b> · {shown.length}건
+            {active === "all" ? "총" : labelOf(active)} 비용 <b className="text-ink">{won(total)}</b> · {shown.length}건
           </p>
         )}
       </div>
@@ -67,10 +69,10 @@ export function MaintenanceDiary({ logs }: { logs: MaintenanceLog[] }) {
                   key={k}
                   type="button"
                   onClick={() => setFilter(k)}
-                  aria-pressed={filter === k}
+                  aria-pressed={active === k}
                   className={cn(
                     "flex-none rounded-full px-3 py-1.5 text-sm font-semibold ring-1 ring-inset",
-                    filter === k ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink-soft ring-line hover:bg-slate-50",
+                    active === k ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink-soft ring-line hover:bg-slate-50",
                   )}
                 >
                   {k === "all" ? "전체" : `${emojiOf(k)} ${labelOf(k)}`}

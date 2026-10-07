@@ -32,19 +32,25 @@ export type RideResult = {
   path: LatLng[];
 };
 
-const STORAGE_KEY = "b-lock:ride-in-progress";
-/** 이 시간이 지난 미완료 기록은 이어가지 않아요 */
-const RESUME_LIMIT_MS = 12 * 3600e3;
+/** 계정마다 따로 저장해요. (같은 휴대폰을 다른 계정이 써도 남의 기록·경로가 보이지 않게) */
+const storageKey = (userId: string) => `b-lock:ride-in-progress:${userId}`;
+/** 예전 버전이 쓰던 공용 키 (발견하면 지움) */
+const LEGACY_KEY = "b-lock:ride-in-progress";
+/** 이 시간이 지나면 '다시 시작'은 막고 저장·버리기만 (같은 라이딩으로 보기엔 너무 오래됨) */
+export const RESUME_LIMIT_MS = 12 * 3600e3;
+/** 서버가 받아 주는 기한(시작 후 2일)보다 조금 짧게: 이보다 오래된 미완료 기록은 지움 */
+const KEEP_LIMIT_MS = 46 * 3600e3;
 /** 원본 경로가 너무 길어지면 한 번 줄여서 메모리·저장 공간을 아낌 */
 const MAX_RAW_POINTS = 20000;
 
-function loadSaved(): RideSnapshot | null {
+function loadSaved(key: string): RideSnapshot | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    localStorage.removeItem(LEGACY_KEY);
+    const raw = localStorage.getItem(key);
     if (!raw) return null;
     const s = JSON.parse(raw) as RideSnapshot;
-    if (!s.vehicleId || !s.startedAt || Date.now() - s.startedAt > RESUME_LIMIT_MS) {
-      localStorage.removeItem(STORAGE_KEY);
+    if (!s.vehicleId || !s.startedAt || Date.now() - s.startedAt > KEEP_LIMIT_MS) {
+      localStorage.removeItem(key);
       return null;
     }
     return s;
@@ -53,10 +59,10 @@ function loadSaved(): RideSnapshot | null {
   }
 }
 
-function save(s: RideSnapshot | null) {
+function save(key: string, s: RideSnapshot | null) {
   try {
-    if (s) localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...s, savedAt: Date.now() }));
-    else localStorage.removeItem(STORAGE_KEY);
+    if (s) localStorage.setItem(key, JSON.stringify({ ...s, savedAt: Date.now() }));
+    else localStorage.removeItem(key);
   } catch {
     // 저장 실패해도 기록 자체는 화면에서 계속돼요.
   }
@@ -79,7 +85,8 @@ async function requestWakeLock(): Promise<WakeLockLike | null> {
  * - 진행 상황을 브라우저에 저장해서, 새로고침하거나 앱이 닫혀도 이어서 기록 가능
  * - 기록 중에는 화면이 꺼지지 않게 요청
  */
-export function useRideTracker() {
+export function useRideTracker(userId: string) {
+  const key = storageKey(userId);
   const [status, setStatus] = useState<RideStatus>("idle");
   const [gps, setGps] = useState<GpsState>("off");
   const [current, setCurrent] = useState<LatLng | null>(null);
@@ -104,10 +111,18 @@ export function useRideTracker() {
     snapRef.current = next;
     setSnap(next);
     if (persist === "now" || Date.now() - lastSaveRef.current > 5000) {
-      save(next);
+      save(key, next);
       lastSaveRef.current = Date.now();
     }
-  }, []);
+  }, [key]);
+
+  /** 지금 상태를 바로 저장 (화면을 떠나거나 앱이 가려질 때) */
+  const flush = useCallback(() => {
+    const s = snapRef.current;
+    if (!s) return;
+    save(key, s);
+    lastSaveRef.current = Date.now();
+  }, [key]);
 
   const setStatusBoth = (s: RideStatus) => {
     statusRef.current = s;
@@ -116,7 +131,7 @@ export function useRideTracker() {
 
   // 미완료 기록이 있으면 '이어서 기록하기'를 제안 (자동으로 다시 시작하지는 않음)
   useEffect(() => {
-    const saved = loadSaved();
+    const saved = loadSaved(key);
     if (saved) {
       // 앱이 닫혀 있던 동안은 기록되지 않았으니, 마지막 저장 시점까지만 진행 시간으로 셉니다.
       const until = saved.savedAt ?? saved.activeSince ?? saved.startedAt;
@@ -129,7 +144,7 @@ export function useRideTracker() {
       commit(paused);
       setStatusBoth("paused");
     }
-  }, [commit]);
+  }, [commit, key]);
 
   const onFix = useCallback(
     (pos: GeolocationPosition) => {
@@ -218,14 +233,20 @@ export function useRideTracker() {
     setWakeLocked(false);
   }, []);
 
-  // 화면을 다시 켜면 화면 꺼짐 방지를 다시 요청 (브라우저가 자동으로 풀어요)
+  // 화면을 다시 켜면 화면 꺼짐 방지를 다시 요청 (브라우저가 자동으로 풀어요).
+  // 다른 앱으로 가거나 탭을 닫을 때는 진행 상황을 바로 저장해 둬요. (휴대폰이 탭을 정리해도 이어갈 수 있게)
   useEffect(() => {
     const onVisible = () => {
-      if (document.visibilityState === "visible" && statusRef.current === "riding") lockScreen();
+      if (document.visibilityState === "hidden") flush();
+      else if (statusRef.current === "riding") lockScreen();
     };
     document.addEventListener("visibilitychange", onVisible);
-    return () => document.removeEventListener("visibilitychange", onVisible);
-  }, [lockScreen]);
+    window.addEventListener("pagehide", flush);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("pagehide", flush);
+    };
+  }, [lockScreen, flush]);
 
   // 1초마다 시간 갱신 + 한동안 움직임이 없으면 현재 속도 0
   useEffect(() => {
@@ -237,11 +258,15 @@ export function useRideTracker() {
     return () => clearInterval(id);
   }, [status]);
 
-  // 화면을 떠날 때 GPS·화면 꺼짐 방지 정리
-  useEffect(() => () => {
-    if (watchRef.current != null) navigator.geolocation.clearWatch(watchRef.current);
-    wakeRef.current?.release().catch(() => {});
-  }, []);
+  // 앱 안에서 다른 화면으로 갈 때: 진행 상황을 저장하고 GPS·화면 꺼짐 방지 정리
+  useEffect(
+    () => () => {
+      flush();
+      if (watchRef.current != null) navigator.geolocation.clearWatch(watchRef.current);
+      wakeRef.current?.release().catch(() => {});
+    },
+    [flush],
+  );
 
   const start = useCallback(
     (vehicleId: string) => {
@@ -250,6 +275,7 @@ export function useRideTracker() {
       lastMoveAtRef.current = 0;
       speedHistRef.current = [];
       setSpeed(0);
+      setNow(t);
       setRestored(null);
       commit({ vehicleId, startedAt: t, activeMs: 0, activeSince: t, distance: 0, movingSec: 0, maxSpeed: 0, points: [] });
       setStatusBoth("riding");
@@ -276,13 +302,24 @@ export function useRideTracker() {
     lastFixRef.current = null;
     speedHistRef.current = [];
     setRestored(null);
-    commit({ ...s, activeSince: Date.now() });
+    const t = Date.now();
+    setNow(t);
+    commit({ ...s, activeSince: t });
     setStatusBoth("riding");
     startGps();
     lockScreen();
   }, [commit, startGps, lockScreen]);
 
-  /** 종료: 결과를 돌려주고 진행 상태는 그대로 둠 (저장 성공 후 clear 호출) */
+  /** 기록할 이동수단 바꾸기 (원래 이동수단을 삭제했을 때 저장하려고) */
+  const reassign = useCallback(
+    (vehicleId: string) => {
+      const s = snapRef.current;
+      if (s) commit({ ...s, vehicleId });
+    },
+    [commit],
+  );
+
+  /** 종료: 일시정지하고 결과를 돌려줘요. (저장하면 clear, 계속 타면 resume) */
   const finish = useCallback((): RideResult | null => {
     const s = snapRef.current;
     if (!s) return null;
@@ -314,7 +351,9 @@ export function useRideTracker() {
     setSpeed(0);
   }, [commit]);
 
-  const elapsedSec = snap ? Math.round((snap.activeMs + (snap.activeSince ? now - snap.activeSince : 0)) / 1000) : 0;
+  const elapsedSec = snap ? Math.round((snap.activeMs + (snap.activeSince ? Math.max(0, now - snap.activeSince) : 0)) / 1000) : 0;
+  /** 너무 오래된 미완료 기록은 이어서 타지 못하고 저장·버리기만 */
+  const canResume = !snap || now - snap.startedAt <= RESUME_LIMIT_MS;
 
   return {
     status,
@@ -329,6 +368,7 @@ export function useRideTracker() {
     points: snap?.points ?? [],
     vehicleId: snap?.vehicleId ?? null,
     restored,
+    canResume,
     wakeLocked,
     startGps,
     stopGps,
@@ -337,5 +377,6 @@ export function useRideTracker() {
     resume,
     finish,
     clear,
+    reassign,
   };
 }

@@ -55,7 +55,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
         </ButtonLink>
       </div>
 
-      {/* 검색 (자바스크립트 없이도 동작하는 일반 폼) */}
+      {/* 검색 (일반 GET 폼: 주소에 검색어가 남아 공유·뒤로 가기가 돼요) */}
       <form action="/community" className="relative">
         {status !== "open" && <input type="hidden" name="status" value={status} />}
         {type && <input type="hidden" name="type" value={type} />}
@@ -105,8 +105,8 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
         </div>
       </div>
 
-      {/* 탭·검색을 바꿀 때마다 목록 자리에 스켈레톤을 보여줘요 */}
-      <Suspense key={`${status}|${type}|${q}|${page}`} fallback={<ListRows rows={4} />}>
+      {/* 탭·검색을 바꿀 때마다 목록 자리에 스켈레톤을 보여줘요 (더 보기는 지금 목록을 유지) */}
+      <Suspense key={`${status}|${type}|${q}`} fallback={<ListRows rows={4} />}>
         <PostResults q={q} status={status} type={type} page={page} moreHref={href({ page: String(page + 1) })} />
       </Suspense>
     </div>

@@ -101,13 +101,15 @@ export function partStatus(ratio: number): PartStatus {
 /** 남은 양 설명: "180km 남음" / "3일 남음" / "120km 지남" */
 export function remainingText(p: Pick<VehiclePart, "interval_km" | "interval_days" | "distance_m" | "last_serviced_at">, now = Date.now()) {
   const parts: string[] = [];
+  // 주기에 딱 닿은 순간(남은 양 0)부터는 상태가 교체 권장이라, 문구도 지남·오늘로 맞춰요.
   if (p.interval_km) {
     const left = p.interval_km - p.distance_m / 1000;
-    parts.push(left >= 0 ? `${fmtKm(left)} 남음` : `${fmtKm(-left)} 지남`);
+    parts.push(left > 0 ? `${fmtKm(left)} 남음` : left === 0 ? "주기 도달" : `${fmtKm(-left)} 지남`);
   }
   if (p.interval_days) {
     const left = p.interval_days - daysSince(p.last_serviced_at, now);
-    parts.push(left >= 0 ? `${Math.ceil(left)}일 남음` : `${Math.floor(-left)}일 지남`);
+    const over = Math.floor(-left);
+    parts.push(left > 0 ? `${Math.ceil(left)}일 남음` : over < 1 ? "오늘 할 때예요" : `${over}일 지남`);
   }
   return parts.join(" · ");
 }

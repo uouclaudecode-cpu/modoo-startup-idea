@@ -27,6 +27,9 @@
 | `/community/[id]` | 글 상세, 댓글(본 위치·사진), 🔒 비밀 댓글, 찾았어요, 공유 | 댓글은 필요 |
 | `/stickers/[code]` | 새 B-LOCK 스티커를 내 이동수단에 등록 (주인만 아는 부착 위치 기록) | 필요 |
 | `/admin/stickers` | 관리자: 빈 스티커 묶음 만들기, A4 40칸 인쇄·PDF, CSV | 관리자 |
+| `/ride` | **라이딩 기록**: 네이버 지도 위 실시간 경로, 시작·일시정지·종료, 거리·시간·속도 | 필요 |
+| `/rides`, `/rides/[id]` | 라이딩 기록 목록(이번 달 합계), 결과(전체 경로·출발/도착·정비 알림), 삭제 | 필요 |
+| `/vehicles/[id]/maintenance` | **소모품·정비**: 마모율 3단계, 주기 수정, 정비 완료(0km 리셋) + 정비 다이어리 | 필요 |
 | `/vehicles/[id]/edit` | 이동수단 정보·사진 수정 (QR은 그대로) | 필요 |
 
 ## 보안 설계
@@ -43,7 +46,7 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3.4 · Supabas
 - 이 PC가 Node 18이라 Next.js 16 / Tailwind 4 / 최신 supabase-js 대신 Node 18에서 동작하는 버전을 고정했습니다. Vercel(Node 22)에서도 동작합니다.
 
 ## 처음 설정
-1. Supabase 프로젝트를 만들고 **SQL Editor**에서 [`supabase/schema.sql`](supabase/schema.sql) → [`002_community.sql`](supabase/002_community.sql) → [`003_stickers.sql`](supabase/003_stickers.sql) 순서로 실행합니다.
+1. Supabase 프로젝트를 만들고 **SQL Editor**에서 [`supabase/schema.sql`](supabase/schema.sql) → [`002_community.sql`](supabase/002_community.sql) → [`003_stickers.sql`](supabase/003_stickers.sql) → [`004_rides_maintenance.sql`](supabase/004_rides_maintenance.sql) → [`005_review_fixes.sql`](supabase/005_review_fixes.sql) 순서로 실행합니다.
    관리자 지정: `update public.profiles set is_admin = true where email = '관리자 이메일';`
 2. Supabase → Authentication → Sign In / Providers → **Confirm email** 끄기 (MVP: 가입 즉시 로그인)
 3. `.env.example`을 복사해 `.env.local`을 만들고 값을 채웁니다.
@@ -69,6 +72,17 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3.4 · Supabas
 3. 앱이 만든 QR도 그대로 쓰이고, QR 화면에서 등록한 스티커 QR도 확인·저장 가능 (주인 확인용). 주인이 로그인한 채 찍으면 '내 이동수단이에요' 표시
 4. 분실 → 커뮤니티 글(🏷️ 스티커 표시) → '이건가요?' 비밀 댓글 → 주인이 비밀 답글로 스티커 위치(📍 버튼) → 발견자가 스티커를 찍어 위치·사진 제보
 
+## 라이딩 기록 · 소모품 · 정비 다이어리
+- **지도**: 네이버 클라우드 플랫폼 Maps → Application(Dynamic Map)의 Client ID를 `NEXT_PUBLIC_NAVER_MAP_CLIENT_ID`에 넣고, Web 서비스 URL에 사이트 주소(localhost 포함)를 등록합니다. 키가 없거나 인증에 실패하면 지도 대신 경로 모양만 그려서 기능은 계속 동작합니다.
+- **GPS 걸러내기** (`src/lib/ride/geo.ts`): 정확도 35m보다 나쁜 위치 버림 · 시속 65km 넘는 순간 이동(튐) 버림 · 정확도 반경 안 맴돌기(정차 떨림)는 거리·이동 시간에 넣지 않음 · 최고 속도는 8초 평균.
+- 기록 중 화면 꺼짐 방지(Wake Lock), 진행 상황을 브라우저에 저장해 새로고침·앱 종료 후에도 이어서 기록. 웹 특성상 화면이 꺼지거나 다른 앱으로 가면 위치 기록이 멈출 수 있어요.
+- 저장(`complete_ride`)하면 기록 + 이동수단 누적 거리 + 소모품 거리를 한 번에 반영. 기록 삭제(`delete_ride`)는 그 라이딩 뒤로 정비하지 않은 소모품에서만 거리를 뺍니다.
+- 기본 주기: 타이어 공기압 14일 · 체인 윤활 250km · 브레이크 패드 2,000km · 체인 3,500km · 타이어 3,500km (킥보드는 체인 항목 없음). 마모율 80% 점검 필요, 100% 교체 권장.
+- 정비 완료(`service_part`): 날짜·비용·정비소·메모를 다이어리에 남기고 거리 0km부터 다시 셉니다.
+
+## 로딩 화면
+- 데이터를 불러오는 모든 화면은 `loading.tsx` 스켈레톤(shimmer)으로, 버튼 제출 대기만 버튼 안 인라인 스피너로 통일했습니다. 커뮤니티 탭·검색 전환도 목록 자리에 스켈레톤이 나옵니다.
+
 ## 앱 설치 (PWA)
 - `src/app/manifest.ts`(앱 정보), `src/app/icons/[file]`(앱 아이콘을 코드로 그림), `public/sw.js`(설치 조건 + 오프라인 안내 화면만 저장, 개인 화면은 저장 안 함)
 - 화면 맨 아래 **앱 설치** 버튼: 크롬·삼성 인터넷은 바로 설치 창, 아이폰은 '홈 화면에 추가' 방법 안내, 카카오톡 안 브라우저는 다른 브라우저로 열기 안내. 설치한 앱으로 열면 버튼이 보이지 않습니다.
@@ -88,4 +102,4 @@ supabase/schema.sql       데이터베이스·권한·저장소 설정
 ```
 
 ## 다음 단계 아이디어
-지도 표시(카카오맵 등), 제보·댓글 도착 알림(이메일·푸시), 소유권 확인용 구매 영수증 첨부, 글 신고·차단
+제보·댓글·정비 알림 푸시(웹 푸시), 라이딩 백그라운드 기록(네이티브 앱), 소유권 확인용 구매 영수증 첨부, 글 신고·차단

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { History, Pause, Play, Satellite, Square, SunMedium, Trash2 } from "lucide-react";
 import { Button, Card, Modal, useToast } from "@/components/ui";
 import { RideMap } from "@/components/ride/RideMap";
@@ -19,10 +19,12 @@ const LAST_VEHICLE_KEY = "b-lock:last-ride-vehicle";
 /** 이보다 짧으면 저장할 의미가 없어서 버리기만 제안 */
 const MIN_SAVE_METERS = 10;
 
-export function RideTracker({ vehicles }: { vehicles: RideVehicle[] }) {
+export function RideTracker({ vehicles, userId }: { vehicles: RideVehicle[]; userId: string }) {
   const router = useRouter();
   const toast = useToast();
-  const t = useRideTracker();
+  const t = useRideTracker(userId);
+  /** 종료를 누르기 전에 달리던 중이었는지 (계속 타기 하면 다시 기록) */
+  const wasRidingRef = useRef(false);
   const [vehicleId, setVehicleId] = useState(vehicles[0].id);
   const [result, setResult] = useState<RideResult | null>(null);
   const [saving, setSaving] = useState(false);
@@ -31,6 +33,8 @@ export function RideTracker({ vehicles }: { vehicles: RideVehicle[] }) {
 
   const activeVehicleId = t.vehicleId ?? vehicleId;
   const vehicle = vehicles.find((v) => v.id === activeVehicleId);
+  // 기록 중인 이동수단을 그사이 삭제했다면, 저장할 이동수단을 다시 골라야 해요.
+  const vehicleMissing = Boolean(t.vehicleId) && !vehicle;
 
   // 지난번에 탄 이동수단을 기본으로 고르기
   useEffect(() => {
@@ -51,13 +55,32 @@ export function RideTracker({ vehicles }: { vehicles: RideVehicle[] }) {
       .catch(() => {});
   }, [startGps]);
 
-  // 기록 중에 화면을 닫으려 하면 한 번 더 확인
+  // 기록 중에 화면을 닫거나 앱 안 다른 화면으로 가려 하면 한 번 더 확인
+  const { pause } = t;
   useEffect(() => {
     if (t.status !== "riding") return;
     const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    // 메뉴·링크를 누르면(앱 안 이동) 기록이 멈추니 먼저 물어봐요. 이동하면 일시정지해 둬요.
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!a || a.target === "_blank") return;
+      const url = new URL(a.href, location.href);
+      if (url.origin !== location.origin || url.pathname === location.pathname) return;
+      if (window.confirm("라이딩을 기록하는 중이에요. 다른 화면으로 가면 기록이 일시정지돼요. 이동할까요?")) {
+        pause();
+      } else {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
     window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [t.status]);
+    document.addEventListener("click", onClick, true);
+    return () => {
+      window.removeEventListener("beforeunload", warn);
+      document.removeEventListener("click", onClick, true);
+    };
+  }, [t.status, pause]);
 
   function start() {
     try {
@@ -70,7 +93,15 @@ export function RideTracker({ vehicles }: { vehicles: RideVehicle[] }) {
 
   function end() {
     setSaveError("");
+    wasRidingRef.current = t.status === "riding";
     setResult(t.finish());
+  }
+
+  /** 종료 창에서 '계속 타기': 달리던 중이었다면 바로 다시 기록 */
+  function keepRiding() {
+    setResult(null);
+    if (wasRidingRef.current) t.resume();
+    wasRidingRef.current = false;
   }
 
   async function saveRide() {
@@ -90,7 +121,7 @@ export function RideTracker({ vehicles }: { vehicles: RideVehicle[] }) {
     setSaving(false);
     if (error) {
       console.error(error);
-      // 기록은 브라우저에 그대로 남아 있어서 다시 저장할 수 있어요.
+      // 기록은 브라우저에 그대로 남아 있어서 다시 저장할 수 있어요. (같은 라이딩을 두 번 저장해도 서버가 한 번만 반영)
       setSaveError(friendlyError(error, "저장하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요."));
       return;
     }
@@ -121,8 +152,28 @@ export function RideTracker({ vehicles }: { vehicles: RideVehicle[] }) {
 
       {t.restored && t.status === "paused" && (
         <div className="rounded-2xl bg-amber-50 p-4 text-[14px] leading-relaxed text-amber-900 ring-1 ring-amber-200">
-          <b>끝내지 않은 라이딩이 있어요.</b> {formatDistance(t.restored.distance)} · {formatDuration(t.elapsedSec)} 기록돼 있어요. 이어서 타거나 종료해서
-          저장할 수 있어요.
+          <b>끝내지 않은 라이딩이 있어요.</b> {formatDistance(t.restored.distance)} · {formatDuration(t.elapsedSec)} 기록돼 있어요.{" "}
+          {t.canResume ? "이어서 타거나 종료해서 저장할 수 있어요." : "시작한 지 오래돼서 이어 타기는 안 되고, 종료해서 저장하거나 버릴 수 있어요."}
+        </div>
+      )}
+
+      {vehicleMissing && (
+        <div className="space-y-2 rounded-2xl bg-rose-50 p-4 text-[14px] text-rose-800 ring-1 ring-rose-200">
+          <p>
+            <b>기록하던 이동수단을 찾을 수 없어요.</b> (삭제했을 수 있어요) 이 기록을 어느 이동수단에 저장할지 골라 주세요.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {vehicles.map((v) => (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => t.reassign(v.id)}
+                className="rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-ink-soft ring-1 ring-inset ring-line hover:bg-slate-50"
+              >
+                {typeEmoji(v.type)} {v.name}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
@@ -206,11 +257,13 @@ export function RideTracker({ vehicles }: { vehicles: RideVehicle[] }) {
           </div>
         )}
         {t.status === "paused" && (
-          <div className="grid grid-cols-2 gap-2">
-            <Button size="lg" className="h-16 text-lg shadow-lift" icon={<Play aria-hidden className="h-6 w-6" />} onClick={t.resume}>
-              다시 시작
-            </Button>
-            <Button size="lg" variant="danger" className="h-16 text-lg shadow-lift" icon={<Square aria-hidden className="h-5 w-5" />} onClick={end}>
+          <div className={cn("grid gap-2", t.canResume && !vehicleMissing ? "grid-cols-2" : "grid-cols-1")}>
+            {t.canResume && !vehicleMissing && (
+              <Button size="lg" className="h-16 text-lg shadow-lift" icon={<Play aria-hidden className="h-6 w-6" />} onClick={t.resume}>
+                다시 시작
+              </Button>
+            )}
+            <Button size="lg" variant="danger" className="h-16 text-lg shadow-lift" icon={<Square aria-hidden className="h-5 w-5" />} onClick={end} disabled={vehicleMissing} title={vehicleMissing ? "저장할 이동수단을 먼저 골라 주세요" : undefined}>
               종료
             </Button>
           </div>
@@ -220,12 +273,12 @@ export function RideTracker({ vehicles }: { vehicles: RideVehicle[] }) {
       {/* 종료 확인: 저장 / 계속 타기 / 버리기 */}
       <Modal
         open={Boolean(result) && !confirmDiscard}
-        onClose={() => !saving && setResult(null)}
+        onClose={() => !saving && keepRiding()}
         title="라이딩을 마칠까요?"
         footer={
           result && result.distance >= MIN_SAVE_METERS ? (
             <>
-              <Button variant="ghost" onClick={() => setResult(null)} disabled={saving}>
+              <Button variant="ghost" onClick={keepRiding} disabled={saving}>
                 계속 타기
               </Button>
               <Button loading={saving} loadingText="저장 중..." onClick={saveRide}>
@@ -234,7 +287,7 @@ export function RideTracker({ vehicles }: { vehicles: RideVehicle[] }) {
             </>
           ) : (
             <>
-              <Button variant="ghost" onClick={() => setResult(null)}>
+              <Button variant="ghost" onClick={keepRiding}>
                 계속 타기
               </Button>
               <Button variant="danger" onClick={discard}>
