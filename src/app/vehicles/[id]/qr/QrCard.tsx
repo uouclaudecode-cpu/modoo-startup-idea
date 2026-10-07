@@ -17,12 +17,19 @@ export function QrCard({ token, vehicleName, siteName }: { token: string; vehicl
   useEffect(() => {
     const link = scanUrl(token);
     setUrl(link);
-    if (canvasRef.current) {
+    const canvas = canvasRef.current;
+    if (canvas) {
       // 오류 정정 수준 H: 스티커가 일부 긁히거나 더러워져도 읽히도록
-      QRCode.toCanvas(canvasRef.current, link, { width: 640, margin: 1, errorCorrectionLevel: "H" }).catch((e) => {
-        console.error(e);
-        toast.error("QR을 만들지 못했어요. 새로고침해 주세요.");
-      });
+      QRCode.toCanvas(canvas, link, { width: 640, margin: 1, errorCorrectionLevel: "H" })
+        .then(() => {
+          // 라이브러리가 넣는 고정 크기(640px)를 지워 화면 폭에 맞춰 줄어들게 합니다.
+          canvas.style.width = "100%";
+          canvas.style.height = "auto";
+        })
+        .catch((e) => {
+          console.error(e);
+          toast.error("QR을 만들지 못했어요. 새로고침해 주세요.");
+        });
     }
   }, [token, toast]);
 

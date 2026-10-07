@@ -11,15 +11,16 @@ export async function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-line/80 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-3xl items-center gap-1 px-4">
-        <Link href={user ? "/dashboard" : "/"} className="mr-auto flex items-center gap-2 font-extrabold tracking-tight text-ink">
+        <Link href={user ? "/dashboard" : "/"} className="mr-auto flex items-center gap-2 whitespace-nowrap font-extrabold tracking-tight text-ink">
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 text-white">
             <ShieldCheck aria-hidden className="h-5 w-5" />
           </span>
           {site.name}
         </Link>
-        <Link href="/scan" className={cn(buttonClass("ghost"), "h-10 px-3 text-sm")}>
+        <Link href="/scan" className={cn(buttonClass("ghost"), "h-10 px-2.5 text-sm")} aria-label="QR 스캔">
           <QrCode aria-hidden className="h-4 w-4" />
-          <span>QR 스캔</span>
+          {/* 아주 좁은 화면에서는 아이콘만 */}
+          <span className="hidden min-[380px]:inline">QR 스캔</span>
         </Link>
         {user ? (
           <>
