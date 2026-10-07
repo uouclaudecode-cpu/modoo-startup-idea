@@ -36,6 +36,21 @@ export async function middleware(request: NextRequest) {
     login.search = `?next=${encodeURIComponent(path + request.nextUrl.search)}`;
     return NextResponse.redirect(login);
   }
+  // 이미 로그인했는데 로그인·회원가입 화면에 오면 가려던 곳(없으면 내 이동수단)으로
+  if (user && (path === "/login" || path === "/signup")) {
+    const next = request.nextUrl.searchParams.get("next");
+    const dest = request.nextUrl.clone();
+    dest.pathname = next && next.startsWith("/") && !next.startsWith("//") ? next.split("?")[0] : "/dashboard";
+    dest.search = next && next.includes("?") ? next.slice(next.indexOf("?")) : "";
+    return NextResponse.redirect(dest);
+  }
+  // 개발용 디자인 확인 화면은 실제 사이트에서 숨김
+  if (path.startsWith("/styleguide") && process.env.NODE_ENV === "production") {
+    const home = request.nextUrl.clone();
+    home.pathname = "/";
+    home.search = "";
+    return NextResponse.redirect(home);
+  }
   return response;
 }
 

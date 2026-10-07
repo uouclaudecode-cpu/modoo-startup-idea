@@ -14,7 +14,7 @@ export async function Header() {
   return (
     <header className="sticky top-0 z-40 print:hidden border-b border-line/80 bg-white/90 pt-[env(safe-area-inset-top)] backdrop-blur">
       <div className="mx-auto flex h-14 max-w-3xl items-center gap-1 px-4">
-        <Link href={user ? "/dashboard" : "/"} className="mr-auto flex items-center gap-2 whitespace-nowrap font-extrabold tracking-tight text-ink">
+        <Link href="/" aria-label={`${site.name} 홈`} className="mr-auto flex items-center gap-2 whitespace-nowrap font-extrabold tracking-tight text-ink">
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 text-white">
             <ShieldCheck aria-hidden className="h-5 w-5" />
           </span>

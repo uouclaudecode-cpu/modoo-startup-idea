@@ -4,7 +4,7 @@ import { site } from "@/config/site";
 import { ButtonLink, Card, StatusBadge } from "@/components/ui";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
 import { POST_LIST_COLUMNS } from "@/lib/community";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 
 const STEPS = [
   { icon: Tag, title: "스티커 받기", text: "학교·편의점에 놓인 B-LOCK QR 스티커를 받아요. 없으면 앱에서 QR을 만들어 출력해도 돼요." },
@@ -33,7 +33,7 @@ async function recentPosts() {
 }
 
 export default async function HomePage() {
-  const posts = await recentPosts();
+  const [posts, user] = await Promise.all([recentPosts(), getUser()]);
   return (
     <div className="space-y-12">
       {/* 첫 화면: 무엇을 하는 서비스인지 바로 이해되도록 */}
@@ -48,8 +48,9 @@ export default async function HomePage() {
           QR 스티커 하나로 등록하고, 잃어버렸을 때 주변 사람의 제보를 받을 수 있습니다.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href="/vehicles/new" size="lg" full variant="light" icon={<Bike aria-hidden className="h-5 w-5" />}>
-            내 이동수단 등록하기
+          {/* 로그인했으면 내 이동수단으로, 아니면 등록 시작 */}
+          <ButtonLink href={user ? "/dashboard" : "/vehicles/new"} size="lg" full variant="light" icon={<Bike aria-hidden className="h-5 w-5" />}>
+            {user ? "내 이동수단 보기" : "내 이동수단 등록하기"}
           </ButtonLink>
           <ButtonLink href="/scan" size="lg" full variant="glass" icon={<Camera aria-hidden className="h-5 w-5" />}>
             QR 스캔하기
