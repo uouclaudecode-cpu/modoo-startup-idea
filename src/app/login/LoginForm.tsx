@@ -50,7 +50,7 @@ export function LoginForm() {
       footer={
         <>
           아직 계정이 없나요?{" "}
-          <Link href="/signup" className="font-semibold text-brand-700 underline-offset-2 hover:underline">
+          <Link href={safeNext === "/dashboard" ? "/signup" : `/signup?next=${encodeURIComponent(safeNext)}`} className="font-semibold text-brand-700 underline-offset-2 hover:underline">
             회원가입
           </Link>
         </>

@@ -22,6 +22,10 @@
 | `/scan` | 카메라 QR 스캔, 링크 직접 입력 | - |
 | `/scan/[qrId]` | **공개 QR 화면**: 정상 / 🚨 수색 중 안내 (소유자 개인정보 없음) | - |
 | `/report/[qrId]` | 발견 제보·연락 요청 (위치 권한 또는 직접 입력, 사진, 연락처 선택) | - |
+| `/community` | **분실 커뮤니티**: 찾는 중/찾았어요, 종류 필터, 지역·색상 검색 | - |
+| `/community/new` | 분실 글 쓰기 (내 이동수단 연결 시 정보·사진 자동 채움 + 수색 중 전환) | 필요 |
+| `/community/[id]` | 글 상세, 댓글(본 위치·사진), 🔒 비밀 댓글, 찾았어요, 공유 | 댓글은 필요 |
+| `/vehicles/[id]/edit` | 이동수단 정보·사진 수정 (QR은 그대로) | 필요 |
 
 ## 보안 설계
 - QR에는 예측할 수 없는 24자리 무작위 코드만 들어갑니다. (`/scan/MjdL-...`) 사용자 ID·개인정보 없음.
@@ -29,6 +33,7 @@
 - 공개 QR 화면은 `get_public_vehicle` 함수가 종류·색상·브랜드·모델·특징·사진·상태만 돌려줍니다. 이름·이메일·닉네임은 꺼낼 수 없습니다.
 - 제보는 `submit_report` 함수로만 남길 수 있고(QR 코드 필수, 10분 20건 제한), 읽기는 소유자만 됩니다.
 - 사진: `vehicle-images`는 공개(본인 폴더에만 올리기), `report-images`는 비공개(소유자만 1시간짜리 주소로 열람). 5MB·이미지만 허용, 올리기 전에 1600px로 줄입니다.
+- 커뮤니티: 글·공개 댓글은 누구나 읽기, 쓰기는 회원만. **비밀 댓글**은 댓글 쓴 사람과 글쓴이만 내용·위치·사진을 볼 수 있고(`get_post_comments`가 나머지 사람에게는 비워서 돌려줌), 비밀 댓글 사진은 비공개 버킷 `community-secret`에 저장됩니다. 글쓴이 이름은 닉네임만 보입니다.
 - 공개 키(publishable key)만 사용합니다. 비밀 키는 이 사이트에 필요 없습니다.
 
 ## 기술 스택
@@ -36,7 +41,7 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3.4 · Supabas
 - 이 PC가 Node 18이라 Next.js 16 / Tailwind 4 / 최신 supabase-js 대신 Node 18에서 동작하는 버전을 고정했습니다. Vercel(Node 22)에서도 동작합니다.
 
 ## 처음 설정
-1. Supabase 프로젝트를 만들고 **SQL Editor**에서 [`supabase/schema.sql`](supabase/schema.sql) 전체를 실행합니다.
+1. Supabase 프로젝트를 만들고 **SQL Editor**에서 [`supabase/schema.sql`](supabase/schema.sql), 이어서 [`supabase/002_community.sql`](supabase/002_community.sql)을 실행합니다.
 2. Supabase → Authentication → Sign In / Providers → **Confirm email** 끄기 (MVP: 가입 즉시 로그인)
 3. `.env.example`을 복사해 `.env.local`을 만들고 값을 채웁니다.
    ```
@@ -55,6 +60,11 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3.4 · Supabas
 3. 배포 주소가 나오면 `NEXT_PUBLIC_SITE_URL`에 그 주소를 넣고 다시 배포 (QR에 들어가는 주소가 고정됩니다)
 4. Supabase → Authentication → URL Configuration → Site URL에 배포 주소 입력
 
+## 앱 설치 (PWA)
+- `src/app/manifest.ts`(앱 정보), `src/app/icons/[file]`(앱 아이콘을 코드로 그림), `public/sw.js`(설치 조건 + 오프라인 안내 화면만 저장, 개인 화면은 저장 안 함)
+- 화면 맨 아래 **앱 설치** 버튼: 크롬·삼성 인터넷은 바로 설치 창, 아이폰은 '홈 화면에 추가' 방법 안내, 카카오톡 안 브라우저는 다른 브라우저로 열기 안내. 설치한 앱으로 열면 버튼이 보이지 않습니다.
+- 휴대폰에서는 아래쪽 메뉴(홈·커뮤니티·QR 스캔·내 이동수단)로 이동합니다.
+
 ## 폴더 구성
 ```
 src/
@@ -69,4 +79,4 @@ supabase/schema.sql       데이터베이스·권한·저장소 설정
 ```
 
 ## 다음 단계 아이디어
-지도 표시(카카오맵 등), 제보 도착 알림(이메일·푸시), 이동수단 정보 수정, 소유권 확인용 구매 영수증 첨부
+지도 표시(카카오맵 등), 제보·댓글 도착 알림(이메일·푸시), 소유권 확인용 구매 영수증 첨부, 글 신고·차단

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Lock, MapPinned, MessageCircle, Siren } from "lucide-react";
+import { Lock, MapPinned, MessageCircle, MessagesSquare, Siren } from "lucide-react";
 import { ButtonLink, Card, ErrorState, StatusBadge } from "@/components/ui";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { vehicleImageUrl } from "@/lib/images";
@@ -64,6 +64,9 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
   );
 
   if (v.status === "searching") {
+    // 소유자가 커뮤니티에 올린 분실 글이 있으면 이어 줍니다. (글 ID만 받아요)
+    const { data: postId, error: postErr } = await supabase.rpc("get_vehicle_post", { p_token: token });
+    if (postErr) console.error(postErr);
     return (
       <div className="mx-auto max-w-md space-y-4">
         <div role="alert" className="rounded-3xl bg-rose-600 p-6 text-white shadow-lift">
@@ -75,6 +78,11 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
           <ButtonLink href={`${reportHref}?kind=found`} variant="light" size="lg" full className="mt-5" icon={<MapPinned aria-hidden className="h-5 w-5" />}>
             📍 발견 제보하기
           </ButtonLink>
+          {typeof postId === "string" && (
+            <ButtonLink href={`/community/${postId}`} variant="glass" full className="mt-2" icon={<MessagesSquare aria-hidden className="h-5 w-5" />}>
+              커뮤니티 분실 글 보기
+            </ButtonLink>
+          )}
         </div>
         {details}
         {privacy}

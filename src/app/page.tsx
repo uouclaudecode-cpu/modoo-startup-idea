@@ -1,6 +1,10 @@
-import { Bike, Camera, Lock, MapPinned, QrCode, ScanLine, Siren, Sticker } from "lucide-react";
+import Link from "next/link";
+import { Bike, Camera, ChevronRight, Lock, MapPinned, MessagesSquare, QrCode, ScanLine, Siren, Sticker } from "lucide-react";
 import { site } from "@/config/site";
 import { ButtonLink, Card, StatusBadge } from "@/components/ui";
+import { PostCard, type PostListItem } from "@/components/community/PostCard";
+import { POST_LIST_COLUMNS } from "@/lib/community";
+import { createClient } from "@/lib/supabase/server";
 
 const STEPS = [
   { icon: Bike, title: "이동수단 등록", text: "자전거·킥보드의 사진과 특징을 등록해요." },
@@ -9,9 +13,28 @@ const STEPS = [
   { icon: Siren, title: "분실 시 수색 중으로", text: "잃어버리면 버튼 하나로 '수색 중'으로 바꿔요." },
   { icon: ScanLine, title: "주변 사람이 스캔", text: "발견한 사람이 로그인 없이 QR을 스캔해요." },
   { icon: MapPinned, title: "발견 위치 제보", text: "발견 위치와 사진이 소유자에게만 전달돼요." },
+  { icon: MessagesSquare, title: "커뮤니티에 분실 글", text: "QR이 없어도 분실 글을 올리면 본 사람이 댓글·비밀 댓글로 알려줘요." },
 ];
 
-export default function HomePage() {
+/** 최근 '찾는 중' 글 3개 (불러오지 못해도 첫 화면은 그대로 보여요) */
+async function recentPosts() {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("lost_posts")
+    .select(POST_LIST_COLUMNS)
+    .is("deleted_at", null)
+    .eq("status", "open")
+    .order("created_at", { ascending: false })
+    .limit(3);
+  if (error) {
+    console.error(error);
+    return [];
+  }
+  return (data ?? []) as PostListItem[];
+}
+
+export default async function HomePage() {
+  const posts = await recentPosts();
   return (
     <div className="space-y-12">
       {/* 첫 화면: 무엇을 하는 서비스인지 바로 이해되도록 */}
@@ -54,6 +77,36 @@ export default function HomePage() {
             </li>
           ))}
         </ol>
+      </section>
+
+      {/* 분실 커뮤니티 */}
+      <section>
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">지금 찾고 있어요</h2>
+            <p className="mt-1 text-sm text-ink-muted">비슷한 자전거·킥보드를 봤다면 댓글로 알려주세요.</p>
+          </div>
+          <Link href="/community" className="flex flex-none items-center text-sm font-semibold text-brand-700 hover:underline">
+            전체 보기 <ChevronRight aria-hidden className="h-4 w-4" />
+          </Link>
+        </div>
+        {posts.length > 0 ? (
+          <ul className="mt-4 space-y-3">
+            {posts.map((p) => (
+              <li key={p.id}>
+                <PostCard post={p} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Card className="mt-4 flex flex-col items-center gap-3 py-8 text-center">
+            <MessagesSquare aria-hidden className="h-8 w-8 text-brand-600" />
+            <p className="text-[15px] text-ink-soft">지금 찾는 중인 글이 없어요. 잃어버렸다면 분실 글을 올려 보세요.</p>
+            <ButtonLink href="/community/new" variant="secondary">
+              분실 글 올리기
+            </ButtonLink>
+          </Card>
+        )}
       </section>
 
       {/* 분실 상황에서 받는 도움 */}

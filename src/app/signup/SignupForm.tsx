@@ -11,7 +11,7 @@ import { friendlyError } from "@/lib/format";
 
 type Form = { email: string; password: string; confirm: string; nickname: string };
 
-export function SignupForm() {
+export function SignupForm({ next = "/dashboard" }: { next?: string }) {
   const router = useRouter();
   const toast = useToast();
   const [form, setForm] = useState<Form>({ email: "", password: "", confirm: "", nickname: "" });
@@ -58,7 +58,7 @@ export function SignupForm() {
     if (data.session) {
       // 이메일 확인을 쓰지 않는 설정이면 바로 로그인됩니다.
       toast.success("가입되었습니다! 환영해요.");
-      router.replace("/dashboard");
+      router.replace(next);
       router.refresh();
     } else {
       setSentTo(form.email.trim());
@@ -89,7 +89,7 @@ export function SignupForm() {
       footer={
         <>
           이미 계정이 있나요?{" "}
-          <Link href="/login" className="font-semibold text-brand-700 underline-offset-2 hover:underline">
+          <Link href={next === "/dashboard" ? "/login" : `/login?next=${encodeURIComponent(next)}`} className="font-semibold text-brand-700 underline-offset-2 hover:underline">
             로그인
           </Link>
         </>
@@ -121,7 +121,7 @@ export function SignupForm() {
           value={form.nickname}
           onChange={set("nickname")}
           error={errors.nickname}
-          hint="인사말에 쓰여요. 다른 사람에게는 보이지 않아요."
+          hint="인사말과 커뮤니티 글·댓글에 보여요. 실명·전화번호는 쓰지 마세요."
           required
         />
         {errors.form && (

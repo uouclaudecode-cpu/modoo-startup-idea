@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft, QrCode } from "lucide-react";
+import { ChevronLeft, MessagesSquare, Pencil, PenSquare, QrCode } from "lucide-react";
 import { ButtonLink, Card, StatusBadge } from "@/components/ui";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { formatDate } from "@/lib/format";
@@ -21,6 +21,15 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
     .eq("vehicle_id", vehicle.id)
     .eq("kind", "found");
   const { count: total } = await supabase.from("reports").select("id", { count: "exact", head: true }).eq("vehicle_id", vehicle.id);
+  const { data: openPost } = await supabase
+    .from("lost_posts")
+    .select("id, comment_count")
+    .eq("vehicle_id", vehicle.id)
+    .eq("status", "open")
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
   const status = displayStatus(vehicle.status, count ?? 0);
 
   const rows: [string, string | null][] = [
@@ -61,9 +70,26 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
 
       <StatusActions vehicleId={vehicle.id} status={vehicle.status} foundReports={count ?? 0} totalReports={total ?? 0} />
 
-      <ButtonLink href={`/vehicles/${vehicle.id}/qr`} variant="secondary" full size="lg" icon={<QrCode aria-hidden className="h-5 w-5" />}>
-        QR 보기
-      </ButtonLink>
+      {openPost ? (
+        <ButtonLink href={`/community/${openPost.id}`} variant="secondary" full size="lg" icon={<MessagesSquare aria-hidden className="h-5 w-5" />}>
+          커뮤니티 분실 글 보기 (댓글 {openPost.comment_count})
+        </ButtonLink>
+      ) : (
+        vehicle.status === "searching" && (
+          <ButtonLink href={`/community/new?vehicle=${vehicle.id}`} variant="secondary" full size="lg" icon={<PenSquare aria-hidden className="h-5 w-5" />}>
+            커뮤니티에 분실 글 올리기
+          </ButtonLink>
+        )
+      )}
+
+      <div className="grid grid-cols-2 gap-2">
+        <ButtonLink href={`/vehicles/${vehicle.id}/qr`} variant="secondary" size="lg" icon={<QrCode aria-hidden className="h-5 w-5" />}>
+          QR 보기
+        </ButtonLink>
+        <ButtonLink href={`/vehicles/${vehicle.id}/edit`} variant="secondary" size="lg" icon={<Pencil aria-hidden className="h-5 w-5" />}>
+          정보 수정
+        </ButtonLink>
+      </div>
     </div>
   );
 }

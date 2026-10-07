@@ -10,6 +10,16 @@ export function formatDate(iso: string) {
   return formatDateTime(iso).slice(0, 10);
 }
 
+/** 방금 전 / 5분 전 / 3시간 전 / 2일 전, 일주일이 넘으면 날짜 */
+export function timeAgo(iso: string, now = Date.now()) {
+  const sec = Math.max(0, (now - new Date(iso).getTime()) / 1000);
+  if (sec < 60) return "방금 전";
+  if (sec < 3600) return `${Math.floor(sec / 60)}분 전`;
+  if (sec < 86400) return `${Math.floor(sec / 3600)}시간 전`;
+  if (sec < 86400 * 7) return `${Math.floor(sec / 86400)}일 전`;
+  return formatDate(iso);
+}
+
 /** Supabase 오류를 사용자에게 보여줄 문장으로 */
 export function friendlyError(err: unknown, fallback: string) {
   if (typeof navigator !== "undefined" && !navigator.onLine) return "인터넷 연결을 확인해주세요.";

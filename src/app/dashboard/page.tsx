@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { Bike, Plus } from "lucide-react";
 import { ButtonLink, EmptyState, ErrorState } from "@/components/ui";
 import { VehicleCard } from "@/components/vehicle/VehicleCard";
+import { PostCard, type PostListItem } from "@/components/community/PostCard";
+import { POST_LIST_COLUMNS } from "@/lib/community";
 import { createClient } from "@/lib/supabase/server";
 import type { Vehicle } from "@/lib/types";
 
@@ -15,9 +17,16 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/dashboard");
 
-  const [{ data: profile }, { data: vehicles, error }] = await Promise.all([
+  const [{ data: profile }, { data: vehicles, error }, { data: myPosts }] = await Promise.all([
     supabase.from("profiles").select("nickname").eq("id", user.id).maybeSingle(),
     supabase.from("vehicles").select("*").is("deleted_at", null).order("created_at", { ascending: false }),
+    supabase
+      .from("lost_posts")
+      .select(POST_LIST_COLUMNS)
+      .eq("author_id", user.id)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(5),
   ]);
 
   if (error) {
@@ -67,6 +76,19 @@ export default async function DashboardPage() {
             이동수단 등록
           </ButtonLink>
         </>
+      )}
+
+      {(myPosts ?? []).length > 0 && (
+        <section className="space-y-3 pt-2">
+          <h2 className="text-lg font-bold">내 분실 글</h2>
+          <ul className="space-y-3">
+            {(myPosts as PostListItem[]).map((p) => (
+              <li key={p.id}>
+                <PostCard post={p} />
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </div>
   );

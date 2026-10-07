@@ -1,22 +1,35 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element -- Supabase 저장소 사진이라 기본 img 사용 */
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Button, Card, Input, Textarea, useToast } from "@/components/ui";
+import { Button, Card, Input, Textarea, buttonClass, useToast } from "@/components/ui";
 import { PhotoPicker } from "@/components/ui/PhotoPicker";
 import { cn } from "@/lib/cn";
 import { friendlyError } from "@/lib/format";
-import { prepareImage } from "@/lib/images";
+import { prepareImage, vehicleImageUrl } from "@/lib/images";
 import { createClient } from "@/lib/supabase/client";
-import { VEHICLE_TYPES, type VehicleType } from "@/lib/types";
+import { VEHICLE_TYPES, type Vehicle, type VehicleType } from "@/lib/types";
 
 type Form = { type: VehicleType; name: string; brand: string; model: string; color: string; description: string };
 
-export function NewVehicleForm() {
+/** 이동수단 등록 폼. vehicle을 넘기면 정보 수정 폼이 됩니다. (QR은 바뀌지 않음) */
+export function VehicleForm({ vehicle }: { vehicle?: Vehicle } = {}) {
   const router = useRouter();
   const toast = useToast();
-  const [form, setForm] = useState<Form>({ type: "bicycle", name: "", brand: "", model: "", color: "", description: "" });
+  const editing = Boolean(vehicle);
+  const [form, setForm] = useState<Form>({
+    type: vehicle?.type ?? "bicycle",
+    name: vehicle?.name ?? "",
+    brand: vehicle?.brand ?? "",
+    model: vehicle?.model ?? "",
+    color: vehicle?.color ?? "",
+    description: vehicle?.description ?? "",
+  });
   const [photo, setPhoto] = useState<File | null>(null);
+  // 수정할 때: 지금 사진을 지우기로 했는지
+  const [removeCurrent, setRemoveCurrent] = useState(false);
+  const currentImage = vehicle?.image_path && !removeCurrent ? vehicleImageUrl(vehicle.image_path) : null;
   const [errors, setErrors] = useState<Partial<Record<keyof Form | "photo" | "form", string>>>({});
   const [loading, setLoading] = useState(false);
 
@@ -64,20 +77,28 @@ export function NewVehicleForm() {
         }
       }
 
+      const fields = {
+        type: form.type,
+        name: form.name.trim(),
+        brand: form.brand.trim() || null,
+        model: form.model.trim() || null,
+        color: form.color.trim() || null,
+        description: form.description.trim() || null,
+      };
+
+      if (vehicle) {
+        // 수정: 새 사진 > 사진 지우기 > 그대로. (예전 사진 파일은 커뮤니티 글이 쓰고 있을 수 있어 남겨 둡니다.)
+        const image_path = imagePath ?? (removeCurrent ? null : vehicle.image_path);
+        const { error } = await supabase.from("vehicles").update({ ...fields, image_path }).eq("id", vehicle.id);
+        if (error) throw error;
+        toast.success("정보를 수정했어요. QR은 그대로예요.");
+        router.replace(`/vehicles/${vehicle.id}`);
+        router.refresh();
+        return;
+      }
+
       // 2) 이동수단 저장 → QR 토큰은 데이터베이스가 무작위로 만듭니다.
-      const { data, error } = await supabase
-        .from("vehicles")
-        .insert({
-          type: form.type,
-          name: form.name.trim(),
-          brand: form.brand.trim() || null,
-          model: form.model.trim() || null,
-          color: form.color.trim() || null,
-          description: form.description.trim() || null,
-          image_path: imagePath,
-        })
-        .select("id")
-        .single();
+      const { data, error } = await supabase.from("vehicles").insert({ ...fields, image_path: imagePath }).select("id").single();
       if (error) throw error;
 
       toast.success("등록되었습니다! 고유 QR이 만들어졌어요.");
@@ -87,8 +108,8 @@ export function NewVehicleForm() {
       console.error(err);
       // 저장에 실패하면 먼저 올린 사진을 지워 쓰레기 파일이 남지 않게 합니다.
       if (imagePath) await supabase.storage.from("vehicle-images").remove([imagePath]);
-      setErrors({ form: friendlyError(err, "등록에 실패했습니다. 잠시 후 다시 시도해 주세요.") });
-      toast.error("등록에 실패했습니다.");
+      setErrors({ form: friendlyError(err, `${editing ? "수정" : "등록"}에 실패했습니다. 잠시 후 다시 시도해 주세요.`) });
+      toast.error(`${editing ? "수정" : "등록"}에 실패했습니다.`);
     } finally {
       setLoading(false);
     }
@@ -144,24 +165,40 @@ export function NewVehicleForm() {
         />
       </Card>
       <Card>
-        <PhotoPicker
-          label="사진"
-          hint="전체가 잘 보이는 사진 1장. 발견한 사람이 알아볼 수 있게 도와줘요."
-          value={photo}
-          onChange={(f) => {
-            setPhoto(f);
-            setErrors((e) => ({ ...e, photo: undefined }));
-          }}
-          error={errors.photo}
-        />
+        {currentImage && !photo ? (
+          <div className="space-y-1.5">
+            <p className="text-sm font-semibold text-ink-soft">사진</p>
+            <img src={currentImage} alt="지금 등록된 사진" className="aspect-[4/3] w-full rounded-xl object-cover ring-1 ring-line" />
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <Button variant="secondary" onClick={() => setRemoveCurrent(true)}>
+                사진 지우기
+              </Button>
+              <label className={buttonClass("secondary") + " cursor-pointer"}>
+                사진 바꾸기
+                <input type="file" accept="image/*" className="sr-only" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} />
+              </label>
+            </div>
+          </div>
+        ) : (
+          <PhotoPicker
+            label="사진"
+            hint="전체가 잘 보이는 사진 1장. 발견한 사람이 알아볼 수 있게 도와줘요."
+            value={photo}
+            onChange={(f) => {
+              setPhoto(f);
+              setErrors((e) => ({ ...e, photo: undefined }));
+            }}
+            error={errors.photo}
+          />
+        )}
       </Card>
       {errors.form && (
         <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
           {errors.form}
         </p>
       )}
-      <Button type="submit" full size="lg" loading={loading} loadingText="등록 중...">
-        등록하고 QR 만들기
+      <Button type="submit" full size="lg" loading={loading} loadingText={editing ? "저장 중..." : "등록 중..."}>
+        {editing ? "수정 내용 저장" : "등록하고 QR 만들기"}
       </Button>
     </form>
   );
