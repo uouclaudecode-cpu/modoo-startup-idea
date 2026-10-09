@@ -119,7 +119,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
     e.preventDefault();
     const errs: typeof errors = {};
     if (mode === "contact" && !description.trim()) errs.description = "전할 말을 적어 주세요.";
-    if (mode === "found" && !coords && !locationText.trim()) errs.location = "현재 위치를 가져오거나 위치를 직접 입력해 주세요.";
+    if (mode === "found" && !coords && !locationText.trim()) errs.location = "현재 위치를 가져오거나, 여기에 장소를 적어 주세요.";
     if (contactMode === "callback" && contact.trim().length < 4) errs.contact = "콜백 받을 전화번호를 적어 주세요.";
     setErrors(errs);
     if (Object.keys(errs).length) return;
@@ -158,7 +158,9 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
             <p className="text-sm font-semibold text-ink-soft">
               발견 위치<span className="ml-0.5 text-rose-600">*</span>
             </p>
-            <p className="mt-0.5 text-[13px] text-ink-muted">지금 있는 곳의 위치를 한 번만 보내요. 실시간으로 추적하지 않아요.</p>
+            <p className="mt-0.5 text-[13px] text-ink-muted">
+              현재 위치를 가져오거나, 아래에 장소를 적어 주세요. 위치는 한 번만 보내고 실시간으로 추적하지 않아요.
+            </p>
           </div>
           {coords ? (
             <div className="flex items-start gap-3 rounded-xl bg-emerald-50 p-3 text-emerald-800 ring-1 ring-emerald-200">
@@ -174,8 +176,10 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
             </Button>
           )}
           {locationError && <p className="text-sm text-orange-700">{locationError}</p>}
+          {/* 현재 위치가 있으면 선택, 없으면 이 칸이 위치를 대신해요 */}
           <Input
-            label="장소 설명 (선택)"
+            label={coords ? "장소 설명 (선택)" : "장소 설명"}
+            hint={coords ? undefined : "현재 위치를 쓸 수 없으면 이 칸만 적어도 보낼 수 있어요."}
             placeholder="예) 울산대학교 학생회관 뒤쪽 자전거 거치대"
             value={locationText}
             onChange={(e) => setLocationText(e.target.value)}

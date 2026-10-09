@@ -19,6 +19,13 @@ import { ShareButton } from "./ShareButton";
 
 type Params = { params: Promise<{ id: string }> };
 
+/** 안내 문장에 넣을 이름과 '을/를' (기타는 '기타를' 대신 '이동수단을') */
+function vehicleNoun(type: string) {
+  if (type === "bicycle") return { noun: "자전거", obj: "자전거를" };
+  if (type === "kickboard") return { noun: "전동킥보드", obj: "전동킥보드를" };
+  return { noun: "이동수단", obj: "이동수단을" };
+}
+
 async function loadPost(id: string) {
   if (!UUID_RE.test(id)) return null;
   const supabase = await createClient();
@@ -104,6 +111,7 @@ export default async function PostPage({ params }: Params) {
     ["색상", post.color],
     ["브랜드·모델", [post.brand, post.model].filter(Boolean).join(" ") || null],
   ];
+  const vehicle = vehicleNoun(post.type);
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
@@ -195,12 +203,12 @@ export default async function PostPage({ params }: Params) {
           <Tag aria-hidden className="mt-0.5 h-5 w-5 flex-none text-brand-600" />
           {isAuthor ? (
             <p>
-              <b>🏷️ QR 스티커가 붙은 이동수단이에요.</b> &ldquo;이건가요?&rdquo;라는 비밀 댓글이 오면 <b>비밀 답글</b>로 스티커 위치를 알려주세요. 그
+              <b>QR 스티커가 붙은 이동수단이에요.</b> &ldquo;이건가요?&rdquo;라는 비밀 댓글이 오면 <b>비밀 답글</b>로 스티커 위치를 알려주세요. 그
               사람이 스티커를 찍으면 위치·사진이 나에게 와요. 스티커 위치는 공개 댓글에 쓰지 마세요.
             </p>
           ) : (
             <p>
-              <b>🏷️ 이 자전거에는 B-LOCK QR 스티커가 숨겨져 있어요.</b> 비슷한 자전거를 봤다면 <b>비밀 댓글</b>로 &ldquo;이건가요?&rdquo;라고
+              <b>이 {vehicle.noun}에는 B-LOCK QR 스티커가 숨겨져 있어요.</b> 비슷한 {vehicle.obj} 봤다면 <b>비밀 댓글</b>로 &ldquo;이건가요?&rdquo;라고
               물어보세요. 주인이 스티커 위치를 알려주면, 그 스티커를 찍어서 위치와 사진을 주인에게 바로 보낼 수 있어요.
             </p>
           )}
@@ -232,7 +240,7 @@ export default async function PostPage({ params }: Params) {
         {commentErr && <p className="text-sm text-rose-600">댓글을 불러오지 못했어요. 새로고침해 주세요.</p>}
         {comments.length === 0 && !commentErr && (
           <p className="rounded-2xl border border-dashed border-line bg-white px-4 py-8 text-center text-sm text-ink-muted">
-            아직 댓글이 없어요. 비슷한 {typeLabel(post.type)}를 봤다면 알려주세요.
+            아직 댓글이 없어요. 비슷한 {vehicle.obj} 봤다면 알려주세요.
           </p>
         )}
         <ul className="space-y-3">

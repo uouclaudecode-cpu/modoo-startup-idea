@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { CircleAlert, ShieldCheck } from "lucide-react";
-import { Card } from "@/components/ui";
+import { CircleAlert, RotateCw, ShieldCheck } from "lucide-react";
+import { Card, ErrorState, buttonClass } from "@/components/ui";
 import { evidenceLabel, type EvidenceKind } from "@/lib/evidence";
 import { formatDateTime } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
@@ -38,15 +38,32 @@ export default async function CertificateVerifyPage({ params }: { params: Promis
   if (/^[A-Za-z0-9_-]{16,40}$/.test(token)) {
     const supabase = await createClient();
     const { data, error } = await supabase.rpc("get_certificate", { p_token: token });
-    if (error) console.error(error);
-    else c = data as Cert;
+    if (error) {
+      // 서버·연결 문제는 '위조됐을 수 있어요'와 구분해서 보여줘요 (진짜 확인서를 가짜로 오해하지 않게)
+      console.error(error);
+      return (
+        <div className="mx-auto max-w-md">
+          <ErrorState
+            title="확인서 정보를 불러오지 못했어요"
+            description="확인서가 잘못됐다는 뜻은 아니에요. 인터넷 연결을 확인하고 잠시 후 다시 시도해 주세요."
+            action={
+              <a href={`/c/${encodeURIComponent(token)}`} className={buttonClass("primary", "md", true)}>
+                <RotateCw aria-hidden className="h-4 w-4" />
+                다시 시도
+              </a>
+            }
+          />
+        </div>
+      );
+    }
+    if (data) c = data as Cert;
   }
   if (!c.valid) {
     return (
       <Card className="mx-auto flex max-w-md flex-col items-center gap-3 py-10 text-center">
         <CircleAlert aria-hidden className="h-12 w-12 text-rose-600" />
         <p className="text-xl font-extrabold">유효하지 않은 확인서</p>
-        <p className="text-[15px] leading-relaxed text-ink-soft">{REASON[c.reason]}</p>
+        <p className="text-[15px] leading-relaxed text-ink-soft">{REASON[c.reason] ?? REASON.not_found}</p>
       </Card>
     );
   }

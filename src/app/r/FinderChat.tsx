@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Bell, CircleCheck, Copy, MessageCircle, Send } from "lucide-react";
 import { MoneyWarning } from "@/components/alerts/TrustInfo";
-import { Button, Card, EmptyState, Textarea, useToast } from "@/components/ui";
+import { ChatSkeleton } from "@/components/skeletons/PageSkeletons";
+import { Button, Card, EmptyState, ErrorState, Textarea, useToast } from "@/components/ui";
 import { hasMoneyRequest } from "@/lib/alerts";
 import { copyText } from "@/lib/clipboard";
 import { loadFinderThreads, type FinderThreadRef } from "@/lib/finderThreads";
@@ -41,7 +42,12 @@ export function FinderChat() {
   const [sending, setSending] = useState(false);
   const [subscribing, setSubscribing] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
+  // 불러오기에 실패했는지 (처음부터 못 불러왔을 때만 오류 화면, 5초 확인은 계속 다시 시도)
+  const [loadError, setLoadError] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  // 지난번에 본 메시지 수 (null = 아직 처음 불러오기 전)
+  const seenCountRef = useRef<number | null>(null);
 
   useEffect(() => {
     const read = () => {
@@ -61,14 +67,27 @@ export function FinderChat() {
     setThread(null);
     setSubscribed(false);
     setBody("");
+    setLoadError(false);
+    seenCountRef.current = null;
   }, [token]);
 
   const load = useCallback(async () => {
     if (!token) return;
     const { data, error } = await createClient().rpc("finder_thread", { p_finder: token });
-    if (error) return console.error(error);
+    if (error) {
+      console.error(error);
+      setLoadError(true);
+      return;
+    }
+    setLoadError(false);
     setThread(data ? (data as Thread) : "missing");
   }, [token]);
+
+  async function retry() {
+    setRetrying(true);
+    await load();
+    setRetrying(false);
+  }
 
   // 화면이 보일 때만 5초마다 새 답장 확인
   useEffect(() => {
@@ -80,10 +99,17 @@ export function FinderChat() {
     return () => clearInterval(id);
   }, [token, load]);
 
-  const count = thread && thread !== "missing" ? thread.messages.length : 0;
+  // 새 메시지가 오면 마지막 메시지가 보이게 내려요.
+  // 처음 열 때는 내리지 않아요 (위의 '답장 알림 받기' 안내가 먼저 보이게).
+  // 아래 메뉴(globals.css의 scroll-padding)와 앱 설치 안내(scroll-mb)에 가리지 않게 여백을 둬요.
+  const loaded = thread !== null && thread !== "missing";
+  const count = loaded ? thread.messages.length : 0;
   useEffect(() => {
-    endRef.current?.scrollIntoView({ block: "end" });
-  }, [count]);
+    if (!loaded) return;
+    const seen = seenCountRef.current;
+    seenCountRef.current = count;
+    if (seen !== null && count > seen) endRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [loaded, count]);
 
   async function send(e: React.FormEvent) {
     e.preventDefault();
@@ -120,9 +146,10 @@ export function FinderChat() {
     if (!token) return;
     const ok = await copyText(`${window.location.origin}/r#t=${token}`);
     if (ok) toast.success("대화 주소를 복사했어요. 메모장 등에 저장해 두면 다른 기기에서도 들어올 수 있어요.");
+    else toast.error("복사하지 못했어요. 주소창의 주소를 직접 저장해 주세요.");
   }
 
-  if (!ready) return null;
+  if (!ready) return <ChatSkeleton />;
 
   if (!token) {
     return refs.length === 0 ? (
@@ -143,7 +170,21 @@ export function FinderChat() {
   if (thread === "missing") {
     return <EmptyState icon={<MessageCircle className="h-7 w-7" />} title="대화를 찾을 수 없어요" description="주소가 잘못됐거나, 주인이 이동수단을 지워 대화가 끝났어요." />;
   }
-  if (!thread) return <Card className="text-center text-ink-muted">불러오는 중...</Card>;
+  if (!thread) {
+    return loadError ? (
+      <ErrorState
+        title="대화를 불러오지 못했어요"
+        description="인터넷 연결을 확인하고 다시 시도해 주세요."
+        action={
+          <Button full loading={retrying} loadingText="불러오는 중..." onClick={retry}>
+            다시 시도
+          </Button>
+        }
+      />
+    ) : (
+      <ChatSkeleton />
+    );
+  }
 
   return (
     <>
@@ -185,7 +226,7 @@ export function FinderChat() {
           ))}
         </ul>
         {thread.messages.length === 0 && <p className="text-center text-[13px] text-ink-muted">아직 답장이 없어요. 주인이 확인하면 여기에 답장이 와요.</p>}
-        <div ref={endRef} />
+        <div ref={endRef} className="scroll-mb-28" />
         {thread.open ? (
           <form onSubmit={send} className="space-y-2">
             <Textarea label="메시지" placeholder="예) 정문 앞 거치대에 그대로 있어요" value={body} maxLength={500} rows={2} onChange={(e) => setBody(e.target.value)} />

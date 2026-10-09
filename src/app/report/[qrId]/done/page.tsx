@@ -13,9 +13,9 @@ export default async function ReportDonePage({ searchParams }: { searchParams: P
         <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-50 text-emerald-600">
           <CircleCheck aria-hidden className="h-9 w-9" />
         </span>
-        <h1 className="text-2xl font-extrabold">✅ {contact ? "메시지가 전달되었습니다." : "제보가 접수되었습니다."}</h1>
+        <h1 className="text-2xl font-extrabold">{contact ? "메시지를 보냈어요" : "제보를 보냈어요"}</h1>
         <p className="text-[15px] leading-relaxed text-ink-soft">
-          {contact ? "소유자에게 메시지가 전달되었습니다." : "소유자에게 발견 정보가 전달되었습니다."} 도와주셔서 고마워요!
+          {contact ? "메시지가 소유자에게만 전달됐어요." : "발견 정보가 소유자에게만 전달됐어요."} 도와주셔서 고마워요!
         </p>
         <ButtonLink href="/" full variant="secondary">
           홈으로
