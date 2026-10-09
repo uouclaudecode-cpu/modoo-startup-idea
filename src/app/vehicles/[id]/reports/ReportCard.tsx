@@ -18,7 +18,7 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: Report; ima
   const mapHref = hasCoords ? `https://map.kakao.com/link/map/${encodeURIComponent("발견 위치")},${r.latitude},${r.longitude}` : null;
 
   return (
-    <Card className="space-y-3 p-4">
+    <Card id={`r-${r.id}`} className="scroll-mt-20 space-y-3 p-4">
       <div className="flex items-center justify-between gap-2">
         {r.kind === "found" ? (
           <Badge tone="warning" icon={<MapPin className="h-3.5 w-3.5" />}>

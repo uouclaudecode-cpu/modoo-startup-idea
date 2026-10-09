@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Bike, ChartColumn, Flag, Play, Plus, Printer, Siren } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { WelcomeGuide } from "@/components/onboarding/WelcomeGuide";
+import { InboxCard, type InboxItem } from "@/components/vehicle/InboxCard";
 import { partsNeedingCare, type VehiclePart } from "@/lib/parts";
 import { ButtonLink, Card, EmptyState, ErrorState } from "@/components/ui";
 import { VehicleCard } from "@/components/vehicle/VehicleCard";
@@ -56,6 +57,38 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     .filter((x) => x.items.length > 0);
 
   const { data: myAlerts } = await supabase.from("theft_alerts").select("id, vehicle_id").eq("owner_id", user.id).eq("status", "open");
+  // 받은 제보·대화 (최근 14일, 내 이동수단 것만: RLS)
+  const since = new Date(Date.now() - 14 * 86400e3).toISOString();
+  const { data: inboxReports } = list.length
+    ? await supabase
+        .from("reports")
+        .select("id, vehicle_id, kind, contact_mode, description, created_at")
+        .in("vehicle_id", list.map((v) => v.id))
+        .gte("created_at", since)
+        .order("created_at", { ascending: false })
+        .limit(20)
+    : { data: [] };
+  const reportIds = (inboxReports ?? []).map((r) => r.id as string);
+  const { data: inboxMsgs } = reportIds.length
+    ? await supabase.from("report_messages").select("report_id, sender, body, created_at").in("report_id", reportIds).order("created_at", { ascending: false })
+    : { data: [] };
+  const inbox: InboxItem[] = (inboxReports ?? [])
+    .map((r) => {
+      const last = (inboxMsgs ?? []).find((m) => m.report_id === r.id);
+      const mode = (r.contact_mode ?? "none") as InboxItem["mode"];
+      return {
+        reportId: r.id as string,
+        vehicleId: r.vehicle_id as string,
+        vehicleName: list.find((v) => v.id === r.vehicle_id)?.name ?? "이동수단",
+        kind: r.kind as InboxItem["kind"],
+        mode,
+        preview: last ? `${last.sender === "finder" ? "발견자: " : "나: "}${last.body}` : (r.description as string),
+        at: (last?.created_at ?? r.created_at) as string,
+        needsReply: last ? last.sender === "finder" : mode !== "none" && Date.now() - new Date(r.created_at as string).getTime() < 3 * 86400e3,
+      };
+    })
+    .sort((a, b) => Number(b.needsReply) - Number(a.needsReply) || b.at.localeCompare(a.at))
+    .slice(0, 5);
   const nickname = profile?.nickname || user.email?.split("@")[0] || "회원";
   // 시작 안내: 스티커를 연결했거나 부착 위치를 적었으면 붙이기 단계 완료로 봐요
   const liveIds = list.map((v) => v.id);
@@ -85,6 +118,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           {list.find((v) => v.id === a.vehicle_id)?.name ?? "이동수단"} 도난 경보 진행 중 · 제보 보기
         </ButtonLink>
       ))}
+
+      <InboxCard items={inbox} />
 
       <WelcomeGuide nickname={nickname} hasVehicle={list.length > 0} hasSticker={hasSticker} fresh={welcome === "1"} />
 

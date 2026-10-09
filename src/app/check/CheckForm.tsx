@@ -159,6 +159,11 @@ export function CheckForm({ initial }: { initial: string }) {
             <ArrowRightLeft aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
             살 거라면 판매자에게 B-LOCK &lsquo;소유권 넘기기&rsquo;를 요청하세요. 진짜 주인만 넘길 수 있어서, 넘겨받으면 내 것으로 바로 등록돼요.
           </p>
+          <ol className="list-decimal space-y-1 pl-5 text-[13px] leading-relaxed text-ink-soft">
+            <li>B-LOCK에 가입·로그인해요.</li>
+            <li>판매자가 앱에서 &lsquo;소유권 넘기기&rsquo;를 누르면 QR이 떠요. 그 QR을 휴대폰 카메라로 찍어요.</li>
+            <li>판매자에게 숨은 스티커 위치를 물어 직접 찍으면(또는 차대번호 입력) 바로 내 이동수단이 돼요.</li>
+          </ol>
         </Card>
       )}
 

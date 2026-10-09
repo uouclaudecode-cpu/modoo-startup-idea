@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight, QrCode, Siren } from "lucide-react";
+import { ArrowRightLeft, ChevronRight, FileBadge, QrCode, Siren } from "lucide-react";
 import { ButtonLink, StatusBadge } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { vehicleImageUrl } from "@/lib/images";
@@ -45,6 +45,21 @@ export function VehicleCard({ vehicle, foundReports }: { vehicle: Vehicle; found
             <ChevronRight aria-hidden className="h-4 w-4" />
           </ButtonLink>
         </div>
+        {/* 자주 찾는 기능 바로가기 */}
+        <nav aria-label={`${vehicle.name} 바로가기`} className="grid grid-cols-3 gap-1 border-t border-line/70 pt-2 text-center text-[12px] font-semibold text-ink-soft">
+          <Link href={`/vehicles/${vehicle.id}/transfer`} className="flex flex-col items-center gap-1 rounded-xl py-2 hover:bg-slate-50">
+            <ArrowRightLeft aria-hidden className="h-4 w-4 text-brand-600" />
+            소유권 넘기기
+          </Link>
+          <Link href={`/vehicles/${vehicle.id}/evidence`} className="flex flex-col items-center gap-1 rounded-xl py-2 hover:bg-slate-50">
+            <FileBadge aria-hidden className="h-4 w-4 text-emerald-600" />
+            소유 증명
+          </Link>
+          <Link href={`/vehicles/${vehicle.id}/alert`} className="flex flex-col items-center gap-1 rounded-xl py-2 hover:bg-slate-50">
+            <Siren aria-hidden className="h-4 w-4 text-rose-600" />
+            도난 경보
+          </Link>
+        </nav>
       </div>
     </article>
   );
