@@ -5,6 +5,7 @@ import { site } from "@/config/site";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { Header } from "@/components/layout/Header";
 import { InstallPrompt } from "@/components/layout/InstallPrompt";
+import { IntroSlides } from "@/components/onboarding/IntroSlides";
 import { ToastProvider } from "@/components/ui/Toast";
 
 export const metadata: Metadata = {
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               © {new Date().getFullYear()} {site.name} · 발견 제보 서비스 (실시간 위치 추적 아님)
             </p>
           </footer>
+          <IntroSlides />
           <InstallPrompt />
           <BottomNav />
         </ToastProvider>

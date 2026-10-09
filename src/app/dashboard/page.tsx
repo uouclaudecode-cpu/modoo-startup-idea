@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bike, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Plus, Printer, Route, Search, Settings, Siren } from "lucide-react";
+import { Bike, BookOpen, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Plus, Printer, Route, Search, Settings, Siren } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { MaintenanceOverview } from "@/components/maintenance/MaintenanceOverview";
 import { PushPrompt } from "@/components/onboarding/PushPrompt";
@@ -261,6 +261,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <MenuRow href="/check" icon={Search} label="도난 조회 · 중고 매물 확인" />
           <MenuRow href="/get-sticker" icon={MapPin} label="스티커 받는 곳" />
           <MenuRow href="/settings" icon={Settings} label="알림·계정 설정" />
+          <MenuRow href="/?intro=1" icon={BookOpen} label="앱 소개 다시 보기" />
           <MenuRow href="/contact" icon={MessageCircleQuestion} label="문의하기" />
         </Card>
         {profile?.is_admin && (
