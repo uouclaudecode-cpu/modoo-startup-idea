@@ -315,7 +315,7 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
         )}
       </div>
 
-      {/* 쉬는 중일 때만: 최근 기록 (눌러서 지도·공유 카드·GPX) */}
+      {/* 쉬는 중일 때만: 최근 기록 (눌러서 지도·공유 카드·경로 파일) */}
       {t.status === "idle" && !result && (
         <section aria-labelledby="recent-rides" className="space-y-2 pt-2">
           <div className="flex items-center justify-between px-1">
@@ -330,7 +330,7 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
           </div>
           {recent.length === 0 ? (
             <p className="rounded-2xl bg-slate-50 p-4 text-[14px] leading-relaxed text-ink-muted">
-              아직 기록이 없어요. 라이딩을 마치면 여기에 쌓이고, 눌러서 지도·공유 카드·GPX 파일을 볼 수 있어요.
+              아직 기록이 없어요. 라이딩을 마치면 여기에 쌓이고, 눌러서 지도를 보거나 사진으로 공유할 수 있어요.
             </p>
           ) : (
             <ul className="space-y-2">
@@ -349,7 +349,7 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
                           {formatDateTime(r.started_at)} · {r.vehicle_name ?? "삭제한 이동수단"}
                         </p>
                       </div>
-                      <span className="flex-none text-[12px] font-semibold text-brand-700">공유·GPX</span>
+                      <span className="flex-none text-[12px] font-semibold text-brand-700">공유하기</span>
                       <ChevronRight aria-hidden className="h-5 w-5 flex-none text-ink-faint" />
                     </Card>
                   </Link>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Download, Share2 } from "lucide-react";
 import { Button, useToast } from "@/components/ui";
 
-/** 공유 카드(사진)와 GPX 내보내기. 둘 다 출발·도착 근처 300m는 가려요 */
+/** 공유 카드(사진)와 경로 파일(GPX) 저장. 둘 다 출발·도착 근처 300m는 가려요 */
 export function RideExport({ rideId }: { rideId: string }) {
   const toast = useToast();
   const [busy, setBusy] = useState(false);
@@ -47,15 +47,23 @@ export function RideExport({ rideId }: { rideId: string }) {
           className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl bg-white px-4 text-[15px] font-semibold text-ink ring-1 ring-inset ring-line hover:bg-slate-50"
         >
           <Download aria-hidden className="h-4 w-4" />
-          GPX 파일
+          경로 파일 저장
         </a>
       </div>
-      <p className="text-[12px] leading-relaxed text-ink-muted">
-        집·회사 위치가 드러나지 않게 출발·도착 근처 300m는 빼고 보여요. GPX는 스트라바·가민 등에 올릴 수 있어요.{" "}
-        <a href={`/rides/${rideId}/gpx`} className="underline">
-          전체 경로 GPX
-        </a>
-      </p>
+      <div className="space-y-1 rounded-xl bg-slate-50 p-3 text-[12px] leading-relaxed text-ink-muted">
+        <p>
+          <b className="text-ink-soft">공유 카드</b>: 달린 길과 거리를 사진 한 장으로 만들어 카톡·인스타에 올려요.
+        </p>
+        <p>
+          <b className="text-ink-soft">경로 파일 저장</b>: 스트라바·가민 같은 다른 운동 앱에 이 라이딩을 옮길 때 쓰는 파일(GPX)이에요. 다른 앱을 안 쓰면 몰라도 괜찮아요.
+        </p>
+        <p>
+          집·회사 위치가 드러나지 않게 출발·도착 근처 300m는 빼고 만들어요.{" "}
+          <a href={`/rides/${rideId}/gpx`} className="underline">
+            빼지 않은 전체 경로 파일
+          </a>
+        </p>
+      </div>
     </div>
   );
 }

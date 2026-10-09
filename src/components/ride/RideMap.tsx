@@ -191,7 +191,7 @@ export function RideMap({ path, current = null, follow = false, fit = false, cla
           onClick={toggleBike}
           aria-pressed={bikeOn}
           className={cn(
-            "absolute left-3 top-3 inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold shadow-lift ring-1",
+            "absolute bottom-3 left-3 inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold shadow-lift ring-1",
             bikeOn ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink ring-line",
           )}
         >
