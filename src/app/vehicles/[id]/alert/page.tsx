@@ -19,7 +19,7 @@ export default async function NewAlertPage({ params }: { params: Promise<{ id: s
         {vehicle.name}
       </Link>
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight">🚨 도난 경보 보내기</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight">도난 경보 보내기</h1>
         <p className="mt-1 text-[15px] leading-relaxed text-ink-muted">
           잃어버린 곳 근처에서 경보 알림을 켠 사람들에게 사진과 특징이 바로 전달돼요. 내 이름·연락처는 보이지 않아요.
         </p>

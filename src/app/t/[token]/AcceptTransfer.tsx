@@ -87,7 +87,7 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
             {!scanned && (
               <Input
                 label="또는 스티커 QR 아래 조회 번호(8자리)"
-                placeholder="예) aB3x Kp9Q"
+                placeholder="예) AB3X KP9Q"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 autoComplete="off"
@@ -100,8 +100,8 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
         )}
         {mode === "serial" && (
           <>
-            <p className="text-[14px] leading-relaxed text-ink-soft">이 기기에는 스티커가 없어요. 프레임에 새겨진 차대번호(프레임·시리얼 번호) 전체를 직접 보고 적어 주세요. 자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요. (판매자가 불러 주는 번호 말고 실물을 확인하세요)</p>
-            <Input label="차대번호 (프레임·시리얼 번호 전체)" value={last4} maxLength={40} onChange={(e) => setLast4(e.target.value.toUpperCase())} autoComplete="off" autoCapitalize="characters" />
+            <p className="text-[14px] leading-relaxed text-ink-soft">이 기기에는 스티커가 없어요. 프레임에 새겨진 차대번호(프레임 번호) 전체를 직접 보고 적어 주세요. 자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요. (판매자가 불러 주는 번호 말고 실물을 확인하세요)</p>
+            <Input label="차대번호 (프레임 번호 전체)" value={last4} maxLength={40} onChange={(e) => setLast4(e.target.value.toUpperCase())} autoComplete="off" autoCapitalize="characters" />
           </>
         )}
         {mode === "none" && (
@@ -112,7 +112,7 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
             </p>
             <label className="flex items-center gap-2 text-[15px]">
               <input type="checkbox" className="h-5 w-5 accent-brand-600" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
-              사진과 실물이 같은 것을 확인했어요
+              사진과 실물이 같은지 확인했어요
             </label>
           </>
         )}

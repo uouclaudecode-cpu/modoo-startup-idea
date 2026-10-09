@@ -175,7 +175,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               <span className="truncate">{list.find((v) => v.id === a.vehicle_id)?.name ?? "이동수단"}</span>
               <span className="flex-none">&nbsp;도난 경보 진행 중</span>
             </span>
-            <span className="block text-[13px] text-white/85">받은 제보·목격 보기</span>
+            <span className="block text-[13px] text-white/85">받은 목격 제보 보기</span>
           </span>
           <ChevronRight aria-hidden className="h-5 w-5 flex-none" />
         </Link>

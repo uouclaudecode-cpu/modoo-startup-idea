@@ -15,7 +15,7 @@ export default async function ReportDonePage({ searchParams }: { searchParams: P
         </span>
         <h1 className="text-2xl font-extrabold">{contact ? "메시지를 보냈어요" : "제보를 보냈어요"}</h1>
         <p className="text-[15px] leading-relaxed text-ink-soft">
-          {contact ? "메시지가 소유자에게만 전달됐어요." : "발견 정보가 소유자에게만 전달됐어요."} 도와주셔서 고마워요!
+          {contact ? "메시지가 주인에게만 전달됐어요." : "발견 정보가 주인에게만 전달됐어요."} 도와주셔서 고마워요!
         </p>
         <ButtonLink href="/" full variant="secondary">
           홈으로

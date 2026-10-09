@@ -254,7 +254,7 @@ export function TransferStart({
             </p>
             {/* 구매자 카메라가 안 되면 같은 링크를 채팅으로 */}
             <Button variant="secondary" full icon={<Copy aria-hidden className="h-4 w-4" />} onClick={copyLink}>
-              카메라가 안 되면: 링크 복사해서 보내기
+              링크 복사해서 보내기
             </Button>
           </>
         ) : (

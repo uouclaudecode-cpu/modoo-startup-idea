@@ -25,7 +25,7 @@ export default function PrivacyPage() {
     <LegalPage title="개인정보처리방침">
       <p>
         {site.operator}(이하 &lsquo;운영자&rsquo;)는 {site.name} 서비스를 제공하면서 필요한 최소한의 개인정보만 처리하고, 개인정보 보호법 등 관련 법령을
-        지킵니다.
+        지켜요.
       </p>
       <Clause n={1} title="처리하는 개인정보와 목적·보유 기간">
         {/* 휴대폰: 항목마다 카드로 (표가 옆으로 잘리지 않게) */}

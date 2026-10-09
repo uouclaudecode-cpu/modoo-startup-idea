@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const res = await loadPost(id).catch(() => null);
   if (!res?.post) return { title: "분실 커뮤니티" };
   const p = res.post;
-  const description = `${typeLabel(p.type)}${p.color ? ` · ${p.color}` : ""}${p.lost_area ? ` · ${p.lost_area}` : ""} — 보셨다면 댓글로 알려주세요.`;
+  const description = `${typeLabel(p.type)}${p.color ? ` · ${p.color}` : ""}${p.lost_area ? ` · ${p.lost_area}` : ""} — 보셨다면 댓글로 알려 주세요.`;
   // 카카오톡 등 공유 미리보기에 제목·설명이 나오도록 (사진 카드는 opengraph-image.tsx 가 만들어요)
   const status = p.status === "resolved" ? "[찾았어요]" : "[찾는 중]";
   return {
@@ -203,7 +203,7 @@ export default async function PostPage({ params }: Params) {
           <Tag aria-hidden className="mt-0.5 h-5 w-5 flex-none text-brand-600" />
           {isAuthor ? (
             <p>
-              <b>QR 스티커가 붙은 이동수단이에요.</b> &ldquo;이건가요?&rdquo;라는 비밀 댓글이 오면 <b>비밀 답글</b>로 스티커 위치를 알려주세요. 그
+              <b>QR 스티커가 붙은 이동수단이에요.</b> &ldquo;이건가요?&rdquo;라는 비밀 댓글이 오면 <b>비밀 답글</b>로 스티커 위치를 알려 주세요. 그
               사람이 스티커를 찍으면 위치·사진이 나에게 와요. 스티커 위치는 공개 댓글에 쓰지 마세요.
             </p>
           ) : (
@@ -240,7 +240,7 @@ export default async function PostPage({ params }: Params) {
         {commentErr && <p className="text-sm text-rose-600">댓글을 불러오지 못했어요. 새로고침해 주세요.</p>}
         {comments.length === 0 && !commentErr && (
           <p className="rounded-2xl border border-dashed border-line bg-white px-4 py-8 text-center text-sm text-ink-muted">
-            아직 댓글이 없어요. 비슷한 {vehicle.obj} 봤다면 알려주세요.
+            아직 댓글이 없어요. 비슷한 {vehicle.obj} 봤다면 알려 주세요.
           </p>
         )}
         <ul className="space-y-3">
@@ -267,7 +267,7 @@ export default async function PostPage({ params }: Params) {
               <p className="text-[15px] font-semibold">댓글을 남기려면 로그인해 주세요.</p>
               <p className="flex items-center justify-center gap-1.5 text-[13px] text-ink-muted">
                 <Lock aria-hidden className="h-3.5 w-3.5" />
-                비밀 댓글로 글쓴이에게만 위치를 알려줄 수도 있어요.
+                비밀 댓글로 글쓴이에게만 위치를 알려 줄 수도 있어요.
               </p>
               <div className="grid grid-cols-2 gap-2">
                 <ButtonLink href={`/login?next=/community/${post.id}`}>로그인</ButtonLink>

@@ -186,8 +186,8 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
       <Card className="space-y-3">
         <p className="text-[13px] leading-relaxed text-ink-muted">
           {stickerCode
-            ? "🏷️ 받은 스티커가 이 이동수단에 연결돼요. 주인만 아는 곳에 붙이고 위치를 적어 두세요."
-            : "QR 스티커(받은 스티커나 직접 출력한 QR)를 붙였다면 위치를 적어 두세요. 커뮤니티에서 비밀 답글로 알려줄 때 써요."}
+            ? "받은 스티커가 이 이동수단에 연결돼요. 주인만 아는 곳에 붙이고 위치를 적어 두세요."
+            : "QR 스티커(받은 스티커나 직접 출력한 QR)를 붙였다면 위치를 적어 두세요. 커뮤니티에서 비밀 답글로 알려 줄 때 써요."}
         </p>
         <StickerSpotInput value={spot} onChange={setSpot} />
       </Card>

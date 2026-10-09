@@ -173,7 +173,7 @@ export function TradeCard({ vehicleId, serialLast4, searching }: { vehicleId: st
           <p className="text-[14px] leading-relaxed text-ink-soft">
             흔히 &lsquo;프레임 번호&rsquo;·&lsquo;시리얼 번호&rsquo;라고 불러요. 자전거는 자전거를 뒤집으면 페달 사이 프레임 아랫면(바텀 브래킷)에, 전동킥보드는 발판 아래나 핸들 기둥에 새겨져 있어요. 없는 자전거도 있는데, 그럴 땐 숨은 QR 스티커만으로도 충분해요. 번호 전체는 암호처럼 바꿔 저장하고, 화면에는 끝 4자리만 보여요. 비워서 저장하면 지워져요.
           </p>
-          <Input label="차대번호 (프레임·시리얼 번호)" placeholder="예: WTU123A4567B" value={serial} onChange={(e) => setSerial(e.target.value)} error={serialError} autoComplete="off" autoCapitalize="characters" />
+          <Input label="차대번호 (프레임 번호)" placeholder="예: WTU123A4567B" value={serial} onChange={(e) => setSerial(e.target.value)} error={serialError} autoComplete="off" autoCapitalize="characters" />
         </form>
       </Modal>
 

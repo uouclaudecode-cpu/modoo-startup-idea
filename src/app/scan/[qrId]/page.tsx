@@ -106,7 +106,7 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
   const privacy = (
     <p className="flex items-start gap-2 rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-muted">
       <Lock aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
-      이 이동수단의 소유자 정보는 개인정보 보호를 위해 공개하지 않아요. 제보는 소유자에게만 전달돼요.
+      주인 정보는 개인정보 보호를 위해 공개하지 않아요. 제보는 주인에게만 전달돼요.
     </p>
   );
 
@@ -128,7 +128,7 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
           <Siren aria-hidden className="h-9 w-9" />
           <h1 className="mt-3 text-2xl font-extrabold leading-snug">현재 분실·도난 수색 중이에요</h1>
           <p className="mt-2 text-[15px] leading-relaxed text-rose-50">
-            이 이동수단을 발견하셨다면 위치와 사진을 제보해 주세요. 소유자에게 바로 전달돼요.
+            이 이동수단을 발견했다면 위치와 사진을 제보해 주세요. 주인에게 바로 전달돼요.
           </p>
           {bounty ? (
             <p className="mt-3 flex items-start gap-2 rounded-xl bg-white/15 p-3 text-[14px] leading-relaxed ring-1 ring-inset ring-white/25">
@@ -175,7 +175,7 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
       {privacy}
       <div className="grid gap-2">
         <ButtonLink href={`${reportHref}?kind=contact`} size="lg" full icon={<MessageCircle aria-hidden className="h-5 w-5" />}>
-          이 이동수단의 소유자에게 연락하기
+          주인에게 연락하기
         </ButtonLink>
         <ButtonLink href={`${reportHref}?kind=found`} size="lg" full variant="secondary" icon={<MapPinned aria-hidden className="h-5 w-5" />}>
           발견 제보하기

@@ -41,7 +41,7 @@ export function VehicleCard({ vehicle, foundReports }: { vehicle: Vehicle; found
             QR 보기
           </ButtonLink>
           <ButtonLink href={alert ? `/vehicles/${vehicle.id}/reports` : `/vehicles/${vehicle.id}`} variant={alert ? "danger" : "primary"}>
-            {alert ? "제보 확인" : "상세보기"}
+            {alert ? "제보 확인" : "상세 보기"}
             <ChevronRight aria-hidden className="h-4 w-4" />
           </ButtonLink>
         </div>

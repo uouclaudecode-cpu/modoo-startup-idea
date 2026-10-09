@@ -48,7 +48,7 @@ export default async function ClaimStickerPage({ params }: { params: Promise<{ c
   return (
     <div className="mx-auto max-w-xl space-y-4">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight">🏷️ 스티커 등록</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight">스티커 등록</h1>
         <p className="mt-1 text-sm leading-relaxed text-ink-muted">
           이 스티커를 붙일 이동수단을 골라 주세요. 등록한 뒤 스티커를 찍으면 그 이동수단의 신분증이 열려요.
         </p>

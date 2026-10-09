@@ -77,8 +77,8 @@ export function CommentForm({ postId, isAuthor }: { postId: string; isAuthor: bo
     } catch (err) {
       console.error(err);
       if (uploaded) await supabase.storage.from(bucket).remove([uploaded]);
-      setErrors({ form: friendlyError(err, "댓글을 남기지 못했습니다. 잠시 후 다시 시도해 주세요.") });
-      toast.error("댓글을 남기지 못했습니다.");
+      setErrors({ form: friendlyError(err, "댓글을 남기지 못했어요. 잠시 후 다시 시도해 주세요.") });
+      toast.error("댓글을 남기지 못했어요.");
     } finally {
       setLoading(false);
     }
@@ -88,7 +88,7 @@ export function CommentForm({ postId, isAuthor }: { postId: string; isAuthor: bo
     <Card className="space-y-4">
       <form onSubmit={onSubmit} noValidate className="space-y-4">
         <Textarea
-          label={isAuthor ? "댓글" : "봤다면 알려주세요"}
+          label={isAuthor ? "댓글" : "봤다면 알려 주세요"}
           placeholder={isAuthor ? "예) 알려주셔서 감사해요! 지금 가볼게요." : "예) 오늘 오후 2시쯤 학생회관 뒤 거치대에서 비슷한 자전거를 봤어요."}
           value={body}
           onChange={(e) => setBody(e.target.value)}
@@ -108,7 +108,7 @@ export function CommentForm({ postId, isAuthor }: { postId: string; isAuthor: bo
             <span>
               <Lock aria-hidden className="mr-1 inline h-4 w-4 align-[-3px]" />
               <b>비밀 댓글</b>로 남기기
-              <span className="mt-0.5 block text-[13px] opacity-80">글쓴이(주인)에게만 내용·위치·사진이 보여요. 정확한 위치를 알려줄 때 써 주세요.</span>
+              <span className="mt-0.5 block text-[13px] opacity-80">글쓴이(주인)에게만 내용·위치·사진이 보여요. 정확한 위치를 알려 줄 때 써 주세요.</span>
             </span>
           </label>
         )}
@@ -143,7 +143,7 @@ export function CommentForm({ postId, isAuthor }: { postId: string; isAuthor: bo
               </div>
             ) : (
               <Button variant="secondary" full loading={loc.locating} loadingText="위치 확인 중..." icon={<Crosshair aria-hidden className="h-4 w-4" />} onClick={loc.locate}>
-                지금 있는 곳 위치 공유
+                지금 위치 공유
               </Button>
             )}
             {loc.error && <p className="text-sm text-orange-700">{loc.error}</p>}

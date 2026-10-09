@@ -81,7 +81,7 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
             <li key={s.code8} className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
               <Tag aria-hidden className="h-4 w-4 flex-none text-brand-600" />
               <p className="min-w-0 flex-1 text-[14px]">
-                스티커 · 조회 <b className="tracking-wide text-ink">{lookupCode(s.code8)}</b>
+                스티커 · 조회 번호 <b className="tracking-wide text-ink">{lookupCode(s.code8)}</b>
                 {s.claimedAt && <span className="block text-[12px] text-ink-muted">{formatDate(s.claimedAt)} 연결</span>}
               </p>
               <Button variant="ghost" className="h-9 flex-none px-2.5 text-sm" aria-label="조회 번호 복사" icon={<Copy aria-hidden className="h-4 w-4" />} onClick={() => copyCode(s.code8)}>
@@ -102,7 +102,7 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
             붙인 위치 (나만 보기): <b className="text-ink">{stickerSpot}</b>
           </span>
         ) : (
-          <span>붙인 위치를 적어 두면, 커뮤니티에서 &ldquo;이건가요?&rdquo;라고 묻는 사람에게 비밀 답글로 바로 알려줄 수 있어요.</span>
+          <span>붙인 위치를 적어 두면, 커뮤니티에서 &ldquo;이건가요?&rdquo;라고 묻는 사람에게 비밀 답글로 바로 알려 줄 수 있어요.</span>
         )}
       </p>
       <div className="grid grid-cols-2 gap-2">
@@ -131,7 +131,7 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
       >
         <div className="space-y-3">
           <p className="text-[15px] leading-relaxed text-ink-soft">
-            조회 <b className="text-ink">{target ? lookupCode(target.code8) : ""}</b> 스티커를 이 이동수단에서 떼어 낼게요. 어떤 경우인가요?
+            조회 번호 <b className="text-ink">{target ? lookupCode(target.code8) : ""}</b> 스티커를 이 이동수단에서 떼어 낼게요. 어떤 경우인가요?
           </p>
           <div role="radiogroup" aria-label="연결을 끊는 이유" className="space-y-2">
             {REASONS.map((r) => (
@@ -149,7 +149,7 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
             ))}
           </div>
           <p className="rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
-            {reason === "lost" ? "되돌릴 수 없어요. " : ""}연결된 스티커가 하나도 남지 않으면, 소유권을 넘길 때 구매자는 스티커 대신 차대번호로(등록하지 않았다면 사진과 실물을 눈으로) 확인해요.
+            {reason === "lost" ? "되돌릴 수 없어요. " : ""}연결된 스티커가 하나도 남지 않으면, 소유권을 넘길 때 구매자는 차대번호로 확인해요. 차대번호도 없으면 사진과 실물을 눈으로 확인해요.
           </p>
         </div>
       </Modal>

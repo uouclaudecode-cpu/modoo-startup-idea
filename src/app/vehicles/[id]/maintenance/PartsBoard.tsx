@@ -78,7 +78,7 @@ export function PartsBoard({ parts, now, lastLife = {} }: { parts: VehiclePart[]
       )}
       <p className="flex items-start gap-1.5 text-[12px] leading-relaxed text-ink-muted">
         <Info aria-hidden className="mt-0.5 h-3.5 w-3.5 flex-none" />
-        주기의 80%가 되면 &lsquo;점검 필요&rsquo;, 100%가 되면 &lsquo;교체 권장&rsquo;으로 알려드려요. 기본값은 일반 라이더 기준이라, 타는 환경에 맞게 바꿔도
+        주기의 80%가 되면 &lsquo;점검 필요&rsquo;, 100%가 되면 &lsquo;교체 권장&rsquo;으로 알려 드려요. 기본값은 일반 라이더 기준이라, 타는 환경에 맞게 바꿔도
         돼요.
       </p>
 

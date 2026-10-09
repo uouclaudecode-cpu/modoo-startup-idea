@@ -51,11 +51,11 @@ export default async function ReportPage({
         {typeLabel(v.type)} 정보로 돌아가기
       </Link>
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight">{mode === "contact" ? "소유자에게 연락하기" : "발견 제보하기"}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight">{mode === "contact" ? "주인에게 연락하기" : "발견 제보하기"}</h1>
         <p className="mt-1 text-sm leading-relaxed text-ink-muted">
           {mode === "contact"
-            ? "남긴 메시지는 소유자에게만 전달돼요. 로그인하지 않아도 보낼 수 있어요."
-            : "발견한 위치와 사진을 보내 주시면 소유자에게만 전달돼요. 로그인하지 않아도 제보할 수 있어요."}
+            ? "남긴 메시지는 주인에게만 전달돼요. 로그인하지 않아도 보낼 수 있어요."
+            : "발견한 위치와 사진을 보내 주시면 주인에게만 전달돼요. 로그인하지 않아도 제보할 수 있어요."}
         </p>
       </div>
       <ReportForm token={token} mode={mode} vehicleLabel={[v.color, v.brand, typeLabel(v.type)].filter(Boolean).join(" ")} />

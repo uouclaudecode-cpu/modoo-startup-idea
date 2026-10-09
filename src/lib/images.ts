@@ -53,7 +53,7 @@ export async function uploadPhoto(supabase: SupabaseClient,bucket: string, userI
   const { error } = await supabase.storage.from(bucket).upload(path, blob, { contentType: "image/jpeg", upsert: false });
   if (error) {
     console.error(error);
-    throw new Error("사진 업로드에 실패했습니다. 다시 시도해주세요.");
+    throw new Error("사진을 올리지 못했어요. 다시 시도해 주세요.");
   }
   return path;
 }

@@ -71,7 +71,7 @@ export default function ContactPage() {
     },
     {
       q: "중고로 사고팔 때 소유권은 어떻게 넘기나요?",
-      a: "판매자가 이동수단 화면의 '소유권 넘기기'를 누르면 10분 동안 쓸 수 있는 양도 QR이 떠요. 구매자가 그 QR을 찍고 자전거에 숨긴 스티커를 찍으면(스티커가 없으면 차대번호 입력) 바로 구매자 것이 돼요. 팔기 전에 '안심거래 인증' 링크를 보내면 사는 사람이 도난 이력·등록일을 미리 볼 수 있어요.",
+      a: "판매자가 이동수단 화면의 '소유권 넘기기'를 누르면 직접 만날 때 쓰는 10분짜리 QR이나, 비대면 거래용 7일짜리 링크를 만들 수 있어요. 구매자가 QR이나 링크를 열고 숨은 스티커를 찍으면 바로 구매자 것이 돼요. 스티커가 없으면 차대번호를 넣어요. 팔기 전에 '안심거래 인증' 링크를 보내면 사는 사람이 도난 이력·등록일을 미리 볼 수 있어요.",
     },
     {
       q: "숨겨 둔 스티커가 떨어지거나 없어졌어요.",
@@ -103,7 +103,7 @@ export default function ContactPage() {
     <div className="mx-auto max-w-xl space-y-5">
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">문의하기</h1>
-        <p className="mt-1 text-sm text-ink-muted">궁금한 점이나 불편한 점을 알려주세요.</p>
+        <p className="mt-1 text-sm text-ink-muted">궁금한 점이나 불편한 점을 알려 주세요.</p>
       </div>
 
       <Card className="space-y-3">

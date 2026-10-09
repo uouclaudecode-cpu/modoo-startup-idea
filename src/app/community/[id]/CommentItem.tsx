@@ -75,7 +75,7 @@ export function CommentThread({ comment, replies, imageOf, viewerIsAuthor, postI
           )}
         >
           <MessageSquareReply aria-hidden className="h-4 w-4" />
-          {viewerIsAuthor && comment.is_secret ? "비밀 답글 (스티커 위치 알려주기)" : "답글"}
+          {viewerIsAuthor && comment.is_secret ? "비밀 답글 (스티커 위치)" : "답글"}
         </button>
       )}
     </div>
@@ -118,7 +118,7 @@ function CommentBody({ comment: c, imageUrl, canDelete, loggedIn, postId, reply 
     return (
       <div className="flex items-center gap-2 rounded-2xl bg-slate-100 px-4 py-3 text-sm text-ink-muted">
         {reply ? <CornerDownRight aria-hidden className="h-4 w-4" /> : <Lock aria-hidden className="h-4 w-4" />}
-        {reply ? "비밀 답글입니다." : "비밀 댓글입니다. 글쓴이와 댓글 쓴 사람만 볼 수 있어요."}
+        {reply ? "비밀 답글이에요." : "비밀 댓글이에요. 글쓴이와 댓글 쓴 사람만 볼 수 있어요."}
         <span className="ml-auto text-[13px] text-ink-faint" suppressHydrationWarning>
           {/* "N분 전"은 서버와 브라우저 시각이 조금 달라 1분 차이가 날 수 있어요 */}
           {timeAgo(c.created_at)}

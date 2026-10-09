@@ -127,7 +127,7 @@ export function PostActions({ postId, status, vehicleId }: { postId: string; sta
               onClick={() => setMenu(false)}
               className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold text-ink hover:bg-slate-50"
             >
-              <Pencil aria-hidden className="h-4 w-4" />글 수정
+              <Pencil aria-hidden className="h-4 w-4" />글 고치기
             </Link>
             <button
               type="button"

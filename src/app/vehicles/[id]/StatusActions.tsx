@@ -28,7 +28,7 @@ const CONFIRM: Record<Exclude<Action, "search">, Confirm> = {
   },
   delete: {
     title: "이동수단 삭제",
-    body: "삭제하면 목록에서 사라지고, 이 QR을 스캔하면 '현재 사용할 수 없는 QR'로 보여요. 되돌릴 수 없어요.",
+    body: "삭제하면 목록에서 사라지고, 이 QR을 스캔하면 '지금은 쓸 수 없는 QR'로 보여요. 되돌릴 수 없어요.",
     button: "삭제하기",
     variant: "danger",
   },
@@ -192,7 +192,7 @@ export function StatusActions({
               잃어버렸어요 (분실)
             </Button>
             <p className="text-[13px] leading-relaxed text-ink-muted">
-              근처 알림 없이 상태만 &lsquo;수색 중&rsquo;으로 바꿔요. QR을 스캔한 사람에게 분실 안내와 사진·특징이 보이고, 발견 위치 제보를 받을 수 있어요.
+              근처 알림 없이 상태만 &lsquo;수색 중&rsquo;으로 바꿔요. QR을 스캔한 사람에게 분실 안내와 사진·특징이 보이고, 발견 제보를 받을 수 있어요.
             </p>
           </div>
           <p className="rounded-xl bg-slate-50 p-3 text-[13px] leading-relaxed text-ink-soft">

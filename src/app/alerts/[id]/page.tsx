@@ -152,7 +152,7 @@ export default async function AlertPage({
           title={`🚨 ${vehicleTitle(a.vehicle)} 도난 경보`}
           text={`${a.place_label ?? "근처"}에서 ${vehicleTitle(a.vehicle)}을(를) 도둑맞았어요. 비슷한 걸 보면 알려 주세요!`}
           path={`/alerts/${a.id}`}
-          label="카카오톡·단톡방에 공유해서 같이 찾기"
+          label="공유해서 같이 찾기"
         />
       )}
 
@@ -172,7 +172,7 @@ export default async function AlertPage({
       ) : null}
 
       <p className="rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
-        직접 다가가거나 되찾으려 하지 마세요. 위험하면 112에 신고하세요. 경보 내용은 주인이 적은 것이며, B-LOCK은 실시간 위치 추적을 하지 않아요.
+        직접 다가가거나 되찾으려 하지 마세요. 위험하면 112에 신고하세요. 경보 내용은 주인이 적은 거예요. B-LOCK은 실시간 위치 추적을 하지 않아요.
       </p>
     </div>
   );

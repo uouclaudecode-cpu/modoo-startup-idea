@@ -52,7 +52,7 @@ export function UnfinishedRideCard({ userId }: { userId: string }) {
           <p className="font-bold text-amber-900">진행 중인 라이딩이 있어요</p>
           <p className="mt-0.5 text-[13px] leading-relaxed text-amber-900/80">
             {formatDistance(ride.distance)} · {formatDuration(ride.elapsedSec)} 기록돼 있어요.{" "}
-            {canResume ? "이어서 타거나 종료해서 저장해 주세요." : "시작한 지 오래돼서 이어 타기는 안 되고, 종료해서 저장할 수 있어요."} {expiry}
+            {canResume ? "이어서 타거나 종료해서 저장해 주세요." : "시작한 지 오래돼서 이어 탈 수 없어요. 종료하면 저장할 수 있어요."} {expiry}
           </p>
         </div>
       </div>

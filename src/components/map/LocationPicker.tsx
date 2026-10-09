@@ -123,7 +123,7 @@ export function LocationPicker({ value, onChange, label }: { value: PickedLocati
           {mode === "naver" && !value && (
             <p className="pointer-events-none absolute inset-x-3 bottom-3 rounded-lg bg-white/90 px-3 py-2 text-center text-[13px] font-semibold text-ink-soft shadow-card">
               <MapPin aria-hidden className="mr-1 inline h-4 w-4 align-[-3px] text-rose-600" />
-              지도를 눌러 잃어버린 곳에 핀을 꽂아 주세요
+              지도를 눌러 핀을 꽂아 주세요
             </p>
           )}
         </div>

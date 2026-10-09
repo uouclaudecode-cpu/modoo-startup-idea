@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export type Coords = { lat: number; lng: number; accuracy: number };
 
-const DENIED = "위치 권한을 사용할 수 없습니다. 위치를 직접 입력해주세요.";
+const DENIED = "위치 권한을 쓸 수 없어요. 위치를 직접 입력해 주세요.";
 
 /** 브라우저 위치 권한으로 현재 위치를 한 번만 가져옵니다. (실시간 추적 아님) */
 export function useCurrentLocation() {

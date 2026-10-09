@@ -153,14 +153,14 @@ export function RideTracker({ vehicles, userId }: { vehicles: RideVehicle[]; use
       {t.restored && t.status === "paused" && (
         <div className="rounded-2xl bg-amber-50 p-4 text-[14px] leading-relaxed text-amber-900 ring-1 ring-amber-200">
           <b>끝내지 않은 라이딩이 있어요.</b> {formatDistance(t.restored.distance)} · {formatDuration(t.elapsedSec)} 기록돼 있어요.{" "}
-          {t.canResume ? "이어서 타거나 종료해서 저장할 수 있어요." : "시작한 지 오래돼서 이어 타기는 안 되고, 종료해서 저장하거나 버릴 수 있어요."}
+          {t.canResume ? "이어서 타거나 종료해서 저장할 수 있어요." : "시작한 지 오래돼서 이어 탈 수 없어요. 종료해서 저장하거나 버릴 수 있어요."}
         </div>
       )}
 
       {vehicleMissing && (
         <div className="space-y-2 rounded-2xl bg-rose-50 p-4 text-[14px] text-rose-800 ring-1 ring-rose-200">
           <p>
-            <b>기록하던 이동수단을 찾을 수 없어요.</b> (삭제했을 수 있어요) 이 기록을 어느 이동수단에 저장할지 골라 주세요.
+            <b>기록하던 이동수단을 찾을 수 없어요.</b> 삭제됐을 수 있어요. 이 기록을 어느 이동수단에 저장할지 골라 주세요.
           </p>
           <div className="flex flex-wrap gap-2">
             {vehicles.map((v) => (

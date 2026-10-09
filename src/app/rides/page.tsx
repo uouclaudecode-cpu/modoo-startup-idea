@@ -91,7 +91,7 @@ export default async function RidesPage({ searchParams }: { searchParams: Promis
           <EmptyState
             icon={<Route className="h-7 w-7" />}
             title="아직 라이딩 기록이 없어요"
-            description="라이딩을 기록하면 거리가 소모품 수명에 자동으로 더해져서, 정비할 때를 알려드려요."
+            description="라이딩을 기록하면 거리가 소모품 수명에 자동으로 더해져서, 정비할 때를 알려 드려요."
             action={
               <ButtonLink href="/ride" full icon={<Play aria-hidden className="h-4 w-4" />}>
                 첫 라이딩 시작

@@ -121,7 +121,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ token: 
 
       <div className="space-y-2 rounded-2xl bg-slate-100 p-4 text-[13px] leading-relaxed text-ink-soft">
         <p>
-          <b>주소가 b-lock-app.vercel.app 인지 꼭 확인하세요.</b> 캡처 이미지는 믿지 말고 링크를 직접 열어 보세요.
+          <b>주소가 b-lock-app.vercel.app인지 꼭 확인하세요.</b> 캡처 이미지는 믿지 말고 링크를 직접 열어 보세요.
         </p>
         <p>
           이 화면은 B-LOCK에 등록된 정보를 보여 줄 뿐, 법적 소유권을 증명하지는 않아요. 직거래 때는 실물의 차대번호와 숨은 스티커를 확인하고, 앱의

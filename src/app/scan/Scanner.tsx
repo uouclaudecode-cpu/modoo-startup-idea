@@ -106,7 +106,7 @@ export function Scanner({ onToken, hideManual = false }: { onToken?: (token: str
     }
     const link = onToken ? null : appLinkPath(manual);
     if (!link && !extractToken(manual)) {
-      setManualError("QR 바로 아래에 적힌 조회 번호 8자리를 그대로 넣어 주세요. (예: aB3x Kp9Q)");
+      setManualError("QR 바로 아래에 적힌 조회 번호 8자리를 그대로 넣어 주세요. (예: AB3X KP9Q)");
       return;
     }
     go(manual);
@@ -164,7 +164,7 @@ export function Scanner({ onToken, hideManual = false }: { onToken?: (token: str
         <form onSubmit={onManual} className="space-y-3" noValidate>
           <Input
             label="QR 아래 조회 번호(8자리) 또는 QR 주소"
-            placeholder="예) aB3x Kp9Q"
+            placeholder="예) AB3X KP9Q"
             hint="스티커나 QR 카드의 QR 바로 아래에 적힌 영문·숫자예요."
             value={manual}
             onChange={(e) => setManual(e.target.value)}

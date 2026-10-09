@@ -12,7 +12,7 @@ export function ShareButton({ title }: { title: string }) {
     const url = window.location.href.split("#")[0];
     if (navigator.share) {
       try {
-        await navigator.share({ title, text: `${title} — 보셨다면 댓글로 알려주세요!`, url });
+        await navigator.share({ title, text: `${title} — 보셨다면 댓글로 알려 주세요!`, url });
         return;
       } catch (e) {
         if ((e as Error).name === "AbortError") return;

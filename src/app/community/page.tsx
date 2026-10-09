@@ -12,7 +12,7 @@ import { VEHICLE_TYPES } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "분실 커뮤니티",
-  description: "잃어버린 자전거·킥보드를 함께 찾는 곳. 봤다면 댓글로 위치와 사진을 알려주세요.",
+  description: "잃어버린 자전거·킥보드를 함께 찾는 곳. 봤다면 댓글로 위치와 사진을 알려 주세요.",
 };
 
 const PAGE_SIZE = 20;
@@ -48,7 +48,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
       <div className="flex items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">분실 커뮤니티</h1>
-          <p className="mt-1 text-sm text-ink-muted">봤다면 댓글로 알려주세요. 위치·사진·비밀 댓글을 남길 수 있어요.</p>
+          <p className="mt-1 text-sm text-ink-muted">봤다면 댓글로 알려 주세요. 위치·사진·비밀 댓글을 남길 수 있어요.</p>
         </div>
         <ButtonLink href="/community/new" className="flex-none" icon={<PenSquare aria-hidden className="h-4 w-4" />}>
           글쓰기
@@ -148,7 +148,7 @@ async function PostResults({ q, status, type, page, moreHref }: { q: string; sta
         <EmptyState
           icon={<MessagesSquare className="h-7 w-7" />}
           title={q ? `'${q}'에 맞는 글이 없어요` : status === "resolved" ? "아직 찾은 글이 없어요" : status === "open" ? "지금 찾는 중인 글이 없어요" : "아직 올라온 글이 없어요"}
-          description="잃어버렸다면 분실 글을 올려 주세요. 주변 사람들이 보고 댓글로 알려줄 수 있어요."
+          description="잃어버렸다면 분실 글을 올려 주세요. 주변 사람들이 보고 댓글로 알려 줄 수 있어요."
           action={
             <ButtonLink href="/community/new" full icon={<PenSquare aria-hidden className="h-4 w-4" />}>
               분실 글 올리기

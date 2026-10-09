@@ -83,7 +83,7 @@ export default async function PostOgImage({ params }: { params: Promise<{ id: st
               </div>
             )}
           </div>
-          <div style={{ display: "flex", fontSize: 28, color: "#64748b" }}>{open ? "보셨다면 댓글로 알려주세요" : "주인이 찾았어요. 도와주셔서 고마워요!"}</div>
+          <div style={{ display: "flex", fontSize: 28, color: "#64748b" }}>{open ? "보셨다면 댓글로 알려 주세요" : "주인이 찾았어요. 도와주셔서 고마워요!"}</div>
         </div>
       </div>
     ),

@@ -46,7 +46,7 @@ export default async function ResetPasswordPage() {
         // 비밀번호를 잊어서 온 사람이 '지금 비밀번호'에서 막히지 않게, 왜 묻는지와 다른 길을 알려줘요
         <div className="space-y-3 rounded-xl bg-amber-50 px-3 py-3 text-sm leading-relaxed text-amber-900">
           <p>
-            메일 링크로 들어온 지 1시간이 지났거나 주소로 바로 들어와서, 본인 확인을 위해 지금 쓰는 비밀번호를 먼저 물어봐요.
+            본인 확인을 위해 지금 쓰는 비밀번호를 먼저 물어봐요. 메일 링크를 연 지 1시간이 지났거나 주소로 바로 들어왔기 때문이에요.
             {" 비밀번호가 기억나지 않으면 '비밀번호 찾기'로 메일을 다시 받고, 같은 휴대폰·브라우저에서 그 메일의 링크를 눌러 주세요."}
           </p>
           <ButtonLink href="/forgot-password" variant="secondary" full>

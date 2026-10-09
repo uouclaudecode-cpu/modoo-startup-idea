@@ -10,7 +10,7 @@ export default function OfflinePage() {
     <div className="mx-auto max-w-md pt-6">
       <ErrorState
         icon={<WifiOff className="h-7 w-7" />}
-        title="인터넷 연결을 확인해주세요."
+        title="인터넷 연결을 확인해 주세요"
         description="연결되면 다시 열어 주세요. QR 스캔과 제보는 인터넷이 있어야 보낼 수 있어요."
       />
     </div>

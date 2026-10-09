@@ -447,8 +447,8 @@ export function NewPostForm({
           </div>
         ) : (
           <PhotoPicker
-            label={!editing && vehicle?.image_path ? "사진 (선택 · 안 고르면 등록된 사진 사용)" : "사진 (선택)"}
-            hint="전체가 잘 보이는 사진이 있으면 알아보기 쉬워요."
+            label="사진 (선택)"
+            hint={!editing && vehicle?.image_path ? "안 고르면 등록된 이동수단 사진을 써요." : "전체가 잘 보이는 사진이 있으면 알아보기 쉬워요."}
             value={photo}
             onChange={(f) => {
               setPhoto(f);

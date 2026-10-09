@@ -83,7 +83,7 @@ export function ClaimStickerForm({ code, vehicles }: { code: string; vehicles: C
           <EyeOff aria-hidden className="mt-0.5 h-5 w-5 flex-none text-brand-600" />
           <p className="text-[13px] leading-relaxed text-ink-muted">
             도둑이 떼어 버리지 못하게 <b className="text-ink">눈에 잘 안 띄는 곳</b>에 붙이는 게 좋아요. 붙인 위치는 나만 볼 수 있고, 커뮤니티에서
-            &ldquo;이건가요?&rdquo;라고 묻는 사람에게 비밀 답글로 알려줄 때 써요.
+            &ldquo;이건가요?&rdquo;라고 묻는 사람에게 비밀 답글로 알려 줄 때 써요.
           </p>
         </div>
         <StickerSpotInput value={spot} onChange={setSpot} placeholder={vehicle?.sticker_spot ?? undefined} />

@@ -148,7 +148,7 @@ export function OwnerPanel({
       </Card>
 
       <ButtonLink href={`/alerts/${alert.id}/police`} variant="secondary" full size="lg" icon={<FileText aria-hidden className="h-5 w-5" />}>
-        112 도난 신고서 만들기 (인쇄·문자)
+        112 도난 신고서 만들기
       </ButtonLink>
 
       {rewards.length > 0 && (
@@ -275,7 +275,7 @@ export function OwnerPanel({
                 <>
                   <p className="font-bold">차대번호로 확인해요</p>
                   <p>도둑이 숨은 스티커를 떼어 갔다면, 등록해 둔 차대번호로 되찾았는지 확인해요. 이 경보에는 &lsquo;스티커 없이 회수&rsquo;로 기록돼요. 끝낸 뒤 새 스티커를 붙이고 위치를 적어 두세요.</p>
-                  <Input label="차대번호 (프레임·시리얼 번호 전체)" hint="자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
+                  <Input label="차대번호 (프레임 번호 전체)" hint="자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
                 </>
               ) : (
                 <>
@@ -284,7 +284,7 @@ export function OwnerPanel({
                 </>
               )}
               <button type="button" onClick={() => { setMissing(false); setCode(""); setResolveError(""); }} className="font-semibold underline">
-                스티커가 있어요 (다시 확인하기)
+                스티커 다시 확인하기
               </button>
             </div>
           ) : alert.vehicle.has_sticker ? (
@@ -301,7 +301,7 @@ export function OwnerPanel({
                   <Input
                     label="카메라가 안 되면: 스티커 QR 아래 조회 번호"
                     hint="8자리예요. 띄어쓰기·대소문자는 상관없어요."
-                    placeholder="예: Ab12 Cd34"
+                    placeholder="예: AB3X KP9Q"
                     autoCapitalize="none"
                     autoComplete="off"
                     spellCheck={false}
@@ -316,7 +316,7 @@ export function OwnerPanel({
               </button>
             </div>
           ) : alert.vehicle.has_serial ? (
-            <Input label="차대번호 (프레임·시리얼 번호 전체)" hint="자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
+            <Input label="차대번호 (프레임 번호 전체)" hint="자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
           ) : (
             <p className="text-[14px] text-ink-soft">스티커·차대번호가 없어 바로 끝낼 수 있어요.</p>
           )}

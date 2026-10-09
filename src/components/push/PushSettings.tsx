@@ -13,9 +13,9 @@ export type NotifyPrefs = { notify_reports: boolean; notify_comments: boolean; n
 type PrefKey = keyof NotifyPrefs;
 
 const PREFS: { key: PrefKey; emoji: string; label: string; desc: string }[] = [
-  { key: "notify_reports", emoji: "🚨", label: "발견 제보·연락 요청", desc: "누군가 내 QR로 제보하면 바로 알려드려요." },
-  { key: "notify_comments", emoji: "💬", label: "댓글·답글", desc: "내 분실 글의 새 댓글, 내 댓글에 달린 답글을 알려드려요." },
-  { key: "notify_maintenance", emoji: "🔧", label: "정비 시기", desc: "소모품 점검·교체 시기가 되면 아침 9시에 알려드려요." },
+  { key: "notify_reports", emoji: "🚨", label: "발견 제보·연락 요청", desc: "누군가 내 QR로 제보하면 바로 알려 드려요." },
+  { key: "notify_comments", emoji: "💬", label: "댓글·답글", desc: "내 분실 글의 새 댓글, 내 댓글에 달린 답글을 알려 드려요." },
+  { key: "notify_maintenance", emoji: "🔧", label: "정비 시기", desc: "소모품 점검·교체 시기가 되면 아침 9시에 알려 드려요." },
 ];
 
 type Status = PushState | "checking" | "nokey";
@@ -173,7 +173,7 @@ export function PushSettings({ notify_reports, notify_comments, notify_maintenan
             <h2 className="text-lg font-bold tracking-tight text-ink">휴대폰 알림</h2>
             {status === "checking" ? <Skeleton className="h-6 w-14 rounded-full" /> : <Badge tone={BADGE[status].tone}>{BADGE[status].label}</Badge>}
           </div>
-          <p className="mt-0.5 text-[13px] leading-relaxed text-ink-muted">앱을 닫아 두어도 발견 제보·댓글·정비 시기를 휴대폰으로 알려드려요.</p>
+          <p className="mt-0.5 text-[13px] leading-relaxed text-ink-muted">앱을 닫아 두어도 발견 제보·댓글·정비 시기를 휴대폰으로 알려 드려요.</p>
         </div>
       </div>
 

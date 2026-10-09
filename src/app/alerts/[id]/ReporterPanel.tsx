@@ -12,7 +12,7 @@ import { uploadPhoto } from "@/lib/images";
 import { useCurrentLocation } from "@/lib/location";
 import { createClient } from "@/lib/supabase/client";
 
-const SIGHTING_STATUS: Record<Sighting["status"], string> = { new: "주인 확인 전", useful: "도움 됨 🙌", false: "관련 없음", duplicate: "중복" };
+const SIGHTING_STATUS: Record<Sighting["status"], string> = { new: "주인 확인 전", useful: "도움 됨", false: "관련 없음", duplicate: "중복" };
 const REWARD_STATUS: Record<Reward["status"], string> = {
   pending: "주인이 보내기 전",
   paid: "주인이 보냈다고 했어요",
@@ -107,7 +107,7 @@ export function ReporterPanel({ alert, mySightings, myRewards, photos }: { alert
     <div className="space-y-4">
       {myRewards.length > 0 && (
         <Card className="space-y-3">
-          <p className="font-bold">🙌 내 제보가 회수에 도움이 됐어요</p>
+          <p className="font-bold">내 제보가 회수에 도움이 됐어요</p>
           {myRewards.map((r) => (
             <div key={r.id} className="space-y-2 rounded-xl bg-slate-50 p-3 text-[14px]">
               <p>

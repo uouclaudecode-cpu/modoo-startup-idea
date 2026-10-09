@@ -58,7 +58,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               </Link>
             </nav>
             <p>
-              © {new Date().getFullYear()} {site.name} · 발견 위치 제보 서비스 (실시간 위치 추적 아님)
+              © {new Date().getFullYear()} {site.name} · 발견 제보 서비스 (실시간 위치 추적 아님)
             </p>
           </footer>
           <InstallPrompt />

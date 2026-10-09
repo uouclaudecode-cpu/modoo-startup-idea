@@ -253,7 +253,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
         </p>
       )}
       <Button type="submit" full size="lg" loading={loading} loadingText="보내는 중..." icon={<Send aria-hidden className="h-5 w-5" />} disabled={quick}>
-        {mode === "contact" ? "소유자에게 보내기" : "발견 제보 보내기"}
+        {mode === "contact" ? "주인에게 보내기" : "발견 제보 보내기"}
       </Button>
     </form>
   );

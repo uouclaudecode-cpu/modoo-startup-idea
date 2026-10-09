@@ -75,7 +75,7 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
               <ShieldCheck aria-hidden className="h-4 w-4" />
               B-LOCK
             </p>
-            <h1 className="mt-1 text-2xl font-extrabold tracking-tight">이동수단 소유 확인서</h1>
+            <h1 className="mt-1 text-2xl font-extrabold tracking-tight">이동수단 소유 증명서</h1>
             <p className="mt-1 text-[13px] text-ink-muted">
               발급 {formatDateTime(c.issued_at)} · 문서번호 {c.id.slice(0, 8).toUpperCase()}
             </p>

@@ -87,7 +87,7 @@ export function QrCard({
       toast.success("QR 이미지를 저장했어요.");
     } catch (e) {
       console.error(e);
-      toast.error("저장에 실패했습니다. 다시 시도해 주세요.");
+      toast.error("저장하지 못했어요. 다시 시도해 주세요.");
     } finally {
       setBusy(null);
     }

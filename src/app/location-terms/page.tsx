@@ -9,7 +9,7 @@ export default function LocationTermsPage() {
     <LegalPage title="위치정보 이용약관">
       <Clause n={1} title="목적">
         <p>
-          이 약관은 {site.operator}가 제공하는 {site.name} 서비스에서 위치정보를 이용하는 조건과 절차, 회원의 권리를 정합니다.
+          이 약관은 {site.operator}가 제공하는 {site.name} 서비스에서 위치정보를 이용하는 조건과 절차, 회원의 권리를 정해요.
         </p>
       </Clause>
       <Clause n={2} title="위치정보를 이용하는 기능">
