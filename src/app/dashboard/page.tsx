@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bike, ChartColumn, ChevronRight, Flag, History, Plus, Printer, Siren } from "lucide-react";
+import { Bike, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Plus, Printer, Route, Search, Settings, Siren } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { MaintenanceOverview } from "@/components/maintenance/MaintenanceOverview";
 import { PushPrompt } from "@/components/onboarding/PushPrompt";
@@ -148,105 +148,101 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const urgentPush = list.some((v) => v.status === "searching") || (myAlerts ?? []).length > 0;
   const showPushPrompt = list.length > 0 && !hasPush && (urgentPush || !welcomeGuideVisible({ hasVehicle: true, hasSticker, fresh }));
 
+  const guideOpen = welcomeGuideVisible({ hasVehicle: list.length > 0, hasSticker, fresh });
+  const replaceAlerts = careByVehicle.filter(({ items }) => items.some((i) => partStatus(i.ratio) === "replace"));
+
   return (
-    <div className="space-y-6">
-      {/* 내 정보: 닉네임 + 설정으로 바로 가기 */}
-      <Card className="flex items-center gap-4 p-4">
-        <span aria-hidden className="grid h-14 w-14 flex-none place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-xl font-extrabold text-white">
-          {Array.from(String(nickname))[0]}
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-semibold text-ink-muted">안녕하세요</p>
-          <h1 className="line-clamp-1 break-all text-xl font-extrabold tracking-tight">{nickname}님</h1>
-          <p className="mt-0.5 flex items-center gap-1.5 text-sm text-ink-muted">
-            <Bike aria-hidden className="h-4 w-4" />내 이동수단 {list.length}개
-          </p>
-        </div>
-      </Card>
-
-      {/* 진행 중인 도난 경보: 이름이 길면 줄임표로 줄이고, 글자가 버튼 밖으로 넘치지 않게 두 줄로 */}
-      {(myAlerts ?? []).map((a) => (
-        <Link
-          key={a.id}
-          href={`/alerts/${a.id}`}
-          className="flex min-h-14 w-full items-center gap-3 rounded-xl bg-rose-600 px-4 py-3 text-white transition-colors hover:bg-rose-700 active:bg-rose-800"
-        >
-          <Siren aria-hidden className="h-5 w-5 flex-none" />
-          <span className="min-w-0 flex-1">
-            <span className="flex min-w-0 font-semibold">
-              <span className="truncate">{list.find((v) => v.id === a.vehicle_id)?.name ?? "이동수단"}</span>
-              <span className="flex-none">&nbsp;도난 경보 진행 중</span>
-            </span>
-            <span className="block text-[13px] text-white/85">받은 목격 제보 보기</span>
+    <div className="space-y-8">
+      {/* ① 내 정보 */}
+      <div className="space-y-3">
+        <Card className="flex items-center gap-4 p-4">
+          <span aria-hidden className="grid h-14 w-14 flex-none place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-xl font-extrabold text-white">
+            {Array.from(String(nickname))[0]}
           </span>
-          <ChevronRight aria-hidden className="h-5 w-5 flex-none" />
-        </Link>
-      ))}
+          <div className="min-w-0 flex-1">
+            <h1 className="line-clamp-1 break-all text-xl font-extrabold tracking-tight">{nickname}님</h1>
+            <p className="mt-0.5 flex items-center gap-1.5 text-sm text-ink-muted">
+              <Bike aria-hidden className="h-4 w-4" />내 이동수단 {list.length}개
+            </p>
+          </div>
+        </Card>
 
-      <div className="space-y-1">
-        <InboxCard items={inbox} />
-        <div className="flex justify-end">
-          <Link href="/alerts#mine" className="inline-flex items-center gap-1 py-1.5 text-[13px] font-semibold text-ink-muted hover:text-ink">
-            <History aria-hidden className="h-4 w-4" />
-            내 경보·제보 기록
-            <ChevronRight aria-hidden className="h-4 w-4" />
+        {/* ② 지금 확인할 것: 진행 중인 경보 · 받은 제보 · 알림 · 끝내지 않은 라이딩 */}
+        {(myAlerts ?? []).map((a) => (
+          <Link
+            key={a.id}
+            href={`/alerts/${a.id}`}
+            className="flex min-h-14 w-full items-center gap-3 rounded-xl bg-rose-600 px-4 py-3 text-white transition-colors hover:bg-rose-700 active:bg-rose-800"
+          >
+            <Siren aria-hidden className="h-5 w-5 flex-none" />
+            <span className="min-w-0 flex-1">
+              <span className="flex min-w-0 font-semibold">
+                <span className="truncate">{list.find((v) => v.id === a.vehicle_id)?.name ?? "이동수단"}</span>
+                <span className="flex-none">&nbsp;도난 경보 진행 중</span>
+              </span>
+              <span className="block text-[13px] text-white/85">받은 목격 제보 보기</span>
+            </span>
+            <ChevronRight aria-hidden className="h-5 w-5 flex-none" />
           </Link>
-        </div>
+        ))}
+        <InboxCard items={inbox} />
+        {showPushPrompt && <PushPrompt userId={user.id} urgent={urgentPush} />}
+        <UnfinishedRideCard userId={user.id} />
       </div>
 
+      {/* ③ 처음이라면: 순서대로 따라 하기 */}
       <WelcomeGuide nickname={nickname} hasVehicle={list.length > 0} hasSticker={hasSticker} hasPush={hasPush} fresh={fresh} firstVehicleId={list[list.length - 1]?.id ?? null} />
 
-      {showPushPrompt && <PushPrompt userId={user.id} urgent={urgentPush} />}
-
-      <UnfinishedRideCard userId={user.id} />
-
-      <MaintenanceOverview vehicles={list} parts={(allParts ?? []) as VehiclePart[]} now={now} />
-      {careByVehicle.filter(({ items }) => items.some((i) => partStatus(i.ratio) === "replace")).map(({ v, items }) => (
-        <MaintenanceAlert key={v.id} vehicleId={v.id} vehicleName={v.name} items={items} now={now} />
-      ))}
-
-      {profile?.is_admin && (
-        <div className="grid gap-2 sm:grid-cols-3">
-          <ButtonLink href="/admin" variant="secondary" icon={<ChartColumn aria-hidden className="h-4 w-4" />}>
-            운영 통계
-          </ButtonLink>
-          <ButtonLink href="/admin/stickers" variant="secondary" icon={<Printer aria-hidden className="h-4 w-4" />}>
-            스티커 관리
-          </ButtonLink>
-          <ButtonLink href="/admin/reports" variant="secondary" icon={<Flag aria-hidden className="h-4 w-4" />}>
-            신고 처리
-          </ButtonLink>
-        </div>
-      )}
-
-      {list.length === 0 ? (
-        <EmptyState
-          icon={<Bike className="h-7 w-7" />}
-          title="아직 등록한 이동수단이 없어요"
-          description="자전거나 킥보드를 등록하면 디지털 신분증(QR)이 자동으로 만들어져요."
-          action={
-            <ButtonLink href="/vehicles/new" full size="lg" icon={<Plus aria-hidden className="h-5 w-5" />}>
-              이동수단 등록
-            </ButtonLink>
-          }
-        />
-      ) : (
-        <>
-          <StickerActions withLink title="QR 스티커" />
+      {/* ④ 내 이동수단 */}
+      <Section
+        title="내 이동수단"
+        action={
+          list.length > 0 && (
+            <Link href="/vehicles/new" className="inline-flex h-9 items-center gap-1 rounded-xl bg-brand-50 px-3 text-sm font-semibold text-brand-700 hover:bg-brand-100">
+              <Plus aria-hidden className="h-4 w-4" />
+              추가
+            </Link>
+          )
+        }
+      >
+        {list.length === 0 ? (
+          <EmptyState
+            icon={<Bike className="h-7 w-7" />}
+            title="아직 등록한 이동수단이 없어요"
+            description="자전거나 킥보드를 등록하면 디지털 신분증(QR)이 자동으로 만들어져요."
+            action={
+              <ButtonLink href="/vehicles/new" full size="lg" icon={<Plus aria-hidden className="h-5 w-5" />}>
+                이동수단 등록
+              </ButtonLink>
+            }
+          />
+        ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             {list.map((v) => (
               <VehicleCard key={v.id} vehicle={v} foundReports={counts.get(v.id) ?? 0} />
             ))}
           </div>
-          <ButtonLink href="/vehicles/new" full size="lg" variant="secondary" icon={<Plus aria-hidden className="h-5 w-5" />}>
-            이동수단 등록
-          </ButtonLink>
-        </>
+        )}
+      </Section>
+
+      {/* ⑤ QR 스티커 (시작 안내가 보이는 동안은 안내 안에 같은 버튼이 있어요) */}
+      {list.length > 0 && !guideOpen && <StickerActions withLink title="QR 스티커" />}
+
+      {/* ⑥ 정비 */}
+      {list.length > 0 && (
+        <Section title="소모품·정비">
+          <div className="space-y-3">
+            <MaintenanceOverview vehicles={list} parts={(allParts ?? []) as VehiclePart[]} now={now} />
+            {replaceAlerts.map(({ v, items }) => (
+              <MaintenanceAlert key={v.id} vehicleId={v.id} vehicleName={v.name} items={items} now={now} />
+            ))}
+          </div>
+        </Section>
       )}
 
+      {/* ⑦ 내 분실 글 */}
       {(myPosts ?? []).length > 0 && (
-        <section className="space-y-3 pt-2">
-          <h2 className="text-lg font-bold">내 분실 글</h2>
+        <Section title="내 분실 글">
           <ul className="space-y-3">
             {(myPosts as PostListItem[]).map((p) => (
               <li key={p.id}>
@@ -254,8 +250,52 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               </li>
             ))}
           </ul>
-        </section>
+        </Section>
       )}
+
+      {/* ⑧ 더보기 */}
+      <Section title="더보기">
+        <Card className="divide-y divide-line/70 p-0">
+          <MenuRow href="/alerts#mine" icon={History} label="내 경보·제보 기록" />
+          <MenuRow href="/rides" icon={Route} label="라이딩 기록·통계" />
+          <MenuRow href="/check" icon={Search} label="도난 조회 · 중고 매물 확인" />
+          <MenuRow href="/get-sticker" icon={MapPin} label="스티커 받는 곳" />
+          <MenuRow href="/settings" icon={Settings} label="알림·계정 설정" />
+          <MenuRow href="/contact" icon={MessageCircleQuestion} label="문의하기" />
+        </Card>
+        {profile?.is_admin && (
+          <Card className="mt-3 divide-y divide-line/70 p-0">
+            <p className="px-4 py-2.5 text-[12px] font-bold text-ink-muted">운영자</p>
+            <MenuRow href="/admin" icon={ChartColumn} label="운영 통계" />
+            <MenuRow href="/admin/stickers" icon={Printer} label="스티커 관리 · 받는 곳" />
+            <MenuRow href="/admin/reports" icon={Flag} label="신고 처리" />
+          </Card>
+        )}
+      </Section>
     </div>
+  );
+}
+
+/** MY의 묶음 제목 */
+function Section({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <section className="space-y-3">
+      <div className="flex min-h-9 items-center justify-between gap-2 px-1">
+        <h2 className="text-lg font-bold tracking-tight">{title}</h2>
+        {action}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+/** 더보기 메뉴 한 줄 */
+function MenuRow({ href, icon: Icon, label }: { href: string; icon: typeof Bike; label: string }) {
+  return (
+    <Link href={href} className="flex min-h-14 items-center gap-3 px-4 py-3 hover:bg-slate-50">
+      <Icon aria-hidden className="h-5 w-5 flex-none text-ink-soft" />
+      <span className="flex-1 text-[15px] font-semibold">{label}</span>
+      <ChevronRight aria-hidden className="h-4 w-4 flex-none text-ink-faint" />
+    </Link>
   );
 }

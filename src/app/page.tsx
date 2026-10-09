@@ -1,20 +1,10 @@
 import Link from "next/link";
-import { Bike, Camera, ChevronRight, EyeOff, Lock, MapPinned, MessagesSquare, Route, ScanLine, Search, Siren, Tag, Wrench } from "lucide-react";
+import { Bike, ChevronRight, Lock, MapPin, MapPinned, MessagesSquare, Plus, Printer, Route, ScanLine, Search, Siren, Tag } from "lucide-react";
 import { site } from "@/config/site";
-import { ButtonLink, Card, StatusBadge } from "@/components/ui";
+import { ButtonLink, Card } from "@/components/ui";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
 import { POST_LIST_COLUMNS } from "@/lib/community";
 import { createClient, getUser } from "@/lib/supabase/server";
-import { StickerActions } from "@/components/vehicle/StickerActions";
-
-const STEPS = [
-  { icon: Tag, title: "스티커 받기", text: "학교·가게에 놓인 B-LOCK QR 스티커를 받아요. 근처에 없으면 앱에서 원하는 크기로 출력해도 돼요." },
-  { icon: ScanLine, title: "찍어서 내 자전거에 등록", text: "스티커를 찍어 내 자전거·킥보드에 연결해요. 앱에서도 같은 QR을 확인·저장할 수 있어요." },
-  { icon: EyeOff, title: "주인만 아는 곳에 부착", text: "안장 밑처럼 눈에 안 띄는 곳에 붙이고, 붙인 위치는 나만 보이게 적어 둬요." },
-  { icon: MessagesSquare, title: "잃어버리면 커뮤니티에", text: "분실 글을 올리면 '수색 중'으로 바뀌고, 본 사람들이 댓글로 알려 줘요." },
-  { icon: Lock, title: "비밀 답글로 스티커 위치", text: "“이건가요?”라는 비밀 댓글에 주인이 비밀 답글로 스티커 위치를 알려 줘요." },
-  { icon: MapPinned, title: "스티커를 찍어 제보", text: "발견한 사람이 스티커를 찍으면 위치·사진이 주인에게만 전달돼요." },
-];
 
 /**
  * 최근 '찾는 중' 글 3개.
@@ -57,23 +47,50 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         <p className="mt-4 text-[15px] leading-relaxed text-brand-50/90">
           QR 스티커 하나로 등록하고, 잃어버렸을 때 주변 사람의 제보를 받을 수 있어요.
         </p>
-        <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-          {/* 로그인했으면 내 이동수단으로, 아니면 등록 시작 */}
+        <div className="mt-7">
+          {/* 로그인했으면 내 이동수단으로, 아니면 등록 시작 (QR 스캔은 아래 메뉴 가운데 버튼) */}
           <ButtonLink href={user ? "/dashboard" : "/vehicles/new"} size="lg" full variant="light" icon={<Bike aria-hidden className="h-5 w-5" />}>
-            {user ? "내 이동수단 보기" : "내 이동수단 등록하기"}
-          </ButtonLink>
-          <ButtonLink href="/scan" size="lg" full variant="glass" icon={<Camera aria-hidden className="h-5 w-5" />}>
-            QR 스캔하기
+            {user ? "내 이동수단 보기" : "무료로 등록하기"}
           </ButtonLink>
         </div>
       </section>
 
-      {/* QR이 있어야 시작돼요: 출력 · 받는 곳을 크게 */}
-      <StickerActions />
+      {/* 순서대로 시작하기: 등록 → QR 붙이기 → 잃어버리면 */}
+      <section className="space-y-3">
+        <div className="px-1">
+          <h2 className="text-xl font-bold tracking-tight">3단계로 시작해요</h2>
+          <p className="mt-1 text-sm text-ink-muted">무료예요. 5분이면 잃어버렸을 때 찾을 준비가 끝나요.</p>
+        </div>
+        <ol className="space-y-3">
+          <StepCard n={1} icon={Bike} title="내 이동수단 등록" text="자전거·킥보드 사진과 특징을 넣으면 QR 신분증이 만들어져요.">
+            <ButtonLink href={user ? "/dashboard" : "/vehicles/new"} full icon={<Plus aria-hidden className="h-4 w-4" />}>
+              {user ? "내 이동수단 보기" : "등록하기"}
+            </ButtonLink>
+          </StepCard>
+          <StepCard n={2} icon={Tag} title="QR 붙이기" text="스티커를 받거나 원하는 크기로 출력해서, 안장 밑처럼 주인만 아는 곳에 붙여요.">
+            <div className="grid grid-cols-2 gap-2">
+              <ButtonLink href="/print" icon={<Printer aria-hidden className="h-4 w-4" />}>
+                QR 출력하기
+              </ButtonLink>
+              <ButtonLink href="/get-sticker" variant="secondary" icon={<MapPin aria-hidden className="h-4 w-4" />}>
+                받는 곳
+              </ButtonLink>
+            </div>
+          </StepCard>
+          <StepCard
+            n={3}
+            icon={Siren}
+            title="잃어버리면 알리기"
+            text="'찾는 중'으로 바꾸고 도난 경보를 보내면 근처 사용자에게 알림이 가요. 누가 QR을 찍으면 위치·사진이 나에게만 와요."
+          />
+        </ol>
+      </section>
 
-      {/* 누구나 쓰는 도구: 근처 도난 경보 · 도난 조회 · 도난 다발 지도 */}
-      <section aria-label="누구나 쓰는 도구" className="space-y-3">
-        {/* 가장 급한 공개 정보라 맨 위에 넓게 (커뮤니티의 경보 배너와 같은 모양) */}
+      {/* 누구나 쓰는 도구 */}
+      <section aria-labelledby="tools-title" className="space-y-3">
+        <h2 id="tools-title" className="px-1 text-xl font-bold tracking-tight">
+          누구나 쓸 수 있어요
+        </h2>
         <Link href="/alerts" className="flex items-center gap-3 rounded-2xl bg-rose-50 p-4 ring-1 ring-rose-100 transition-colors hover:bg-rose-100/70">
           <Siren aria-hidden className="h-6 w-6 flex-none text-rose-600" />
           <span className="min-w-0 flex-1">
@@ -83,57 +100,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <ChevronRight aria-hidden className="h-5 w-5 flex-none text-rose-400" />
         </Link>
         <div className="grid grid-cols-2 gap-3">
-          <Link href="/check" className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70 transition-shadow hover:shadow-lift">
-            <Search aria-hidden className="h-6 w-6 text-brand-600" />
-            <p className="mt-2 font-bold">도난 조회</p>
-            <p className="mt-0.5 text-[13px] leading-snug text-ink-muted">중고로 사기 전 QR·차대번호로 확인</p>
-          </Link>
-          <Link href="/stats" className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70 transition-shadow hover:shadow-lift">
-            <MapPinned aria-hidden className="h-6 w-6 text-rose-600" />
-            <p className="mt-2 font-bold">도난 다발 지도</p>
-            <p className="mt-0.5 text-[13px] leading-snug text-ink-muted">어디서 많이 도둑맞을까?</p>
-          </Link>
+          <ToolCard href="/check" icon={Search} color="text-brand-600" title="도난 조회" text="중고로 사기 전 번호·판매 글로 확인" />
+          <ToolCard href="/scan" icon={ScanLine} color="text-brand-600" title="QR 찍어 제보" text="길에서 본 자전거 QR을 찍어 알려 주기" />
+          <ToolCard href="/community" icon={MessagesSquare} color="text-emerald-600" title="분실 커뮤니티" text="잃어버린 글 보고 댓글로 알려 주기" />
+          <ToolCard href="/stats" icon={MapPinned} color="text-rose-600" title="도난 다발 지도" text="어디서 많이 도둑맞을까?" />
         </div>
-      </section>
-
-      {/* 작동 방식 */}
-      <section>
-        <h2 className="text-xl font-bold tracking-tight">이렇게 작동해요</h2>
-        {/* 한 줄로 이어지는 단계 (카드 6개를 늘어놓지 않고 짧게) */}
-        <ol className="mt-4 rounded-2xl bg-white p-5 shadow-card ring-1 ring-line/70">
-          {STEPS.map((s, i) => (
-            <li key={s.title} className="relative flex gap-4 pb-6 last:pb-0">
-              {i < STEPS.length - 1 && <span aria-hidden className="absolute bottom-1 left-5 top-12 w-px -translate-x-1/2 bg-brand-100" />}
-              <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-brand-600 text-white">
-                <s.icon aria-hidden className="h-5 w-5" />
-              </span>
-              <div className="min-w-0 pt-0.5">
-                <p className="text-xs font-bold text-brand-600">STEP {i + 1}</p>
-                <p className="font-bold leading-snug">{s.title}</p>
-                <p className="mt-1 text-sm leading-relaxed text-ink-muted">{s.text}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* 라이딩 기록 → 소모품 정비 알림 */}
-      <section>
-        <Card className="flex flex-col gap-4 bg-gradient-to-br from-emerald-50 to-white sm:flex-row sm:items-center">
-          <span aria-hidden className="grid h-14 w-14 flex-none place-items-center rounded-2xl bg-emerald-600 text-white">
-            <Route className="h-7 w-7" />
-          </span>
-          <div className="flex-1">
-            <h2 className="text-lg font-bold">라이딩을 기록하면 정비 시기를 알려 드려요</h2>
-            <p className="mt-1 text-sm leading-relaxed text-ink-muted">
-              지도에 달린 길을 그리고 거리·속도를 재요. 달린 거리는 체인 윤활·브레이크 패드·타이어 같은 소모품 수명에 자동으로 더해지고, 점검할 때가 되면
-              알려 드려요. 정비 이력은 다이어리로 남아요.
-            </p>
-          </div>
-          <ButtonLink href="/ride" className="flex-none" icon={<Wrench aria-hidden className="h-4 w-4" />}>
-            라이딩 시작
-          </ButtonLink>
-        </Card>
       </section>
 
       {/* 분실 커뮤니티 */}
@@ -174,28 +145,53 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         )}
       </section>
 
-      {/* 분실 상황에서 받는 도움 */}
-      <section>
-        <h2 className="text-xl font-bold tracking-tight">잃어버렸을 때 이렇게 도와드려요</h2>
-        <Card className="mt-4 space-y-4">
-          <p className="text-[15px] leading-relaxed text-ink-soft">
-            상태를 <b className="text-ink">수색 중</b>으로 바꾸면, QR을 스캔한 사람에게 &lsquo;분실·도난 수색 중&rsquo; 안내와 이동수단의
-            사진·색상·특징이 보여요. 발견한 사람은 로그인 없이 <b className="text-ink">발견 제보</b>를 보낼 수 있고, 제보는 소유자
-            계정에서만 확인할 수 있어요.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <StatusBadge status="active" />
-            <StatusBadge status="searching" />
-            <StatusBadge status="reported" />
-            <StatusBadge status="recovered" />
-          </div>
-          <p className="flex items-start gap-2 rounded-xl bg-slate-50 p-3 text-[13px] leading-relaxed text-ink-muted">
-            <Lock aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
-            이 서비스는 실시간 위치 추적 장치가 아니에요. 발견한 사람이 그 자리에서 알려 주는 발견 제보 방식이에요. 소유자의
-            이름·전화번호·이메일·주소는 공개하지 않아요.
-          </p>
-        </Card>
-      </section>
+      {/* 라이딩 기록 → 정비 알림 */}
+      <Link href="/ride" className="flex items-center gap-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-white p-4 shadow-card ring-1 ring-line/70 transition-shadow hover:shadow-lift">
+        <span aria-hidden className="grid h-12 w-12 flex-none place-items-center rounded-2xl bg-emerald-600 text-white">
+          <Route className="h-6 w-6" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-bold">라이딩 기록 · 정비 알림</span>
+          <span className="block text-[13px] leading-snug text-ink-muted">달린 거리로 체인·브레이크·타이어 교체 시기를 알려 드려요</span>
+        </span>
+        <ChevronRight aria-hidden className="h-5 w-5 flex-none text-ink-faint" />
+      </Link>
+
+      {/* 안심 문구 */}
+      <p className="flex items-start gap-2 rounded-2xl bg-slate-100 p-4 text-[13px] leading-relaxed text-ink-soft">
+        <Lock aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
+        <span>
+          QR에는 무작위 코드만 들어 있어요. 주인의 이름·전화번호·주소는 공개하지 않고, 실시간 위치 추적이 아니라 발견한 사람이 그 자리에서 알려 주는 방식이에요.
+        </span>
+      </p>
     </div>
+  );
+}
+
+function StepCard({ n, icon: Icon, title, text, children }: { n: number; icon: typeof Bike; title: string; text: string; children?: React.ReactNode }) {
+  return (
+    <li className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70">
+      <div className="flex gap-3">
+        <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-brand-600 text-[15px] font-extrabold text-white">{n}</span>
+        <div className="min-w-0 flex-1">
+          <p className="flex items-center gap-1.5 font-bold">
+            <Icon aria-hidden className="h-4 w-4 text-brand-600" />
+            {title}
+          </p>
+          <p className="mt-0.5 text-[14px] leading-relaxed text-ink-muted">{text}</p>
+        </div>
+      </div>
+      {children && <div className="mt-3">{children}</div>}
+    </li>
+  );
+}
+
+function ToolCard({ href, icon: Icon, color, title, text }: { href: string; icon: typeof Bike; color: string; title: string; text: string }) {
+  return (
+    <Link href={href} className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70 transition-shadow hover:shadow-lift">
+      <Icon aria-hidden className={`h-6 w-6 ${color}`} />
+      <p className="mt-2 font-bold">{title}</p>
+      <p className="mt-0.5 text-[13px] leading-snug text-ink-muted">{text}</p>
+    </Link>
   );
 }
