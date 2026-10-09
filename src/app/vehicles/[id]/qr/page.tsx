@@ -57,7 +57,7 @@ export default async function VehicleQrPage({
           token={s.code}
           vehicleName={vehicle.name}
           siteName={site.name}
-          caption={`🏷️ 등록한 스티커 QR · 끝자리 ${s.code.slice(-4)}${s.claimed_at ? ` · ${formatDate(s.claimed_at)} 등록` : ""} — 붙인 스티커와 같은지 확인할 수 있어요`}
+          caption={`등록한 스티커 QR${s.claimed_at ? ` · ${formatDate(s.claimed_at)} 등록` : ""}. 붙인 스티커와 같은지 확인해 보세요.`}
         />
       ))}
 
@@ -65,7 +65,7 @@ export default async function VehicleQrPage({
         token={vehicle.qr_token}
         vehicleName={vehicle.name}
         siteName={site.name}
-        caption="📱 앱에서 만든 QR — 저장해서 직접 출력해 붙일 수 있어요"
+        caption="앱에서 만든 QR이에요. 저장해서 출력해 붙여도 돼요."
       />
 
       <ButtonLink href="/scan" variant="secondary" full size="lg" icon={<ScanLine aria-hidden className="h-5 w-5" />}>

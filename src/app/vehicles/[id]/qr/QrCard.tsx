@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
-import { Download, Share2 } from "lucide-react";
+import { Copy, Download, Share2 } from "lucide-react";
 import { Button, Card, useToast } from "@/components/ui";
 import { copyText } from "@/lib/clipboard";
 import { lookupCode, scanUrl } from "@/lib/qr";
@@ -113,19 +113,33 @@ export function QrCard({
     }
   }
 
+  async function copyLookup() {
+    const ok = await copyText(lookupCode(token));
+    if (ok) toast.success("조회 번호를 복사했어요. 중고거래 채팅에 붙여넣어 주세요.");
+    else toast.error("복사하지 못했어요. 번호를 길게 눌러 복사해 주세요.");
+  }
+
   return (
     <Card className="space-y-5 p-6 text-center">
       <div>
         <p className="text-sm font-semibold text-brand-700">{vehicleName}</p>
-        {caption && <p className="mt-0.5 text-[13px] text-ink-muted">{caption}</p>}
+        {caption && <p className="mt-0.5 text-[13px] leading-relaxed text-ink-muted">{caption}</p>}
       </div>
       <div className="mx-auto w-full max-w-[320px] rounded-2xl bg-white p-3 ring-1 ring-line">
         <canvas ref={canvasRef} className="h-auto w-full" style={{ imageRendering: "pixelated" }} aria-label="QR 코드" />
       </div>
-      <p className="text-[13px] text-ink-muted">
-        조회 번호 <b className="tracking-wider text-ink">{lookupCode(token)}</b> · 구매자가 b-lock-app.vercel.app/check 에서 도난 여부를 확인할 수 있어요
-      </p>
-      <p className="text-[15px] font-semibold leading-relaxed">이 QR은 등록된 이동수단의 디지털 신분증입니다.</p>
+      {/* 조회 번호: 사려는 사람이 '도난 조회'에 넣는 번호 */}
+      <div className="mx-auto flex w-full max-w-[320px] items-center justify-between gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-left">
+        <div className="min-w-0">
+          <p className="text-[12px] font-semibold text-ink-muted">조회 번호</p>
+          <p className="whitespace-nowrap font-mono text-xl font-extrabold tracking-[0.12em] text-ink">{lookupCode(token)}</p>
+        </div>
+        <Button variant="secondary" className="h-10 flex-none px-3 text-sm" icon={<Copy aria-hidden className="h-4 w-4" />} onClick={copyLookup}>
+          복사
+        </Button>
+      </div>
+      <p className="text-[13px] leading-relaxed text-ink-muted">사려는 사람은 B-LOCK의 &lsquo;도난 조회&rsquo;에 이 번호를 넣으면 도난 여부를 볼 수 있어요.</p>
+      <p className="text-[15px] font-semibold leading-relaxed">이 QR은 이동수단의 디지털 신분증이에요.</p>
       <p className="text-[13px] leading-relaxed text-ink-muted">
         QR에는 무작위 코드만 들어 있어요. 이름·연락처 같은 개인정보는 담기지 않아요.
       </p>
