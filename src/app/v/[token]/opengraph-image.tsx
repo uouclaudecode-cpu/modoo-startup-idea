@@ -18,7 +18,7 @@ export default async function VerifyOgImage({ params }: { params: Promise<{ toke
   if (/^[A-Za-z0-9_-]{16,40}$/.test(token)) {
     const { url, key } = supabaseEnv();
     const supabase = createClient(url, key, { auth: { persistSession: false } });
-    const { data, error } = await supabase.rpc("get_trade_verification", { p_token: token });
+    const { data, error } = await supabase.rpc("get_trade_preview", { p_token: token });
     if (error) console.error(error);
     else d = data as TradeVerification;
   }

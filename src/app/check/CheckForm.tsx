@@ -74,7 +74,9 @@ export function CheckForm({ initial }: { initial: string }) {
             value={value}
             onChange={(e) => setValue(e.target.value)}
             autoComplete="off"
-            autoCapitalize="characters"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
           />
           <div className="grid grid-cols-2 gap-2">
             <Button type="submit" loading={loading} loadingText="조회 중..." icon={<Search aria-hidden className="h-4 w-4" />}>

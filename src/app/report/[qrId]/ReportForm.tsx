@@ -83,13 +83,14 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
       p_longitude: opts.coords?.lng ?? null,
       p_location_text: locationText.trim() || null,
       p_image_path: imagePath,
-      p_contact: opts.contact.trim() || null,
+      p_contact: opts.contactMode === "callback" ? opts.contact.trim() || null : null,
       p_contact_mode: opts.contactMode,
     });
     if (error) throw error;
-    const finderToken = (data as { finder_token: string | null }).finder_token;
+    const res = data as { finder_token: string | null; report_id: string };
+    const finderToken = res.finder_token;
     if (finderToken) {
-      saveFinderThread({ token: finderToken, createdAt: new Date().toISOString(), label: vehicleLabel ?? "발견 제보" });
+      saveFinderThread({ token: finderToken, reportId: res.report_id, createdAt: new Date().toISOString(), label: vehicleLabel ?? "발견 제보" });
       router.replace(`/r#t=${finderToken}`);
     } else {
       router.replace(`/report/${encodeURIComponent(token)}/done?kind=${mode}`);
@@ -143,7 +144,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
             통화나 글쓰기가 곤란하면
           </p>
           <Button full size="lg" loading={quick} loadingText="위치 보내는 중..." icon={<MapPin aria-hidden className="h-5 w-5" />} onClick={quickSend} disabled={loading}>
-            📍 위치만 바로 알리기
+            위치만 바로 알리기
           </Button>
           <p className="text-[12px] leading-relaxed text-ink-muted">
             누르면 지금 위치를 한 번만 주인에게 보내요. 이름·번호는 보내지 않고, 보낸 뒤 원하면 익명으로 대화할 수 있어요.

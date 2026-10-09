@@ -31,7 +31,15 @@ export function TransferStart({ vehicleId, vehicleName, searching }: { vehicleId
     const tickTimer = setInterval(() => {
       const s = Math.max(0, Math.round((expiresAt - Date.now()) / 1000));
       setLeft(s);
-      if (s === 0) setStage("expired");
+      if (s === 0) {
+        // 마지막 몇 초에 받았을 수 있어서 한 번 더 확인
+        supabase
+          .from("ownership_transfers")
+          .select("status")
+          .eq("id", transferId)
+          .maybeSingle()
+          .then(({ data }) => setStage(data?.status === "completed" ? "done" : "expired"));
+      }
     }, 1000);
     const pollTimer = setInterval(async () => {
       const { data, error: err } = await supabase.from("ownership_transfers").select("status").eq("id", transferId).maybeSingle();

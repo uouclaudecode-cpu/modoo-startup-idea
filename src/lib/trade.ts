@@ -54,7 +54,6 @@ export type TransferPeek =
   | {
       status: "pending";
       vehicle: { type: VehicleType; name: string; brand: string | null; model: string | null; color: string | null; image_path: string | null };
-      serial_last4: string | null;
       has_serial: boolean;
       requires_sticker: boolean;
       seller: string;

@@ -6,7 +6,7 @@ import { PinMap, type MapPin as PinMapPin } from "@/components/map/PinMap";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "도난 다발 지역 · B-LOCK 통계",
+  title: "통계 · 도난 다발 지역",
   description: "최근 1년 자전거·킥보드 도난 경보가 많았던 곳과 B-LOCK 등록·회수 현황",
 };
 

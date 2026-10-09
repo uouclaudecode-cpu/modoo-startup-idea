@@ -47,16 +47,24 @@ export default async function AlertPage({ params, searchParams }: { params: Prom
   let trust: Trust[] = [];
   let photos: Record<string, string> = {};
   if (user) {
-    const [{ data: s }, { data: r }] = await Promise.all([
-      supabase.from("sightings").select("*").eq("alert_id", a.id).order("created_at", { ascending: false }),
-      supabase.from("alert_rewards").select("*").eq("alert_id", a.id),
-    ]);
-    sightings = (s ?? []) as Sighting[];
-    rewards = (r ?? []) as Reward[];
-    if (a.is_owner && sightings.length) {
-      const ids = [...new Set(sightings.map((x) => x.reporter_id))];
-      const { data: t } = await supabase.rpc("get_user_trust", { p_users: ids });
-      trust = (t ?? []) as Trust[];
+    const rewardCols = "id, alert_id, sighting_id, amount, status, paid_at, confirmed_at";
+    if (a.is_owner) {
+      // 주인에게는 제보자 아이디를 주지 않아요 (신뢰 정보는 제보 번호에 붙여서)
+      const [{ data: s }, { data: r }] = await Promise.all([
+        supabase.rpc("owner_alert_sightings", { p_alert: a.id }),
+        supabase.from("alert_rewards").select(rewardCols).eq("alert_id", a.id),
+      ]);
+      const rows = (s ?? []) as (Omit<Sighting, "reporter_id" | "alert_id"> & Omit<Trust, "user_id" | "unpaid_count">)[];
+      sightings = rows.map((x) => ({ ...x, alert_id: a.id, reporter_id: x.id }));
+      trust = rows.map((x) => ({ user_id: x.id, member_since: x.member_since, helped_count: x.helped_count, false_count: x.false_count, identity_verified: x.identity_verified, unpaid_count: 0 }));
+      rewards = ((r ?? []) as Omit<Reward, "reporter_id" | "owner_id">[]).map((x) => ({ ...x, reporter_id: "", owner_id: "" }));
+    } else {
+      const [{ data: s }, { data: r }] = await Promise.all([
+        supabase.from("sightings").select("*").eq("alert_id", a.id).order("created_at", { ascending: false }),
+        supabase.from("alert_rewards").select(rewardCols).eq("alert_id", a.id),
+      ]);
+      sightings = (s ?? []) as Sighting[];
+      rewards = ((r ?? []) as Omit<Reward, "reporter_id" | "owner_id">[]).map((x) => ({ ...x, reporter_id: "", owner_id: "" }));
     }
     const paths = sightings.map((x) => x.photo_path).filter((p): p is string => Boolean(p));
     if (paths.length) {
@@ -108,6 +116,9 @@ export default async function AlertPage({ params, searchParams }: { params: Prom
                 <Gift aria-hidden className="h-4 w-4 flex-none" />
                 찾아 주면 사례금 {wonLabel(a.bounty_amount)} (주인이 직접 지급하는 약속)
               </p>
+            )}
+            {a.bounty_amount && (a.owner_unpaid ?? 0) > 0 && (
+              <p className="rounded-lg bg-orange-50 px-2.5 py-1.5 text-[13px] font-semibold text-orange-800">이 주인은 사례금 미지급 기록이 {a.owner_unpaid}건 있어요.</p>
             )}
           </div>
           {(a.marks || a.vehicle.description) && (

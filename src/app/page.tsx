@@ -164,7 +164,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         <h2 className="text-xl font-bold tracking-tight">잃어버렸을 때 이렇게 도와드려요</h2>
         <Card className="mt-4 space-y-4">
           <p className="text-[15px] leading-relaxed text-ink-soft">
-            상태를 <b className="text-ink">수색 중</b>으로 바꾸면, QR을 스캔한 사람에게 &lsquo;분실/도난 수색 중&rsquo; 안내와 이동수단의
+            상태를 <b className="text-ink">수색 중</b>으로 바꾸면, QR을 스캔한 사람에게 &lsquo;분실·도난 수색 중&rsquo; 안내와 이동수단의
             사진·색상·특징이 보여요. 발견한 사람은 로그인 없이 <b className="text-ink">발견 위치 제보</b>를 보낼 수 있고, 제보는 소유자
             계정에서만 확인할 수 있어요.
           </p>

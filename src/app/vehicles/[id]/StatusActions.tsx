@@ -12,7 +12,7 @@ type Action = "search" | "recover" | "reset" | "delete";
 
 const CONFIRM: Record<Action, { title: string; body: string; button: string; variant: "danger" | "primary" }> = {
   search: {
-    title: "🚨 분실/도난 신고",
+    title: "🚨 분실·도난 신고",
     body: "상태를 '수색 중'으로 바꿔요. QR을 스캔한 사람에게 분실 안내와 사진·색상·특징이 보이고, 발견 위치 제보를 받을 수 있어요. 이름·연락처 같은 개인정보는 공개되지 않아요.",
     button: "수색 중으로 바꾸기",
     variant: "danger",
@@ -82,7 +82,7 @@ export function StatusActions({
     <Card className="space-y-3">
       {status === "active" && (
         <Button variant="danger" full size="lg" icon={<Siren aria-hidden className="h-5 w-5" />} onClick={() => setPending("search")}>
-          🚨 분실/도난 신고
+          분실·도난 신고
         </Button>
       )}
       {status === "searching" && (

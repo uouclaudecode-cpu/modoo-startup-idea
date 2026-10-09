@@ -31,6 +31,18 @@
 | `/rides`, `/rides/[id]` | 라이딩 기록 목록(이번 달 합계), 결과(전체 경로·출발/도착·정비 알림), 삭제 | 필요 |
 | `/vehicles/[id]/maintenance` | **소모품·정비**: 마모율 3단계, 주기 수정, 정비 완료(0km 리셋) + 정비 다이어리 | 필요 |
 | `/vehicles/[id]/edit` | 이동수단 정보·사진 수정 (QR은 그대로) | 필요 |
+| `/vehicles/[id]/transfer` | **소유권 넘기기**: 비밀번호 재확인 → 10분 양도 QR | 필요 |
+| `/t/[token]` | 소유권 받기: 숨은 스티커(또는 차대번호 끝 4자리)로 실물 확인 후 이전 | 필요 |
+| `/v/[token]` | **안심거래 인증**: 도난 이력·등록일·보유 기간·양도 횟수·확인 코드 (판매자 마스킹) | - |
+| `/vehicles/[id]/evidence`, `/vehicles/[id]/certificate` | **소유 증명**: 증거 사진 보관함, 경찰·보험 제출용 증명서 | 필요 |
+| `/c/[token]` | 소유 증명서 진위 확인 | - |
+| `/vehicles/[id]/alert` | **도난 경보 보내기**: 잃어버린 곳·시각·특징·경찰 신고 번호·약속형 사례금 | 필요 |
+| `/alerts`, `/alerts/[id]` | 근처 도난 경보 목록·상세, 거리/중고 매물 목격 제보, 회수 완료(숨은 스티커 확인) | 제보는 필요 |
+| `/alerts/[id]/police` | **112 도난 신고서**: 인쇄·PDF, 112 문자 복사 (신고자 정보 저장 안 함) | 주인 |
+| `/r` | 발견자 **익명 대화** (로그인 없이, 제보 후 14일) | - |
+| `/check` | **구매 전 도난 조회**: QR·조회 번호(코드 앞 8자리)·차대번호 → 도난 신고 중/등록됨/기록 없음 | - |
+| `/stats` | 공개 통계, 도난 다발 지도 (약 500m 칸) | - |
+| `/admin/members`, `/admin/alerts` | 관리자: 회원 본인인증 표시, 신고된 도난 경보 처리 | 관리자 |
 
 ## 보안 설계
 - QR에는 예측할 수 없는 24자리 무작위 코드만 들어갑니다. (`/scan/MjdL-...`) 사용자 ID·개인정보 없음.
@@ -46,7 +58,7 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3.4 · Supabas
 - 이 PC가 Node 18이라 Next.js 16 / Tailwind 4 / 최신 supabase-js 대신 Node 18에서 동작하는 버전을 고정했습니다. Vercel(Node 22)에서도 동작합니다.
 
 ## 처음 설정
-1. Supabase 프로젝트를 만들고 **SQL Editor**에서 [`supabase/schema.sql`](supabase/schema.sql) → [`002_community.sql`](supabase/002_community.sql) → [`003_stickers.sql`](supabase/003_stickers.sql) → [`004_rides_maintenance.sql`](supabase/004_rides_maintenance.sql) → [`005_review_fixes.sql`](supabase/005_review_fixes.sql) → `006_moderation.sql` → `007_admin_stats.sql` → `008_push.sql` → `009_account.sql` → `010_post_location.sql` → `011_merge_fixes.sql` 순서로 실행합니다. (011은 006·009가 바꾼 트리거를 최종본으로 합쳐요)
+1. Supabase 프로젝트를 만들고 **SQL Editor**에서 [`supabase/schema.sql`](supabase/schema.sql) → [`002_community.sql`](supabase/002_community.sql) → [`003_stickers.sql`](supabase/003_stickers.sql) → [`004_rides_maintenance.sql`](supabase/004_rides_maintenance.sql) → [`005_review_fixes.sql`](supabase/005_review_fixes.sql) → `006_moderation.sql` → `007_admin_stats.sql` → `008_push.sql` → `009_account.sql` → `010_post_location.sql` → `011_merge_fixes.sql` → `012_review_fixes.sql` → `013_trade_transfer.sql` → `014_theft_alerts.sql` → `015_evidence_certificate.sql` → `016_report_chat.sql` → `017_cleanup_admin.sql` → `018_check_stats.sql` 순서로 실행합니다. (뒤 파일이 앞의 함수·트리거를 최종본으로 바꿔요. 모두 여러 번 실행해도 안전)
    관리자 지정: `update public.profiles set is_admin = true where email = '관리자 이메일';`
 2. Supabase → Authentication → Sign In / Providers → **Confirm email** 끄기 (MVP: 가입 즉시 로그인)
 3. `.env.example`을 복사해 `.env.local`을 만들고 값을 채웁니다.

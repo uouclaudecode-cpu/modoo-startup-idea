@@ -27,7 +27,7 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
 
   const mode = peek.requires_sticker ? "sticker" : peek.has_serial ? "serial" : "none";
   const check = mode === "sticker" ? (extractToken(code) ?? code.trim()) : mode === "serial" ? last4.trim() : "";
-  const ready = mode === "sticker" ? Boolean(check) : mode === "serial" ? check.length === 4 : agree;
+  const ready = mode === "sticker" ? Boolean(check) : mode === "serial" ? check.replace(/[^A-Za-z0-9]/g, "").length >= 5 : agree;
 
   async function accept() {
     setError("");
@@ -52,7 +52,6 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
           <p className="text-xl font-extrabold">{[v.brand, v.model].filter(Boolean).join(" ") || v.name}</p>
           <p className="text-[15px] text-ink-soft">
             {v.color ? `색상 ${v.color}` : ""}
-            {peek.serial_last4 ? ` · 차대번호 ••••${peek.serial_last4}` : ""}
           </p>
         </div>
       </Card>
@@ -91,8 +90,8 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
         )}
         {mode === "serial" && (
           <>
-            <p className="text-[14px] leading-relaxed text-ink-soft">이 기기에는 스티커가 없어요. 프레임에 새겨진 차대번호의 끝 4자리를 직접 보고 적어 주세요.</p>
-            <Input label="차대번호 끝 4자리" value={last4} maxLength={4} onChange={(e) => setLast4(e.target.value.toUpperCase())} autoComplete="off" autoCapitalize="characters" />
+            <p className="text-[14px] leading-relaxed text-ink-soft">이 기기에는 스티커가 없어요. 프레임에 새겨진 차대번호 전체를 직접 보고 적어 주세요. (판매자가 불러 주는 번호 말고 실물을 확인하세요)</p>
+            <Input label="차대번호 (전체)" value={last4} maxLength={40} onChange={(e) => setLast4(e.target.value.toUpperCase())} autoComplete="off" autoCapitalize="characters" />
           </>
         )}
         {mode === "none" && (

@@ -1,7 +1,7 @@
 /** 로그인 없는 발견자가 보낸 제보의 대화 열쇠를 이 기기에만 보관해요 (서버에는 해시만 있어요). */
 const KEY = "b-lock:finder-threads";
 
-export type FinderThreadRef = { token: string; createdAt: string; label: string };
+export type FinderThreadRef = { token: string; reportId?: string; createdAt: string; label: string };
 
 export function loadFinderThreads(): FinderThreadRef[] {
   try {

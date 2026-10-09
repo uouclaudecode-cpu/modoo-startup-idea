@@ -23,9 +23,12 @@ type Thread = {
 };
 
 /** 주소 # 뒤의 t=… 를 읽어요 (주소창 기록·서버에 남지 않게 해시로) */
-function tokenFromHash() {
+function tokenFromHash(list: FinderThreadRef[]) {
   const m = window.location.hash.match(/t=([A-Za-z0-9_-]{16,40})/);
-  return m ? m[1] : null;
+  if (m) return m[1];
+  // 답장 알림은 제보 번호(#rid=…)로 와요 → 이 기기에 저장된 대화 열쇠로 바꿔요
+  const rid = window.location.hash.match(/rid=([0-9a-f-]{36})/);
+  return rid ? (list.find((t) => t.reportId === rid[1])?.token ?? null) : null;
 }
 
 export function FinderChat() {
@@ -42,8 +45,8 @@ export function FinderChat() {
 
   useEffect(() => {
     const read = () => {
-      const t = tokenFromHash();
       const list = loadFinderThreads();
+      const t = tokenFromHash(list);
       setRefs(list);
       setToken(t ?? (list.length === 1 ? list[0].token : null));
       setReady(true);
@@ -52,6 +55,13 @@ export function FinderChat() {
     window.addEventListener("hashchange", read);
     return () => window.removeEventListener("hashchange", read);
   }, []);
+
+  // 다른 대화로 바뀌면 이전 대화 내용·알림 상태를 지워요
+  useEffect(() => {
+    setThread(null);
+    setSubscribed(false);
+    setBody("");
+  }, [token]);
 
   const load = useCallback(async () => {
     if (!token) return;

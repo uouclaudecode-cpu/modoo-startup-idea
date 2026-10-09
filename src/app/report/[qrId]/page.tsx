@@ -47,7 +47,7 @@ export default async function ReportPage({
             : "발견한 위치와 사진을 보내 주시면 소유자에게만 전달돼요. 로그인하지 않아도 제보할 수 있어요."}
         </p>
       </div>
-      <ReportForm token={token} mode={mode} />
+      <ReportForm token={token} mode={mode} vehicleLabel={[v.color, v.brand, typeLabel(v.type)].filter(Boolean).join(" ")} />
     </div>
   );
 }

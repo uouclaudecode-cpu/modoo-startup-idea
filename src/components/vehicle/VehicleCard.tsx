@@ -17,7 +17,7 @@ export function VehicleCard({ vehicle, foundReports }: { vehicle: Vehicle; found
       {alert && (
         <div className={cn("flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white", status === "reported" ? "bg-orange-500" : "bg-rose-600")}>
           <Siren aria-hidden className="h-4 w-4" />
-          {status === "reported" ? `발견 제보 ${foundReports}건이 도착했어요` : "분실/도난 수색 중이에요"}
+          {status === "reported" ? `발견 제보 ${foundReports}건이 도착했어요` : "분실·도난 수색 중이에요"}
         </div>
       )}
       <Link href={`/vehicles/${vehicle.id}`} className="block">

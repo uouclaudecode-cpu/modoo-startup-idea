@@ -25,7 +25,17 @@ export default function PrivacyPage() {
         지킵니다.
       </p>
       <Clause n={1} title="처리하는 개인정보와 목적·보유 기간">
-        <div className="-mx-1 overflow-x-auto">
+        {/* 휴대폰: 항목마다 카드로 (표가 옆으로 잘리지 않게) */}
+        <ul className="space-y-2 sm:hidden">
+          {ROWS.map(([a, b, c]) => (
+            <li key={a} className="rounded-xl bg-slate-50 p-3 text-[14px]">
+              <p className="font-bold text-ink">{a}</p>
+              <p className="mt-1">{b}</p>
+              <p className="mt-1 text-[13px] text-ink-muted">보유 기간: {c}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="-mx-1 hidden overflow-x-auto sm:block">
           <table className="w-full min-w-[560px] border-collapse text-left text-[14px]">
             <thead>
               <tr className="border-b border-line text-ink">

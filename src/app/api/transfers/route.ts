@@ -50,6 +50,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // 확인용으로 만든 세션은 바로 끝내요 (이 연결에만 해당, 내 로그인은 그대로)
+  await checker.auth.signOut({ scope: "local" }).catch(() => {});
+
   const { data, error } = await supabase.rpc("start_transfer", { p_vehicle: vehicleId });
   if (error) {
     console.error(error);

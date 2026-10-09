@@ -74,7 +74,7 @@ export function ReplyForm({ postId, parent, stickerSpot, onDone }: { postId: str
       {stickerSpot !== null && (
         stickerSpot ? (
           <Button variant="secondary" full className="h-10 text-sm" icon={<MapPinned aria-hidden className="h-4 w-4" />} onClick={insertSpot}>
-            📍 스티커 위치 넣기
+            스티커 위치 넣기
           </Button>
         ) : (
           <p className="text-[13px] text-ink-muted">내 이동수단 &gt; 정보 수정에서 스티커 붙인 위치를 적어 두면 여기서 바로 넣을 수 있어요.</p>

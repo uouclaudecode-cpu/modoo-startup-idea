@@ -104,12 +104,12 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
         {ownerBanner}
         <div role="alert" className="rounded-3xl bg-rose-600 p-6 text-white shadow-lift">
           <Siren aria-hidden className="h-9 w-9" />
-          <h1 className="mt-3 text-2xl font-extrabold leading-snug">🚨 현재 분실/도난 수색 중입니다.</h1>
+          <h1 className="mt-3 text-2xl font-extrabold leading-snug">현재 분실·도난 수색 중이에요</h1>
           <p className="mt-2 text-[15px] leading-relaxed text-rose-50">
             이 이동수단을 발견하셨다면 위치와 사진을 제보해 주세요. 소유자에게 바로 전달돼요.
           </p>
           <ButtonLink href={`${reportHref}?kind=found`} variant="light" size="lg" full className="mt-5" icon={<MapPinned aria-hidden className="h-5 w-5" />}>
-            📍 발견 제보하기
+            발견 제보하기
           </ButtonLink>
           {typeof postId === "string" && (
             <ButtonLink href={`/community/${postId}`} variant="glass" full className="mt-2" icon={<MessagesSquare aria-hidden className="h-5 w-5" />}>

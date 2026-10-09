@@ -354,3 +354,50 @@ export function DocSkeleton() {
     </SkeletonScreen>
   );
 }
+
+/** 공개 통계: 숫자 타일 6개 + 지도 */
+export function StatsSkeleton() {
+  return (
+    <SkeletonScreen className="space-y-5">
+      <Heading />
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {Array.from({ length: 6 }, (_, i) => (
+          <Skeleton key={i} className="h-[84px] rounded-2xl" />
+        ))}
+      </div>
+      <Skeleton className="h-6 w-44" />
+      <Skeleton className="h-80 rounded-2xl" />
+    </SkeletonScreen>
+  );
+}
+
+/** 익명 대화: 안내 카드 + 말풍선 */
+export function ChatSkeleton() {
+  return (
+    <SkeletonScreen className="mx-auto max-w-md space-y-4">
+      <Skeleton className="h-36 rounded-2xl" />
+      <div className="space-y-3 rounded-2xl bg-white p-5 shadow-card ring-1 ring-line/70">
+        <Skeleton className="h-16 rounded-xl" />
+        <Skeleton className="ml-auto h-12 w-2/3 rounded-2xl" />
+        <Skeleton className="h-12 w-3/4 rounded-2xl" />
+        <Skeleton className="h-20 rounded-xl" />
+      </div>
+    </SkeletonScreen>
+  );
+}
+
+/** 소유 증명: 진행 막대 + 사진 칸 */
+export function EvidenceSkeleton() {
+  return (
+    <SkeletonScreen className="mx-auto max-w-xl space-y-4">
+      <BackLink />
+      <Heading />
+      <Skeleton className="h-24 rounded-2xl" />
+      <div className="grid grid-cols-2 gap-3">
+        {Array.from({ length: 4 }, (_, i) => (
+          <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />
+        ))}
+      </div>
+    </SkeletonScreen>
+  );
+}

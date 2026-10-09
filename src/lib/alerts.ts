@@ -13,6 +13,8 @@ export type AlertCard = {
   marks: string | null;
   police_reported: boolean;
   bounty_amount: number | null;
+  /** 이 주인의 사례금 '못 받음' 기록 수 */
+  owner_unpaid?: number;
   recipients: number | null;
   expires_at: string;
   resolved_at: string | null;

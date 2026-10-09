@@ -30,11 +30,12 @@ export function OwnerChat({ reportId, createdAt, trust, anonymous }: { reportId:
 
   useEffect(() => {
     load();
+    if (!open) return;
     const id = setInterval(() => {
       if (document.visibilityState === "visible") load();
     }, 5000);
     return () => clearInterval(id);
-  }, [load]);
+  }, [load, open]);
 
   async function send(e: React.FormEvent) {
     e.preventDefault();

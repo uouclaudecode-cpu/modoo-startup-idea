@@ -76,7 +76,7 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
           description={
             vehicle.status === "searching"
               ? "누군가 QR을 스캔해 제보하면 여기에 바로 보여요."
-              : "분실/도난 신고를 하면 QR을 스캔한 사람에게 수색 중 안내가 보여요."
+              : "분실·도난 신고를 하면 QR을 스캔한 사람에게 수색 중 안내가 보여요."
           }
         />
       ) : (

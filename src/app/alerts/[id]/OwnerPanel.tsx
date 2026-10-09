@@ -66,6 +66,8 @@ export function OwnerPanel({
     setResolving(false);
     if (error) {
       console.error(error);
+      setScanned(false);
+      setCode("");
       return setResolveError(friendlyError(error, "처리하지 못했어요."));
     }
     setResolveOpen(false);
@@ -201,7 +203,7 @@ export function OwnerPanel({
 
       {active ? (
         <div className="space-y-2">
-          <Button full size="lg" icon={<CircleCheck aria-hidden className="h-5 w-5" />} onClick={() => { setResolveOpen(true); setPicked(sightings.filter((s) => s.status === "useful").map((s) => s.id)); }}>
+          <Button full size="lg" icon={<CircleCheck aria-hidden className="h-5 w-5" />} onClick={() => { setResolveOpen(true); setScanned(false); setCode(""); setResolveError(""); setPicked(sightings.filter((s) => s.status === "useful").map((s) => s.id)); }}>
             찾았어요 (경보 끝내기)
           </Button>
           <Button variant="ghost" full icon={<Trash2 aria-hidden className="h-4 w-4" />} onClick={() => setCancelOpen(true)}>
@@ -245,7 +247,7 @@ export function OwnerPanel({
               )}
             </div>
           ) : alert.vehicle.has_serial ? (
-            <Input label="차대번호 끝 4자리" maxLength={4} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
+            <Input label="차대번호 (전체)" hint="되찾은 이동수단 프레임에 새겨진 번호" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
           ) : (
             <p className="text-[14px] text-ink-soft">스티커·차대번호가 없어 바로 끝낼 수 있어요.</p>
           )}
