@@ -6,18 +6,20 @@ import { EyeOff, MapPin, Plus, Sparkles, Trash2 } from "lucide-react";
 import { LocationPicker, type PickedLocation } from "@/components/map/LocationPicker";
 import { Button, Card, useToast } from "@/components/ui";
 import { cn } from "@/lib/cn";
+import { MeterPicker } from "@/components/ui/MeterPicker";
 import { friendlyError } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
 
 export type PrivacyZone = { id: string; label: string; lat: number; lng: number; radius_m: number };
 export type ZoneSuggestion = { lat: number; lng: number; count: number };
 
-const RADII = [200, 300, 500, 1000];
+const RADII = [100, 200, 300, 500, 1000, 2000];
+const TRIMS = [0, 100, 300, 500, 1000];
 const LABELS = ["집", "회사", "학교", "본가"];
 const MAX = 3;
 const rLabel = (r: number) => (r < 1000 ? `${r}m` : `${r / 1000}km`);
 
-export function ZoneManager({ zones, suggestions }: { zones: PrivacyZone[]; suggestions: ZoneSuggestion[] }) {
+export function ZoneManager({ zones, suggestions, shareTrim }: { zones: PrivacyZone[]; suggestions: ZoneSuggestion[]; shareTrim: number }) {
   const router = useRouter();
   const toast = useToast();
   const [open, setOpen] = useState(false);
@@ -27,6 +29,28 @@ export function ZoneManager({ zones, suggestions }: { zones: PrivacyZone[]; sugg
   const [error, setError] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const full = zones.length >= MAX;
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editRadius, setEditRadius] = useState(300);
+  const [trim, setTrim] = useState(shareTrim);
+
+  async function saveRadius(z: PrivacyZone) {
+    setBusy(z.id);
+    const { error: err } = await createClient().from("privacy_zones").update({ radius_m: editRadius }).eq("id", z.id);
+    setBusy(null);
+    if (err) return toast.error(friendlyError(err, "바꾸지 못했어요."));
+    toast.success(`${z.label} 반경을 ${rLabel(editRadius)}로 바꿨어요.`);
+    setEditId(null);
+    router.refresh();
+  }
+
+  async function saveTrim(m: number) {
+    setTrim(m);
+    setBusy("trim");
+    const { error: err } = await createClient().rpc("set_share_trim", { p_m: m });
+    setBusy(null);
+    if (err) return toast.error(friendlyError(err, "저장하지 못했어요."));
+    toast.success(m === 0 ? "출발·도착 근처도 그대로 보여요." : `출발·도착 근처 ${rLabel(m)}를 가려요.`);
+  }
 
   async function add(p: { lat: number; lng: number }, name: string, r: number, key: string) {
     if (full) return setError(`가림 장소는 ${MAX}곳까지 정할 수 있어요.`);
@@ -58,6 +82,14 @@ export function ZoneManager({ zones, suggestions }: { zones: PrivacyZone[]; sugg
   return (
     <div className="space-y-4">
       <Card className="space-y-3">
+        <div>
+          <p className="font-bold">출발·도착 근처 가리기</p>
+          <p className="text-[13px] leading-relaxed text-ink-muted">가림 장소를 정하지 않아도, 공유할 때 라이딩의 처음과 끝을 이만큼 빼요.</p>
+        </div>
+        <MeterPicker value={trim} onChange={saveTrim} options={TRIMS} min={0} max={1000} zeroLabel="안 가림" disabled={busy === "trim"} />
+      </Card>
+
+      <Card className="space-y-3">
         <p className="font-bold">
           내 가림 장소 <span className="text-ink-muted">{zones.length}/{MAX}</span>
         </p>
@@ -66,17 +98,37 @@ export function ZoneManager({ zones, suggestions }: { zones: PrivacyZone[]; sugg
         ) : (
           <ul className="divide-y divide-line/70">
             {zones.map((z) => (
-              <li key={z.id} className="flex items-center gap-3 py-2.5">
-                <span aria-hidden className="grid h-10 w-10 flex-none place-items-center rounded-xl bg-brand-50 text-brand-600">
-                  <EyeOff className="h-5 w-5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold">{z.label}</p>
-                  <p className="text-[13px] text-ink-muted">반경 {rLabel(z.radius_m)} 가림</p>
+              <li key={z.id} className="py-2.5">
+                <div className="flex items-center gap-3">
+                  <span aria-hidden className="grid h-10 w-10 flex-none place-items-center rounded-xl bg-brand-50 text-brand-600">
+                    <EyeOff className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold">{z.label}</p>
+                    <p className="text-[13px] text-ink-muted">반경 {rLabel(z.radius_m)} 가림</p>
+                  </div>
+                  <Button
+                    variant="secondary"
+                    className="h-9 flex-none px-3 text-sm"
+                    onClick={() => {
+                      setEditId(editId === z.id ? null : z.id);
+                      setEditRadius(z.radius_m);
+                    }}
+                  >
+                    반경 바꾸기
+                  </Button>
+                  <Button variant="ghost" className="h-9 flex-none px-2" loading={busy === z.id && editId !== z.id} aria-label={`${z.label} 지우기`} onClick={() => remove(z)}>
+                    <Trash2 aria-hidden className="h-4 w-4" />
+                  </Button>
                 </div>
-                <Button variant="ghost" className="h-9 flex-none px-2" loading={busy === z.id} aria-label={`${z.label} 지우기`} onClick={() => remove(z)}>
-                  <Trash2 aria-hidden className="h-4 w-4" />
-                </Button>
+                {editId === z.id && (
+                  <div className="mt-3 space-y-2 rounded-xl bg-slate-50 p-3">
+                    <MeterPicker value={editRadius} onChange={setEditRadius} options={RADII} min={100} max={3000} />
+                    <Button full loading={busy === z.id} loadingText="저장 중..." onClick={() => saveRadius(z)}>
+                      {rLabel(editRadius)}로 저장
+                    </Button>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
@@ -105,13 +157,7 @@ export function ZoneManager({ zones, suggestions }: { zones: PrivacyZone[]; sugg
               </div>
               <div>
                 <p className="mb-1.5 text-sm font-semibold">가릴 반경</p>
-                <div className="grid grid-cols-4 gap-2">
-                  {RADII.map((r) => (
-                    <button key={r} type="button" className={chip(radius === r)} aria-pressed={radius === r} onClick={() => setRadius(r)}>
-                      {rLabel(r)}
-                    </button>
-                  ))}
-                </div>
+                <MeterPicker value={radius} onChange={setRadius} options={RADII} min={100} max={3000} />
               </div>
               <LocationPicker label="위치 (지도를 눌러 핀 꽂기)" value={place} onChange={setPlace} />
               {error && <p className="text-sm text-rose-600">{error}</p>}

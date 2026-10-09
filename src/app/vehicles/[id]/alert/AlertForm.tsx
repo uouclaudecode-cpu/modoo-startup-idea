@@ -35,6 +35,10 @@ export function AlertForm({
   const [police, setPolice] = useState("");
   const [radius, setRadius] = useState(1000);
   const [bounty, setBounty] = useState(0);
+  const [bountyText, setBountyText] = useState("");
+  // 사례금: 1천 원 단위, 1천~100만 원
+  const bountyError =
+    bounty === 0 ? "" : bounty < 1000 ? "1,000원 이상으로 적어 주세요." : bounty > 1000000 ? "100만 원까지 정할 수 있어요." : bounty % 1000 !== 0 ? "1,000원 단위로 적어 주세요." : "";
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -46,6 +50,7 @@ export function AlertForm({
     if (!place) return setError("잃어버린 곳을 지도에서 골라 주세요.");
     const lost = new Date(`${lostAt}:00+09:00`);
     if (Number.isNaN(lost.getTime())) return setError("잃어버린 시각을 다시 골라 주세요.");
+    if (bountyError) return setError(`사례금: ${bountyError}`);
     setLoading(true);
     const { data, error: err } = await createClient().rpc("create_theft_alert", {
       p_vehicle: vehicleId,
@@ -121,14 +126,33 @@ export function AlertForm({
               <button
                 key={b}
                 type="button"
-                onClick={() => setBounty(b)}
-                aria-pressed={bounty === b}
-                className={`h-11 rounded-xl text-[14px] font-semibold ring-1 ring-inset transition-colors ${bounty === b ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink ring-line hover:bg-slate-50"}`}
+                onClick={() => {
+                  setBounty(b);
+                  setBountyText("");
+                }}
+                aria-pressed={bounty === b && !bountyText}
+                className={`h-11 rounded-xl text-[14px] font-semibold ring-1 ring-inset transition-colors ${bounty === b && !bountyText ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink ring-line hover:bg-slate-50"}`}
               >
                 {b === 0 ? "없음" : `${b / 10000}만`}
               </button>
             ))}
           </div>
+          <label className="mt-2 flex items-center gap-2 text-[14px]">
+            <span className="font-semibold">직접 입력</span>
+            <input
+              inputMode="numeric"
+              placeholder="예) 35,000"
+              value={bountyText}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/\D/g, "").slice(0, 7);
+                setBountyText(digits ? Number(digits).toLocaleString("ko-KR") : "");
+                setBounty(digits ? Number(digits) : 0);
+              }}
+              className={`h-11 w-36 rounded-xl px-3 text-right text-[15px] ring-1 ring-inset focus:ring-2 focus:ring-brand-500 ${bountyText ? "ring-brand-500" : "ring-line"}`}
+            />
+            <span className="text-ink-muted">원</span>
+          </label>
+          {bountyText && bountyError && <p className="mt-1 text-[13px] text-rose-600">{bountyError}</p>}
           <p className="mt-1.5 text-[12px] leading-relaxed text-ink-muted">
             B-LOCK이 돈을 맡지 않는 &lsquo;약속&rsquo;이에요. 찾으면 도움 된 제보자에게 직접 보내고 앱에서 &lsquo;보냈어요&rsquo;를 눌러 주세요. 약속을 안
             지키면 프로필에 미지급 기록이 남아요.

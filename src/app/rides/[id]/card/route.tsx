@@ -23,7 +23,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   }
   if (!ride) return new Response("없는 기록이에요.", { status: 404 });
   const vehicle = ride.vehicle as unknown as { name: string } | null;
-  const { data: zones, error: zErr } = await supabase.from("privacy_zones").select("lat, lng, radius_m").eq("owner_id", user.id);
+  const [{ data: zones, error: zErr }, { data: prof }] = await Promise.all([
+    supabase.from("privacy_zones").select("lat, lng, radius_m").eq("owner_id", user.id),
+    supabase.from("profiles").select("share_trim_m").eq("id", user.id).maybeSingle(),
+  ]);
+  const trimM = (prof as { share_trim_m?: number } | null)?.share_trim_m ?? 300;
   if (zErr) console.error(zErr);
-  return renderRideCard({ ...ride, path: fromPathJson(ride.path), vehicleName: vehicle?.name ?? null, zones: zones ?? [] });
+  return renderRideCard({ ...ride, path: fromPathJson(ride.path), vehicleName: vehicle?.name ?? null, zones: zones ?? [], trimM });
 }

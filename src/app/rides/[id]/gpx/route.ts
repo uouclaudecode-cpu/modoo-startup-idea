@@ -24,11 +24,15 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
   const full = fromPathJson(ride.path);
   let path: typeof full | (typeof full)[] = full;
-  // 공유용: 앞뒤 300m와 가림 장소(집·회사 등)를 빼요
+  // 공유용: 앞뒤(내가 정한 거리)와 가림 장소(집·회사 등)를 빼요
   if (new URL(req.url).searchParams.get("trim") === "1") {
-    const { data: zones, error: zErr } = await supabase.from("privacy_zones").select("lat, lng, radius_m").eq("owner_id", user.id);
+    const [{ data: zones, error: zErr }, { data: prof }] = await Promise.all([
+      supabase.from("privacy_zones").select("lat, lng, radius_m").eq("owner_id", user.id),
+      supabase.from("profiles").select("share_trim_m").eq("id", user.id).maybeSingle(),
+    ]);
+    const trimM = (prof as { share_trim_m?: number } | null)?.share_trim_m ?? 300;
     if (zErr) console.error(zErr);
-    path = shareSegments(full, zones ?? []);
+    path = shareSegments(full, zones ?? [], trimM);
   }
   const day = new Date(new Date(ride.started_at).getTime() + 9 * 3600e3).toISOString().slice(0, 10);
   const gpx = buildGpx({ name: `B-LOCK 라이딩 ${day}`, path, startedAt: ride.started_at, endedAt: ride.ended_at });

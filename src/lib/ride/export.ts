@@ -7,6 +7,7 @@ import { distance, type LatLng } from "./geo";
 /** 경로 앞뒤를 m만큼 잘라요 (공유할 때 집·회사 위치가 드러나지 않게) */
 export function trimEnds(path: LatLng[], meters = 300): LatLng[] {
   if (path.length < 2) return [];
+  if (meters <= 0) return path;
   const cut = (pts: LatLng[]) => {
     let acc = 0;
     for (let i = 1; i < pts.length; i++) {

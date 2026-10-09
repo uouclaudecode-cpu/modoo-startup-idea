@@ -12,6 +12,8 @@ export type RideCardData = {
   vehicleName: string | null;
   /** 공유에서 뺄 가림 장소 */
   zones?: Zone[];
+  /** 출발·도착 근처를 가리는 거리 (m, 기본 300) */
+  trimM?: number;
 };
 
 const SIZE = 1080;
@@ -33,7 +35,7 @@ function toSvgPath(segs: LatLng[][], w: number, h: number) {
 /** 라이딩 공유 카드 (정사각형 PNG). 집 근처가 드러나지 않게 앞뒤 300m와 가림 장소는 그리지 않아요 */
 export async function renderRideCard(ride: RideCardData) {
   const vehicle = ride.vehicleName ? { name: ride.vehicleName } : null;
-  const d = toSvgPath(shareSegments(ride.path, ride.zones ?? []), 840, 520);
+  const d = toSvgPath(shareSegments(ride.path, ride.zones ?? [], ride.trimM ?? 300), 840, 520);
   const day = new Date(new Date(ride.started_at).getTime() + 9 * 3600e3).toISOString().slice(0, 10).replace(/-/g, ".");
   const stats: [string, string][] = [
     ["이동 시간", formatDuration(ride.moving_sec)],

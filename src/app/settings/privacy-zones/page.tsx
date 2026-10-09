@@ -14,9 +14,10 @@ export default async function PrivacyZonesPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/settings/privacy-zones");
 
-  const [{ data: zones, error }, { data: sugg, error: sErr }] = await Promise.all([
+  const [{ data: zones, error }, { data: sugg, error: sErr }, { data: prof }] = await Promise.all([
     supabase.from("privacy_zones").select("id, label, lat, lng, radius_m").eq("owner_id", user.id).order("created_at", { ascending: true }),
     supabase.rpc("suggest_privacy_zones"),
+    supabase.from("profiles").select("share_trim_m").eq("id", user.id).maybeSingle(),
   ]);
   if (error) console.error(error);
   if (sErr) console.error(sErr);
@@ -33,10 +34,10 @@ export default async function PrivacyZonesPage() {
           정해 둔 곳 근처의 길은 <b className="text-ink">공유 카드와 경로 파일에서 빠져요.</b> 라이딩 기록과 거리 계산은 그대로라 정비 알림도 정확해요.
         </p>
       </div>
-      <ZoneManager zones={(zones ?? []) as PrivacyZone[]} suggestions={(sugg ?? []) as ZoneSuggestion[]} />
+      <ZoneManager zones={(zones ?? []) as PrivacyZone[]} suggestions={(sugg ?? []) as ZoneSuggestion[]} shareTrim={(prof as { share_trim_m?: number } | null)?.share_trim_m ?? 300} />
       <p className="flex items-start gap-2 rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
         <ShieldCheck aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
-        가림 장소는 나만 볼 수 있어요. 라이딩 기록도 원래 나만 보이고, 남에게 보이는 건 내가 직접 공유한 사진·파일뿐이에요. 출발·도착 근처 300m는 따로 정하지 않아도 항상 빠져요.
+        가림 장소는 나만 볼 수 있어요. 라이딩 기록도 원래 나만 보이고, 남에게 보이는 건 내가 직접 공유한 사진·파일뿐이에요. 출발·도착 근처는 위에서 정한 거리만큼 항상 빠져요.
       </p>
     </div>
   );
