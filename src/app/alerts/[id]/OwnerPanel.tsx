@@ -85,9 +85,10 @@ export function OwnerPanel({
   async function resolve() {
     setResolveError("");
     const sticker = alert.vehicle.has_sticker;
-    // 스티커: 찍은 코드 또는 조회 번호 8자리(띄어쓰기 무시) / 스티커가 없어졌으면 확인 없이
-    const check = sticker ? (missing ? "" : scanned ? (extractToken(code) ?? code.trim()) : manual.replace(/\s/g, "")) : code.trim();
+    // 스티커: 찍은 코드 또는 조회 번호 8자리(띄어쓰기 무시) / 스티커가 없어졌으면 차대번호(등록했을 때만)
+    const check = sticker ? (missing ? (alert.vehicle.has_serial ? code.trim() : "") : scanned ? (extractToken(code) ?? code.trim()) : manual.replace(/\s/g, "")) : code.trim();
     if (sticker && !missing && !check) return setResolveError("숨은 스티커를 찍거나, 스티커 QR 아래 조회 번호 8자리를 넣어 주세요.");
+    if (sticker && missing && alert.vehicle.has_serial && !check) return setResolveError("프레임에 새겨진 차대번호 전체를 넣어 주세요.");
     setResolving(true);
     const { error } = await createClient().rpc("resolve_theft_alert", {
       p_alert: alert.id,
@@ -105,7 +106,7 @@ export function OwnerPanel({
     }
     setResolveOpen(false);
     toast.success(
-      `다행이에요! 경보를 끝냈어요.${picked.length ? " 도움 준 분들께 알림을 보냈어요." : ""}${sticker && missing ? " 떼어진 스티커 대신 새 스티커를 붙이고 위치를 적어 두세요." : ""}`,
+      `다행이에요! 경보를 끝냈어요.${picked.length ? " 도움 준 분들께 알림을 보냈어요." : ""}${sticker && missing ? " 이동수단 화면에서 떼어진 스티커 연결을 끊고 새 스티커를 붙여 주세요." : ""}`,
     );
     router.refresh();
   }
@@ -270,9 +271,19 @@ export function OwnerPanel({
         <div className="space-y-4">
           {alert.vehicle.has_sticker && missing ? (
             <div className="space-y-2 rounded-xl bg-orange-50 p-3 text-[14px] leading-relaxed text-orange-900">
-              <p className="font-bold">스티커 확인 없이 끝내요</p>
-              <p>도둑이 숨은 스티커를 떼어 갔다면 이대로 끝낼 수 있어요. 이 경보에는 &lsquo;스티커 없이 회수&rsquo;로 기록돼요. 끝낸 뒤 새 스티커를 붙이고 위치를 적어 두세요.</p>
-              <button type="button" onClick={() => { setMissing(false); setResolveError(""); }} className="font-semibold underline">
+              {alert.vehicle.has_serial ? (
+                <>
+                  <p className="font-bold">차대번호로 확인해요</p>
+                  <p>도둑이 숨은 스티커를 떼어 갔다면, 등록해 둔 차대번호로 되찾았는지 확인해요. 이 경보에는 &lsquo;스티커 없이 회수&rsquo;로 기록돼요. 끝낸 뒤 새 스티커를 붙이고 위치를 적어 두세요.</p>
+                  <Input label="차대번호 (프레임·시리얼 번호 전체)" hint="자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
+                </>
+              ) : (
+                <>
+                  <p className="font-bold">스티커 확인 없이 끝내요</p>
+                  <p>도둑이 숨은 스티커를 떼어 갔다면 이대로 끝낼 수 있어요. 이 경보에는 &lsquo;스티커 없이 회수&rsquo;로 기록돼요. 끝낸 뒤 새 스티커를 붙이고 위치를 적어 두세요.</p>
+                </>
+              )}
+              <button type="button" onClick={() => { setMissing(false); setCode(""); setResolveError(""); }} className="font-semibold underline">
                 스티커가 있어요 (다시 확인하기)
               </button>
             </div>
@@ -300,7 +311,7 @@ export function OwnerPanel({
                   />
                 </>
               )}
-              <button type="button" onClick={() => { setMissing(true); setResolveError(""); }} className="text-[13px] font-semibold text-ink-muted underline">
+              <button type="button" onClick={() => { setMissing(true); setScanned(false); setCode(""); setResolveError(""); }} className="text-[13px] font-semibold text-ink-muted underline">
                 스티커가 없어졌어요
               </button>
             </div>

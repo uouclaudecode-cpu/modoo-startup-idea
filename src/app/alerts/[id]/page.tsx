@@ -81,6 +81,9 @@ export default async function AlertPage({
     }
   }
 
+  // 내 경보이거나 내가 보낸 제보·사례금 기록이 있으면 '내 경보·제보'로 돌아가요
+  const mine = a.is_owner || sightings.length > 0 || rewards.length > 0;
+
   const pins: PinMapPin[] = [
     { lat: a.lat, lng: a.lng, mark: "분실", label: a.place_label ?? "잃어버린 곳", color: "rose" },
     ...sightings
@@ -91,9 +94,9 @@ export default async function AlertPage({
   return (
     <div className="mx-auto max-w-xl space-y-4">
       {/* 공유 링크로 처음 온 사람도 다른 경보·내 경보로 갈 수 있게 */}
-      <Link href={a.is_owner ? "/alerts#mine" : "/alerts"} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+      <Link href={mine ? "/alerts#mine" : "/alerts"} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />
-        {a.is_owner ? "내 경보·제보" : "근처 도난 경보"}
+        {mine ? "내 경보·제보" : "근처 도난 경보"}
       </Link>
 
       {sent && a.is_owner && (

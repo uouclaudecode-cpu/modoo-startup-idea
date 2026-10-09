@@ -35,11 +35,19 @@ begin
   select * into a from public.theft_alerts where id = p_alert and owner_id = auth.uid() for update;
   if not found then raise exception '내 경보만 끝낼 수 있어요.'; end if;
   if a.status not in ('open', 'expired', 'hidden') then raise exception '이미 끝난 경보예요.'; end if;
+  -- 지난 경보를 끝내는데 같은 이동수단에 새 경보가 진행 중이면, 아래 '회수 완료'가 경보 확인에 걸려요. 새 경보에서 끝내게 안내해요
+  if a.status <> 'open' and exists (select 1 from public.theft_alerts where vehicle_id = a.vehicle_id and status = 'open' and id <> p_alert) then
+    raise exception '이 이동수단에 새로 보낸 경보가 진행 중이에요. 그 경보 화면에서 ''찾았어요''를 눌러 주세요.';
+  end if;
   select * into v from public.vehicles where id = a.vehicle_id;
   -- 실물 회수 증명: 숨은 스티커(코드 전체 또는 QR 아래 조회 번호 8자리) 또는 차대번호 전체
   if exists (select 1 from public.stickers where vehicle_id = v.id) then
     if coalesce(p_sticker_missing, false) then
-      -- 도둑이 스티커를 떼어 간 경우: 확인 없이 끝내되 기록으로 남겨요
+      -- 도둑이 스티커를 떼어 간 경우: 차대번호를 등록했으면 그걸로 확인하고, 없으면 확인 없이 끝내되 기록으로 남겨요
+      if v.serial_hash is not null
+         and public.sha256_hex('b-lock-serial:' || upper(regexp_replace(v_check, '[^A-Za-z0-9]', '', 'g'))) <> v.serial_hash then
+        raise exception '차대번호가 맞지 않아요. 스티커가 없으면 프레임에 새겨진 차대번호 전체를 넣어 주세요.';
+      end if;
       v_missing := true;
     elsif not exists (
       select 1 from public.stickers

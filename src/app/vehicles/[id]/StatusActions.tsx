@@ -9,6 +9,7 @@ import type { VehicleStatus } from "@/lib/status";
 import { createClient } from "@/lib/supabase/client";
 
 type Action = "search" | "recover" | "reset" | "delete";
+type Found = { id: string; status: string; expires_at: string | null };
 type Confirm = { title: string; body: string; button: string; variant: "danger" | "primary" };
 
 // '수색 중으로 바꾸기'(분실)는 아래 '분실·도난 신고' 고르기 창에서 바로 해요
@@ -44,7 +45,7 @@ export function StatusActions({
   status: VehicleStatus;
   foundReports: number;
   totalReports: number;
-  /** 진행 중인 도난 경보 id. 화면에서 안 넘겨 주면(undefined) 여기서 직접 찾아요 */
+  /** 진행 중인(open) 도난 경보 id. 없거나 안 넘겨 주면 72시간이 지난 경보까지 여기서 직접 찾아요 */
   openAlertId?: string | null;
 }) {
   const router = useRouter();
@@ -52,29 +53,34 @@ export function StatusActions({
   const [pending, setPending] = useState<Exclude<Action, "search"> | null>(null);
   const [choice, setChoice] = useState(false);
   const [loading, setLoading] = useState(false);
-  // 진행 중인 경보 찾기 (undefined = 확인 중)
-  const [looked, setLooked] = useState<string | null | undefined>(undefined);
-  const needLookup = openAlertId === undefined && status === "searching";
+  // 아직 안 끝낸 경보 찾기 (undefined = 확인 중). 기간이 지난(expired)·숨긴 경보도 '찾았어요'로 끝내야 제보자에게 알림·사례금 기록이 남아요
+  const [looked, setLooked] = useState<Found | null | undefined>(undefined);
+  const needLookup = !openAlertId && status === "searching";
 
   useEffect(() => {
     if (!needLookup) return;
     let alive = true;
     createClient()
       .from("theft_alerts")
-      .select("id")
+      .select("id, status, expires_at")
       .eq("vehicle_id", vehicleId)
-      .eq("status", "open")
+      .in("status", ["open", "expired", "hidden"])
+      .order("created_at", { ascending: false })
+      .limit(1)
       .maybeSingle()
       .then(({ data, error }) => {
         if (error) console.error(error);
-        if (alive) setLooked((data?.id as string | undefined) ?? null);
+        if (alive) setLooked((data as Found | null) ?? null);
       });
     return () => {
       alive = false;
     };
   }, [needLookup, vehicleId]);
 
-  const alertId = openAlertId !== undefined ? openAlertId : status === "searching" ? looked : null;
+  const found: Found | null | undefined = openAlertId ? { id: openAlertId, status: "open", expires_at: null } : status === "searching" ? looked : null;
+  const alertId = found === undefined ? undefined : (found?.id ?? null);
+  // 기간이 지난 경보 (정리 작업이 아직 안 돌아 open으로 남은 것도)
+  const alertEnded = found?.status === "expired" || (found?.status === "open" && !!found.expires_at && new Date(found.expires_at) <= new Date());
 
   async function run(action: Action) {
     setLoading(true);
@@ -88,11 +94,11 @@ export function StatusActions({
     setChoice(false);
     if (error) {
       console.error(error);
-      toast.error(friendlyError(error, "상태를 바꾸지 못했습니다. 다시 시도해 주세요."));
+      toast.error(friendlyError(error, "상태를 바꾸지 못했어요. 다시 시도해 주세요."));
       return;
     }
     if (action === "delete") {
-      toast.success("삭제되었습니다.");
+      toast.success("삭제했어요.");
       router.replace("/dashboard");
     } else {
       toast.success(action === "search" ? "수색 중으로 바꿨어요. 발견 제보를 기다려요." : action === "recover" ? "회수 완료! 다행이에요." : "정상으로 바꿨어요.");
@@ -104,7 +110,8 @@ export function StatusActions({
 
   return (
     <Card className="space-y-3">
-      {status === "active" && (
+      {/* 회수 완료 뒤 또 잃어버려도 여기서 바로 신고해요 */}
+      {status !== "searching" && (
         <Button variant="danger" full size="lg" icon={<Siren aria-hidden className="h-5 w-5" />} onClick={() => setChoice(true)}>
           분실·도난 신고
         </Button>
@@ -125,6 +132,12 @@ export function StatusActions({
                 찾았어요 · 경보 끝내기
               </ButtonLink>
               <p className="text-center text-[13px] leading-relaxed text-ink-muted">도움 준 제보자를 골라 고마움을 전하고, 약속한 사례금을 기록해요.</p>
+              {/* 72시간이 지나 끝난 경보: 아직 못 찾았으면 다시 보낼 수 있어요 */}
+              {alertEnded && (
+                <ButtonLink href={`/vehicles/${vehicleId}/alert`} variant="ghost" full className="text-rose-700" icon={<Siren aria-hidden className="h-4 w-4" />}>
+                  근처에 도난 경보 다시 보내기
+                </ButtonLink>
+              )}
             </div>
           ) : (
             <>

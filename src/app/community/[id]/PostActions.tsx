@@ -11,9 +11,16 @@ import { createClient } from "@/lib/supabase/client";
 
 type Action = "resolve" | "reopen" | "delete";
 
-/** 연결된 이동수단의 진행 중인 도난 경보 (주인만 보여요: RLS) */
+/** 연결된 이동수단의 아직 안 끝낸 도난 경보 (주인만 보여요: RLS). 72시간이 지난(expired)·숨긴 경보도 '찾았어요'로 끝내야 해요 */
 async function findOpenAlert(vehicleId: string) {
-  const { data, error } = await createClient().from("theft_alerts").select("id").eq("vehicle_id", vehicleId).eq("status", "open").maybeSingle();
+  const { data, error } = await createClient()
+    .from("theft_alerts")
+    .select("id")
+    .eq("vehicle_id", vehicleId)
+    .in("status", ["open", "expired", "hidden"])
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
   if (error) console.error(error);
   return (data?.id as string | undefined) ?? null;
 }
@@ -25,7 +32,7 @@ export function PostActions({ postId, status, vehicleId }: { postId: string; sta
   const [pending, setPending] = useState<Action | null>(null);
   const [menu, setMenu] = useState(false);
   const [loading, setLoading] = useState(false);
-  // 도난 경보가 진행 중이면 '찾았어요'는 경보 화면에서 끝내요 (도움 준 제보자 고르기·사례금 기록)
+  // 도난 경보가 안 끝났으면(기간이 지난 경보도) '찾았어요'는 경보 화면에서 끝내요 (도움 준 제보자 고르기·사례금 기록)
   const [alertId, setAlertId] = useState<string | null>(null);
 
   useEffect(() => {
