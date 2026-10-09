@@ -27,6 +27,10 @@ export type Vehicle = {
   /** 라이딩으로 쌓인 누적 주행거리 (m) */
   odometer_m: number;
   status: VehicleStatus;
+  /** 차대번호 끝 4자리 (전체 번호는 해시로만 저장) */
+  serial_last4?: string | null;
+  /** 지금 주인이 갖게 된 시각 (등록 또는 양도) */
+  owned_since?: string | null;
   deleted_at: string | null;
   created_at: string;
   updated_at: string;

@@ -9,8 +9,11 @@ import { extractToken } from "@/lib/qr";
 
 type CamState = "idle" | "starting" | "running" | "denied" | "unsupported";
 
-/** 브라우저 카메라로 QR 읽기. 카메라를 쓸 수 없으면 QR 링크를 직접 입력할 수 있어요. */
-export function Scanner() {
+/**
+ * 브라우저 카메라로 QR 읽기. 카메라를 쓸 수 없으면 QR 링크를 직접 입력할 수 있어요.
+ * onToken을 주면 이동하지 않고 읽은 코드만 넘겨요 (양도 화면의 숨은 스티커 확인 등).
+ */
+export function Scanner({ onToken, hideManual = false }: { onToken?: (token: string) => void; hideManual?: boolean } = {}) {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -30,16 +33,28 @@ export function Scanner() {
 
   const go = useCallback(
     (text: string) => {
+      // 안심거래 인증(/v/…)·소유권 양도(/t/…) QR은 그 화면으로
+      const trade = text.trim().match(/\/(t|v)\/([A-Za-z0-9_-]{16,40})(?:[?#]|$)/);
+      if (trade && !onToken) {
+        stop();
+        router.push(`/${trade[1]}/${trade[2]}`);
+        return true;
+      }
       const token = extractToken(text);
       if (!token) {
         setHint("이 서비스의 QR이 아니에요. 이동수단에 붙은 QR을 비춰 주세요.");
         return false;
       }
       stop();
-      router.push(`/scan/${token}`);
+      if (onToken) {
+        setCam("idle");
+        onToken(token);
+      } else {
+        router.push(`/scan/${token}`);
+      }
       return true;
     },
-    [router, stop],
+    [router, stop, onToken],
   );
 
   async function start() {
@@ -130,6 +145,7 @@ export function Scanner() {
         </div>
       </Card>
 
+      {!hideManual && (
       <Card>
         <form onSubmit={onManual} className="space-y-3" noValidate>
           <Input
@@ -145,6 +161,7 @@ export function Scanner() {
           </Button>
         </form>
       </Card>
+      )}
     </div>
   );
 }

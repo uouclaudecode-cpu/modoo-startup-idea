@@ -12,6 +12,7 @@ import { displayStatus } from "@/lib/status";
 import { typeLabel } from "@/lib/types";
 import { getOwnedVehicle } from "@/lib/vehicles";
 import { StatusActions } from "./StatusActions";
+import { TradeCard } from "./TradeCard";
 
 export const metadata: Metadata = { title: "이동수단 상세" };
 
@@ -20,10 +21,10 @@ export default async function VehicleDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ sticker?: string }>;
+  searchParams: Promise<{ sticker?: string; received?: string }>;
 }) {
   const { id } = await params;
-  const { sticker: justClaimed } = await searchParams;
+  const { sticker: justClaimed, received } = await searchParams;
   const { supabase, vehicle } = await getOwnedVehicle(id, `/vehicles/${id}`);
   const { count } = await supabase
     .from("reports")
@@ -89,6 +90,15 @@ export default async function VehicleDetailPage({
         </div>
       </Card>
 
+      {received && (
+        <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 p-4 text-emerald-800 ring-1 ring-emerald-200">
+          <Tag aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
+          <p className="text-[15px] leading-relaxed">
+            <b>소유권을 받았어요!</b> 이전 주인이 알던 스티커 위치는 지웠어요. 스티커를 새 곳에 숨기고 아래 &lsquo;위치 적기&rsquo;로 적어 두세요.
+          </p>
+        </div>
+      )}
+
       {justClaimed && (
         <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 p-4 text-emerald-800 ring-1 ring-emerald-200">
           <Tag aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
@@ -144,6 +154,8 @@ export default async function VehicleDetailPage({
       </Card>
 
       <StatusActions vehicleId={vehicle.id} status={vehicle.status} foundReports={count ?? 0} totalReports={total ?? 0} />
+
+      <TradeCard vehicleId={vehicle.id} serialLast4={vehicle.serial_last4 ?? null} searching={vehicle.status === "searching"} />
 
       {openPost ? (
         <ButtonLink href={`/community/${openPost.id}`} variant="secondary" full size="lg" icon={<MessagesSquare aria-hidden className="h-5 w-5" />}>
