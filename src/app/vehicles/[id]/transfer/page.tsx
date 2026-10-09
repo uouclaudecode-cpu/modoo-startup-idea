@@ -24,7 +24,7 @@ export default async function TransferPage({ params }: { params: Promise<{ id: s
       </Link>
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">소유권 넘기기</h1>
-        <p className="mt-1 text-[15px] leading-relaxed text-ink-muted">직거래 현장에서 구매자가 이 화면의 QR을 찍으면 바로 넘어가요.</p>
+        <p className="mt-1 text-[15px] leading-relaxed text-ink-muted">직접 만나면 QR로, 택배·원격 거래는 링크를 보내서 넘길 수 있어요.</p>
       </div>
       <TransferStart
         vehicleId={vehicle.id}

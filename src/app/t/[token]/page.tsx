@@ -15,7 +15,7 @@ const MESSAGES: Record<string, string> = {
   not_found: "양도 QR을 찾을 수 없어요. 판매자 화면의 QR을 다시 찍어 주세요.",
   self: "내가 만든 양도 QR이에요. 구매자의 휴대폰으로 찍어야 해요.",
   cancelled: "판매자가 양도를 취소했어요.",
-  expired: "양도 QR 시간(10분)이 지났어요. 판매자에게 다시 만들어 달라고 해 주세요.",
+  expired: "양도 QR·링크의 시간이 지났어요. 판매자에게 다시 만들어 달라고 해 주세요.",
 };
 
 export default async function ReceivePage({ params }: { params: Promise<{ token: string }> }) {

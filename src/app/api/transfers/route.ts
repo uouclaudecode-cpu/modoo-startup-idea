@@ -23,9 +23,11 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const body = (await request.json().catch(() => null)) as { vehicleId?: unknown; password?: unknown } | null;
+  const body = (await request.json().catch(() => null)) as { vehicleId?: unknown; password?: unknown; mode?: unknown } | null;
   const vehicleId = typeof body?.vehicleId === "string" ? body.vehicleId : "";
   const password = typeof body?.password === "string" ? body.password : "";
+  // qr: 직접 만나서 10분 / link: 택배·원격 거래 3일
+  const mode = body?.mode === "link" ? "link" : "qr";
   if (!UUID.test(vehicleId) || !password) {
     return NextResponse.json({ error: "비밀번호를 입력해 주세요." }, { status: 400 });
   }
@@ -53,7 +55,7 @@ export async function POST(request: NextRequest) {
   // 확인용으로 만든 세션은 바로 끝내요 (이 연결에만 해당, 내 로그인은 그대로)
   await checker.auth.signOut({ scope: "local" }).catch(() => {});
 
-  const { data, error } = await supabase.rpc("start_transfer", { p_vehicle: vehicleId });
+  const { data, error } = await supabase.rpc("start_transfer", { p_vehicle: vehicleId, p_mode: mode });
   if (error) {
     console.error(error);
     const msg = /[가-힣]/.test(error.message) ? error.message : "양도를 시작하지 못했어요. 잠시 후 다시 시도해 주세요.";
