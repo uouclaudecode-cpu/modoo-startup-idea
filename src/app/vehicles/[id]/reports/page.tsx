@@ -7,19 +7,39 @@ import type { Report } from "@/lib/types";
 import { getOwnedVehicle } from "@/lib/vehicles";
 import { ReportCard } from "./ReportCard";
 import { PinMap, type MapPin } from "@/components/map/PinMap";
+import { LookupHistory } from "@/components/alerts/LookupHistory";
 import { formatDateTime } from "@/lib/format";
-import type { Trust } from "@/lib/alerts";
+import { createClient } from "@/lib/supabase/server";
+import type { Trust, VehicleLookup } from "@/lib/alerts";
 
-export const metadata: Metadata = { title: "발견 제보" };
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// 탭 제목: 발견자가 쓰는 '발견 제보' 화면과 헷갈리지 않게, 이동수단이 여럿이어도 구분되게
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  if (!UUID.test(id)) return { title: "받은 제보·대화" };
+  const supabase = await createClient();
+  const { data } = await supabase.from("vehicles").select("name").eq("id", id).maybeSingle();
+  return { title: data?.name ? `${data.name} · 받은 제보·대화` : "받은 제보·대화" };
+}
 
 export default async function VehicleReportsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { supabase, vehicle } = await getOwnedVehicle(id, `/vehicles/${id}/reports`);
-  const { data, error } = await supabase
-    .from("reports")
-    .select("id, vehicle_id, reporter_id, contact_mode, kind, latitude, longitude, location_text, description, image_path, contact, created_at")
-    .eq("vehicle_id", vehicle.id)
-    .order("created_at", { ascending: false });
+  const [{ data, error }, { data: lookupRows, error: lookupErr }] = await Promise.all([
+    supabase
+      .from("reports")
+      .select("id, vehicle_id, reporter_id, contact_mode, kind, latitude, longitude, location_text, description, image_path, contact, created_at")
+      .eq("vehicle_id", vehicle.id)
+      .order("created_at", { ascending: false }),
+    // 구매 전 도난 조회 기록 (시간·방법만, 주인만)
+    supabase.rpc("owner_vehicle_lookups", { p_vehicle: vehicle.id }),
+  ]);
+  if (lookupErr) console.error(lookupErr);
+  const lookups = (lookupRows ?? []) as VehicleLookup[];
+  // 수색 중이거나 기록이 있을 때만 (조회 알림이 여기로 열려요)
+  const showLookups = lookups.length > 0 || vehicle.status === "searching";
+  const lookupsFirst = lookups.some((l) => l.stolen);
 
   if (error) {
     console.error(error);
@@ -61,13 +81,16 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
       </Link>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">발견 제보</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight">받은 제보·대화</h1>
           <p className="mt-1 text-sm text-ink-muted">
             발견 제보 {found}건 · 연락 {reports.length - found}건
           </p>
         </div>
         <StatusBadge status={displayStatus(vehicle.status, found)} />
       </div>
+
+      {/* 수색 중에 조회됐으면 중요한 단서라 위에, 아니면 제보 아래에 */}
+      {showLookups && lookupsFirst && <LookupHistory items={lookups} failed={Boolean(lookupErr)} />}
 
       {reports.length === 0 ? (
         <EmptyState
@@ -96,6 +119,8 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
         </ul>
         </>
       )}
+
+      {showLookups && !lookupsFirst && <LookupHistory items={lookups} failed={Boolean(lookupErr)} />}
     </div>
   );
 }

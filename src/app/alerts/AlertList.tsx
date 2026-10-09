@@ -51,37 +51,40 @@ export function AlertList({ initial, areaLabel }: { initial: NearbyAlert[]; area
         <EmptyState icon={<Siren className="h-7 w-7" />} title="지금 진행 중인 경보가 없어요" description="다행이에요! 경보가 생기면 여기에 보여요." />
       ) : (
         <ul className="space-y-3">
-          {list.map((a) => (
-            <li key={a.id}>
-              <Link href={`/alerts/${a.id}`}>
-                <Card className="flex gap-4 p-3 transition-shadow hover:shadow-lift">
-                  <VehicleImage src={vehicleImageUrl(a.image_path)} type={a.type} alt={vehicleTitle(a)} className="h-24 w-24 flex-none rounded-xl" />
-                  <div className="min-w-0 flex-1 py-0.5">
-                    <p className="flex items-center gap-1.5 text-[12px] font-bold text-rose-600">
-                      <Siren aria-hidden className="h-3.5 w-3.5" />
-                      도난 · {timeAgo(a.lost_at)}
-                      {a.police_reported && <span className="text-ink-muted">· 경찰 신고</span>}
-                    </p>
-                    <p className="mt-0.5 line-clamp-1 font-bold">{vehicleTitle(a)}</p>
-                    <p className="mt-1 flex items-center gap-1 text-[13px] text-ink-muted">
-                      <MapPin aria-hidden className="h-3.5 w-3.5 flex-none" />
-                      <span className="truncate">
-                        {a.place_label ? `${a.place_label} · ` : ""}
-                        {where === "전국" ? "" : distanceLabel(a.distance_m)}
-                      </span>
-                    </p>
-                    {a.marks && <p className="mt-0.5 line-clamp-1 text-[13px] text-ink-soft">{a.marks}</p>}
-                    {a.bounty_amount && (
-                      <p className="mt-0.5 flex items-center gap-1 text-[13px] font-semibold text-brand-700">
-                        <Gift aria-hidden className="h-3.5 w-3.5" />
-                        사례금 {wonLabel(a.bounty_amount)}
+          {list.map((a) => {
+            // 전국 목록은 거리 기준이 없어서 장소만 (빈 '·'가 남지 않게 있는 것만 이어요)
+            const place = [a.place_label, where === "전국" ? null : distanceLabel(a.distance_m)].filter(Boolean).join(" · ");
+            return (
+              <li key={a.id}>
+                <Link href={`/alerts/${a.id}`}>
+                  <Card className="flex gap-4 p-3 transition-shadow hover:shadow-lift">
+                    <VehicleImage src={vehicleImageUrl(a.image_path)} type={a.type} alt={vehicleTitle(a)} className="h-24 w-24 flex-none rounded-xl" />
+                    <div className="min-w-0 flex-1 py-0.5">
+                      <p className="flex items-center gap-1.5 text-[12px] font-bold text-rose-600">
+                        <Siren aria-hidden className="h-3.5 w-3.5" />
+                        도난 · {timeAgo(a.lost_at)}
+                        {a.police_reported && <span className="text-ink-muted">· 경찰 신고</span>}
                       </p>
-                    )}
-                  </div>
-                </Card>
-              </Link>
-            </li>
-          ))}
+                      <p className="mt-0.5 line-clamp-1 font-bold">{vehicleTitle(a)}</p>
+                      {place && (
+                        <p className="mt-1 flex items-center gap-1 text-[13px] text-ink-muted">
+                          <MapPin aria-hidden className="h-3.5 w-3.5 flex-none" />
+                          <span className="truncate">{place}</span>
+                        </p>
+                      )}
+                      {a.marks && <p className="mt-0.5 line-clamp-1 text-[13px] text-ink-soft">{a.marks}</p>}
+                      {a.bounty_amount && (
+                        <p className="mt-0.5 flex items-center gap-1 text-[13px] font-semibold text-brand-700">
+                          <Gift aria-hidden className="h-3.5 w-3.5" />
+                          사례금 {wonLabel(a.bounty_amount)}
+                        </p>
+                      )}
+                    </div>
+                  </Card>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

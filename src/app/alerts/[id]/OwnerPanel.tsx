@@ -2,8 +2,8 @@
 
 /* eslint-disable @next/next/no-img-element -- 비공개 사진은 서명 주소라 기본 img 사용 */
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { CircleCheck, FileText, Link2, Megaphone, ShieldCheck, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Bike, CircleCheck, FileText, Link2, Megaphone, ShieldCheck, Trash2 } from "lucide-react";
 import { Scanner } from "@/app/scan/Scanner";
 import { MoneyWarning, TrustInfo } from "@/components/alerts/TrustInfo";
 import { Button, ButtonLink, Card, Input, Modal, useToast } from "@/components/ui";
@@ -27,25 +27,49 @@ export function OwnerPanel({
   rewards,
   trust,
   photos,
+  autoResolve = false,
 }: {
   alert: AlertCard;
   sightings: Sighting[];
   rewards: Reward[];
   trust: Trust[];
   photos: Record<string, string>;
+  /** 이동수단 화면·분실 글의 '찾았어요'에서 왔으면 회수 확인 창을 바로 열어요 */
+  autoResolve?: boolean;
 }) {
   const router = useRouter();
   const toast = useToast();
   const active = alert.status === "open" || alert.status === "expired" || alert.status === "hidden";
   const trustOf = (id: string) => trust.find((t) => t.user_id === id) ?? null;
+  const usefulIds = () => sightings.filter((s) => s.status === "useful").map((s) => s.id);
+  const startOpen = autoResolve && active;
   const [busy, setBusy] = useState("");
-  const [resolveOpen, setResolveOpen] = useState(false);
+  const [resolveOpen, setResolveOpen] = useState(startOpen);
   const [code, setCode] = useState("");
   const [scanned, setScanned] = useState(false);
-  const [picked, setPicked] = useState<string[]>([]);
+  // 카메라가 안 될 때: 스티커 QR 아래 조회 번호 8자리
+  const [manual, setManual] = useState("");
+  // 도둑이 숨은 스티커를 떼어 간 경우
+  const [missing, setMissing] = useState(false);
+  const [picked, setPicked] = useState<string[]>(() => (startOpen ? usefulIds() : []));
   const [resolveError, setResolveError] = useState("");
   const [resolving, setResolving] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+
+  useEffect(() => {
+    // 새로고침해도 창이 다시 뜨지 않게 주소의 ?resolve=1을 지워요
+    if (autoResolve) window.history.replaceState(null, "", window.location.pathname);
+  }, [autoResolve]);
+
+  function openResolve() {
+    setResolveOpen(true);
+    setScanned(false);
+    setCode("");
+    setManual("");
+    setMissing(false);
+    setResolveError("");
+    setPicked(usefulIds());
+  }
 
   async function mark(s: Sighting, status: Sighting["status"]) {
     setBusy(s.id);
@@ -60,9 +84,18 @@ export function OwnerPanel({
 
   async function resolve() {
     setResolveError("");
+    const sticker = alert.vehicle.has_sticker;
+    // 스티커: 찍은 코드 또는 조회 번호 8자리(띄어쓰기 무시) / 스티커가 없어졌으면 확인 없이
+    const check = sticker ? (missing ? "" : scanned ? (extractToken(code) ?? code.trim()) : manual.replace(/\s/g, "")) : code.trim();
+    if (sticker && !missing && !check) return setResolveError("숨은 스티커를 찍거나, 스티커 QR 아래 조회 번호 8자리를 넣어 주세요.");
     setResolving(true);
-    const check = alert.vehicle.has_sticker ? (extractToken(code) ?? code.trim()) : code.trim();
-    const { error } = await createClient().rpc("resolve_theft_alert", { p_alert: alert.id, p_check: check, p_reward_sightings: picked });
+    const { error } = await createClient().rpc("resolve_theft_alert", {
+      p_alert: alert.id,
+      p_check: check,
+      p_reward_sightings: picked,
+      // 예전 함수와도 맞도록 필요할 때만 보내요
+      ...(sticker && missing ? { p_sticker_missing: true } : {}),
+    });
     setResolving(false);
     if (error) {
       console.error(error);
@@ -71,7 +104,9 @@ export function OwnerPanel({
       return setResolveError(friendlyError(error, "처리하지 못했어요."));
     }
     setResolveOpen(false);
-    toast.success("다행이에요! 경보를 끝냈어요. 도움 준 분들께 알림을 보냈어요.");
+    toast.success(
+      `다행이에요! 경보를 끝냈어요.${picked.length ? " 도움 준 분들께 알림을 보냈어요." : ""}${sticker && missing ? " 떼어진 스티커 대신 새 스티커를 붙이고 위치를 적어 두세요." : ""}`,
+    );
     router.refresh();
   }
 
@@ -201,21 +236,20 @@ export function OwnerPanel({
         )}
       </Card>
 
-      {active ? (
+      {active && (
         <div className="space-y-2">
-          <Button full size="lg" icon={<CircleCheck aria-hidden className="h-5 w-5" />} onClick={() => { setResolveOpen(true); setScanned(false); setCode(""); setResolveError(""); setPicked(sightings.filter((s) => s.status === "useful").map((s) => s.id)); }}>
+          <Button full size="lg" icon={<CircleCheck aria-hidden className="h-5 w-5" />} onClick={openResolve}>
             찾았어요 (경보 끝내기)
           </Button>
           <Button variant="ghost" full icon={<Trash2 aria-hidden className="h-4 w-4" />} onClick={() => setCancelOpen(true)}>
             경보 취소
           </Button>
         </div>
-      ) : (
-        alert.vehicle.id && (
-          <ButtonLink href={`/vehicles/${alert.vehicle.id}`} variant="secondary" full>
-            이동수단 화면으로
-          </ButtonLink>
-        )
+      )}
+      {alert.vehicle.id && (
+        <ButtonLink href={`/vehicles/${alert.vehicle.id}`} variant={active ? "ghost" : "secondary"} full icon={<Bike aria-hidden className="h-4 w-4" />}>
+          이동수단 화면으로
+        </ButtonLink>
       )}
 
       <Modal
@@ -228,13 +262,21 @@ export function OwnerPanel({
               닫기
             </Button>
             <Button loading={resolving} loadingText="처리 중..." icon={<ShieldCheck aria-hidden className="h-4 w-4" />} onClick={resolve}>
-              회수 완료
+              {alert.vehicle.has_sticker && missing ? "스티커 없이 끝내기" : "회수 완료"}
             </Button>
           </>
         }
       >
         <div className="space-y-4">
-          {alert.vehicle.has_sticker ? (
+          {alert.vehicle.has_sticker && missing ? (
+            <div className="space-y-2 rounded-xl bg-orange-50 p-3 text-[14px] leading-relaxed text-orange-900">
+              <p className="font-bold">스티커 확인 없이 끝내요</p>
+              <p>도둑이 숨은 스티커를 떼어 갔다면 이대로 끝낼 수 있어요. 이 경보에는 &lsquo;스티커 없이 회수&rsquo;로 기록돼요. 끝낸 뒤 새 스티커를 붙이고 위치를 적어 두세요.</p>
+              <button type="button" onClick={() => { setMissing(false); setResolveError(""); }} className="font-semibold underline">
+                스티커가 있어요 (다시 확인하기)
+              </button>
+            </div>
+          ) : alert.vehicle.has_sticker ? (
             <div className="space-y-2">
               <p className="text-[14px] leading-relaxed text-ink-soft">되찾은 이동수단의 숨은 스티커를 찍어 주세요. 실제로 되찾았는지 확인해요.</p>
               {scanned ? (
@@ -243,8 +285,24 @@ export function OwnerPanel({
                   스티커를 읽었어요.
                 </p>
               ) : (
-                <Scanner hideManual onToken={(t) => { setCode(t); setScanned(true); }} />
+                <>
+                  <Scanner hideManual onToken={(t) => { setCode(t); setScanned(true); setResolveError(""); }} />
+                  <Input
+                    label="카메라가 안 되면: 스티커 QR 아래 조회 번호"
+                    hint="8자리예요. 띄어쓰기·대소문자는 상관없어요."
+                    placeholder="예: Ab12 Cd34"
+                    autoCapitalize="none"
+                    autoComplete="off"
+                    spellCheck={false}
+                    maxLength={12}
+                    value={manual}
+                    onChange={(e) => setManual(e.target.value)}
+                  />
+                </>
               )}
+              <button type="button" onClick={() => { setMissing(true); setResolveError(""); }} className="text-[13px] font-semibold text-ink-muted underline">
+                스티커가 없어졌어요
+              </button>
             </div>
           ) : alert.vehicle.has_serial ? (
             <Input label="차대번호 (프레임·시리얼 번호 전체)" hint="자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
