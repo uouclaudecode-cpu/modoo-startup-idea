@@ -23,7 +23,7 @@ const REASONS: { value: Reason; title: string; body: string }[] = [
   {
     value: "move",
     title: "다른 이동수단에 붙일래요",
-    body: "새 스티커로 돌아가요. 떼어 낸 스티커를 다시 찍어서 원하는 이동수단에 연결하세요.",
+    body: "새 스티커로 돌아가요. 다시 연결하기 전에는 누구나 찍어서 등록할 수 있으니, 떼어 낸 뒤 바로 다시 찍어 원하는 이동수단에 연결해 주세요.",
   },
 ];
 
@@ -50,7 +50,7 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
       return toast.error(friendlyError(error, "연결을 끊지 못했어요. 잠시 후 다시 시도해 주세요."));
     }
     setTarget(null);
-    toast.success(reason === "move" ? "연결을 끊었어요. 스티커를 다시 찍어서 원하는 이동수단에 연결하세요." : "연결을 끊었어요. 이 스티커는 이제 쓸 수 없어요.");
+    toast.success(reason === "move" ? "연결을 끊었어요. 스티커를 바로 다시 찍어서 원하는 이동수단에 연결해 주세요." : "연결을 끊었어요. 이 스티커는 이제 쓸 수 없어요.");
     router.refresh();
   }
 
@@ -139,7 +139,7 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
             ))}
           </div>
           <p className="rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
-            {reason === "lost" ? "되돌릴 수 없어요. " : ""}연결된 스티커가 하나도 남지 않으면, 소유권을 넘길 때 구매자는 스티커 대신 차대번호로 실물을 확인해요.
+            {reason === "lost" ? "되돌릴 수 없어요. " : ""}연결된 스티커가 하나도 남지 않으면, 소유권을 넘길 때 구매자는 스티커 대신 차대번호로(등록하지 않았다면 사진과 실물을 눈으로) 확인해요.
           </p>
         </div>
       </Modal>
