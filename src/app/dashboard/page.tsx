@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Bike, ChartColumn, Flag, Play, Plus, Printer } from "lucide-react";
+import { Bike, ChartColumn, Flag, Play, Plus, Printer, Siren } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { WelcomeGuide } from "@/components/onboarding/WelcomeGuide";
 import { partsNeedingCare, type VehiclePart } from "@/lib/parts";
@@ -55,6 +55,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     .map((v) => ({ v, items: partsNeedingCare(((allParts ?? []) as VehiclePart[]).filter((p) => p.vehicle_id === v.id), now) }))
     .filter((x) => x.items.length > 0);
 
+  const { data: myAlerts } = await supabase.from("theft_alerts").select("id, vehicle_id").eq("owner_id", user.id).eq("status", "open");
   const nickname = profile?.nickname || user.email?.split("@")[0] || "회원";
   // 시작 안내: 스티커를 연결했거나 부착 위치를 적었으면 붙이기 단계 완료로 봐요
   const liveIds = list.map((v) => v.id);
@@ -78,6 +79,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           </p>
         </div>
       </Card>
+
+      {(myAlerts ?? []).map((a) => (
+        <ButtonLink key={a.id} href={`/alerts/${a.id}`} variant="danger" full size="lg" icon={<Siren aria-hidden className="h-5 w-5" />}>
+          {list.find((v) => v.id === a.vehicle_id)?.name ?? "이동수단"} 도난 경보 진행 중 · 제보 보기
+        </ButtonLink>
+      ))}
 
       <WelcomeGuide nickname={nickname} hasVehicle={list.length > 0} hasSticker={hasSticker} fresh={welcome === "1"} />
 

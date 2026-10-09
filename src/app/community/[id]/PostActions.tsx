@@ -27,7 +27,10 @@ export function PostActions({ postId, status, vehicleId }: { postId: string; sta
     if (!error && action === "resolve" && vehicleId) {
       // 연결된 이동수단이 수색 중이면 회수 완료로 함께 바꿉니다.
       const { error: vErr } = await supabase.from("vehicles").update({ status: "recovered" }).eq("id", vehicleId).eq("status", "searching");
-      if (vErr) console.error(vErr);
+      if (vErr) {
+        console.error(vErr);
+        toast.error("글은 '찾았어요'로 바꿨지만 이동수단 상태는 못 바꿨어요. 이동수단 화면에서 '회수 완료'를 눌러 주세요.");
+      }
     }
     setLoading(false);
     setPending(null);

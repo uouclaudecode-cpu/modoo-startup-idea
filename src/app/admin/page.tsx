@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Fragment, type ReactNode } from "react";
-import { Bike, ChevronRight, Flag, Megaphone, Printer, QrCode, RefreshCw, Route, SearchCheck, Users } from "lucide-react";
+import { Bike, ChevronRight, Flag, Megaphone, Printer, QrCode, RefreshCw, Route, SearchCheck, Users, BadgeCheck, Siren } from "lucide-react";
 import { BarChart, type BarDatum } from "@/components/admin/BarChart";
 import { RATE_TEXT, RateBar, rateTone } from "@/components/admin/RateBar";
 import { StatCard } from "@/components/admin/StatCard";
@@ -96,6 +96,12 @@ function QuickLinks() {
       </ButtonLink>
       <ButtonLink href="/admin/reports" variant="secondary" icon={<Flag aria-hidden className="h-4 w-4" />}>
         신고 처리
+      </ButtonLink>
+      <ButtonLink href="/admin/members" variant="secondary" icon={<BadgeCheck aria-hidden className="h-4 w-4" />}>
+        회원 본인인증
+      </ButtonLink>
+      <ButtonLink href="/admin/alerts" variant="secondary" icon={<Siren aria-hidden className="h-4 w-4" />}>
+        경보 신고
       </ButtonLink>
     </nav>
   );
