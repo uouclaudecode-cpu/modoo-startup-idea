@@ -14,3 +14,24 @@ export function extractToken(text: string): string | null {
   if (m) return m[1];
   return /^[A-Za-z0-9_-]{16,}$/.test(t) ? t : null;
 }
+
+/** 손으로 적은 조회 번호(QR 아래 8자리)를 띄어쓰기 없이 꺼냅니다. 조회 번호가 아니면 null */
+export function extractLookupCode(text: string): string | null {
+  const t = text.replace(/\s/g, "");
+  return /^[A-Za-z0-9_-]{8}$/.test(t) ? t : null;
+}
+
+const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+
+/**
+ * 스티커가 아닌 B-LOCK QR 주소 → 앱 안 화면 경로.
+ * 안심거래 인증(/v/…) · 소유권 양도(/t/…) · 소유 증명서(/c/…) · 도난 경보(/alerts/…, 112 신고서에 인쇄)
+ */
+export function appLinkPath(text: string): string | null {
+  const t = text.trim();
+  const m = t.match(/\/(t|v|c)\/([A-Za-z0-9_-]{16,40})(?:[/?#]|$)/);
+  if (m) return `/${m[1]}/${m[2]}`;
+  const a = t.match(new RegExp(`/alerts/(${UUID})(?:[/?#]|$)`, "i"));
+  if (a) return `/alerts/${a[1].toLowerCase()}`;
+  return null;
+}

@@ -3,14 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import jsQR from "jsqr";
-import { Camera, CameraOff, Link2 } from "lucide-react";
+import { Camera, CameraOff, Search } from "lucide-react";
 import { Button, Card, Input } from "@/components/ui";
-import { extractToken } from "@/lib/qr";
+import { appLinkPath, extractLookupCode, extractToken } from "@/lib/qr";
 
 type CamState = "idle" | "starting" | "running" | "denied" | "unsupported";
 
 /**
- * 브라우저 카메라로 QR 읽기. 카메라를 쓸 수 없으면 QR 링크를 직접 입력할 수 있어요.
+ * 브라우저 카메라로 QR 읽기. 카메라를 쓸 수 없으면 QR 아래 조회 번호(8자리)나 QR 주소를 직접 넣을 수 있어요.
  * onToken을 주면 이동하지 않고 읽은 코드만 넘겨요 (양도 화면의 숨은 스티커 확인 등).
  */
 export function Scanner({ onToken, hideManual = false }: { onToken?: (token: string) => void; hideManual?: boolean } = {}) {
@@ -33,11 +33,11 @@ export function Scanner({ onToken, hideManual = false }: { onToken?: (token: str
 
   const go = useCallback(
     (text: string) => {
-      // 안심거래 인증(/v/…)·소유권 양도(/t/…) QR은 그 화면으로
-      const trade = text.trim().match(/\/(t|v)\/([A-Za-z0-9_-]{16,40})(?:[?#]|$)/);
-      if (trade && !onToken) {
+      // 안심거래 인증(/v/…)·소유권 양도(/t/…)·소유 증명서(/c/…)·도난 경보(/alerts/…) QR은 그 화면으로
+      const link = appLinkPath(text);
+      if (link && !onToken) {
         stop();
-        router.push(`/${trade[1]}/${trade[2]}`);
+        router.push(link);
         return true;
       }
       const token = extractToken(text);
@@ -97,8 +97,16 @@ export function Scanner({ onToken, hideManual = false }: { onToken?: (token: str
   function onManual(e: React.FormEvent) {
     e.preventDefault();
     setManualError("");
-    if (!extractToken(manual)) {
-      setManualError("QR 아래에 적힌 주소(…/scan/…)를 그대로 붙여넣어 주세요.");
+    // 스티커·QR 카드에는 주소 대신 조회 번호(8자리)만 인쇄돼 있어요 → 도난 조회 화면에서 이동수단을 찾아요
+    const code = onToken ? null : extractLookupCode(manual);
+    if (code) {
+      stop();
+      router.push(`/check?q=${encodeURIComponent(code)}`);
+      return;
+    }
+    const link = onToken ? null : appLinkPath(manual);
+    if (!link && !extractToken(manual)) {
+      setManualError("QR 바로 아래에 적힌 조회 번호 8자리를 그대로 넣어 주세요. (예: aB3x Kp9Q)");
       return;
     }
     go(manual);
@@ -117,9 +125,15 @@ export function Scanner({ onToken, hideManual = false }: { onToken?: (token: str
               {cam === "denied" || cam === "unsupported" ? (
                 <>
                   <CameraOff aria-hidden className="h-10 w-10 text-rose-300" />
-                  <p className="font-semibold">{cam === "denied" ? "카메라 권한이 필요합니다." : "이 브라우저에서는 카메라를 쓸 수 없어요."}</p>
+                  <p className="font-semibold">{cam === "denied" ? "카메라 권한이 필요해요." : "이 브라우저에서는 카메라를 쓸 수 없어요."}</p>
                   <p className="text-sm text-slate-300">
-                    {cam === "denied" ? "브라우저 설정에서 카메라를 허용하거나, 아래에 QR 링크를 직접 입력해 주세요." : "아래에 QR 링크를 직접 입력해 주세요."}
+                    {hideManual
+                      ? cam === "denied"
+                        ? "브라우저 설정에서 카메라를 허용해 주세요."
+                        : "크롬이나 사파리에서 다시 열어 주세요."
+                      : cam === "denied"
+                        ? "브라우저 설정에서 카메라를 허용하거나, 아래에 QR 아래 조회 번호를 직접 넣어 주세요."
+                        : "아래에 QR 아래 조회 번호를 직접 넣어 주세요."}
                   </p>
                 </>
               ) : (
@@ -149,15 +163,19 @@ export function Scanner({ onToken, hideManual = false }: { onToken?: (token: str
       <Card>
         <form onSubmit={onManual} className="space-y-3" noValidate>
           <Input
-            label="QR 코드 링크 직접 입력"
-            placeholder="https://…/scan/…"
+            label="QR 아래 조회 번호(8자리) 또는 QR 주소"
+            placeholder="예) aB3x Kp9Q"
+            hint="스티커나 QR 카드의 QR 바로 아래에 적힌 영문·숫자예요."
             value={manual}
             onChange={(e) => setManual(e.target.value)}
             error={manualError}
-            inputMode="url"
+            autoComplete="off"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
           />
-          <Button type="submit" variant="secondary" full icon={<Link2 aria-hidden className="h-4 w-4" />} disabled={!manual.trim()}>
-            이동하기
+          <Button type="submit" variant="secondary" full icon={<Search aria-hidden className="h-4 w-4" />} disabled={!manual.trim()}>
+            찾아보기
           </Button>
         </form>
       </Card>
