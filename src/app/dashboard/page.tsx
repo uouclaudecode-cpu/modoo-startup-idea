@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Bike, ChartColumn, Flag, Play, Plus, Printer, Settings } from "lucide-react";
+import { Bike, ChartColumn, Flag, Play, Plus, Printer } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { WelcomeGuide } from "@/components/onboarding/WelcomeGuide";
 import { partsNeedingCare, type VehiclePart } from "@/lib/parts";
@@ -71,14 +71,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           {Array.from(String(nickname))[0]}
         </span>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-xl font-extrabold tracking-tight">안녕하세요, {nickname}님</h1>
+          <p className="text-[13px] font-semibold text-ink-muted">안녕하세요</p>
+          <h1 className="line-clamp-1 break-all text-xl font-extrabold tracking-tight">{nickname}님</h1>
           <p className="mt-0.5 flex items-center gap-1.5 text-sm text-ink-muted">
             <Bike aria-hidden className="h-4 w-4" />내 이동수단 {list.length}개
           </p>
         </div>
-        <ButtonLink href="/settings" variant="secondary" className="h-10 flex-none rounded-full px-3.5 text-sm" icon={<Settings aria-hidden className="h-4 w-4" />}>
-          설정
-        </ButtonLink>
       </Card>
 
       <WelcomeGuide nickname={nickname} hasVehicle={list.length > 0} hasSticker={hasSticker} fresh={welcome === "1"} />

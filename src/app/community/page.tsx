@@ -17,16 +17,16 @@ export const metadata: Metadata = {
 
 const PAGE_SIZE = 20;
 const STATUS_TABS = [
+  { value: "all", label: "전체" },
   { value: "open", label: "찾는 중" },
   { value: "resolved", label: "찾았어요" },
-  { value: "all", label: "전체" },
 ] as const;
 
 type Search = { q?: string; status?: string; type?: string; page?: string };
 
 export default async function CommunityPage({ searchParams }: { searchParams: Promise<Search> }) {
   const sp = await searchParams;
-  const status = STATUS_TABS.some((t) => t.value === sp.status) ? sp.status! : "open";
+  const status = STATUS_TABS.some((t) => t.value === sp.status) ? sp.status! : "all";
   const type = VEHICLE_TYPES.some((t) => t.value === sp.type) ? sp.type! : "";
   // 검색어의 특수문자는 필터 문법과 섞이지 않게 지웁니다.
   const q = (sp.q ?? "").replace(/[,()%*\\.:]/g, " ").trim().slice(0, 40);
@@ -36,7 +36,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
     const next = new URLSearchParams();
     const merged = { q, status, type, ...patch };
     if (merged.q) next.set("q", merged.q);
-    if (merged.status && merged.status !== "open") next.set("status", merged.status);
+    if (merged.status && merged.status !== "all") next.set("status", merged.status);
     if (merged.type) next.set("type", merged.type);
     if (merged.page && merged.page !== "1") next.set("page", merged.page);
     const s = next.toString();
@@ -66,7 +66,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
 
       {/* 검색 (일반 GET 폼: 주소에 검색어가 남아 공유·뒤로 가기가 돼요) */}
       <form action="/community" className="relative">
-        {status !== "open" && <input type="hidden" name="status" value={status} />}
+        {status !== "all" && <input type="hidden" name="status" value={status} />}
         {type && <input type="hidden" name="type" value={type} />}
         <Search aria-hidden className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-faint" />
         <input
@@ -147,7 +147,7 @@ async function PostResults({ q, status, type, page, moreHref }: { q: string; sta
       ) : posts.length === 0 ? (
         <EmptyState
           icon={<MessagesSquare className="h-7 w-7" />}
-          title={q ? `'${q}'에 맞는 글이 없어요` : status === "resolved" ? "아직 찾은 글이 없어요" : "지금 찾는 중인 글이 없어요"}
+          title={q ? `'${q}'에 맞는 글이 없어요` : status === "resolved" ? "아직 찾은 글이 없어요" : status === "open" ? "지금 찾는 중인 글이 없어요" : "아직 올라온 글이 없어요"}
           description="잃어버렸다면 분실 글을 올려 주세요. 주변 사람들이 보고 댓글로 알려줄 수 있어요."
           action={
             <ButtonLink href="/community/new" full icon={<PenSquare aria-hidden className="h-4 w-4" />}>
