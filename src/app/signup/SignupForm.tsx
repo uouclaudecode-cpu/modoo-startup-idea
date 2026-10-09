@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MailCheck } from "lucide-react";
 import { AuthCard } from "@/components/auth/AuthCard";
+import { ResendConfirm, confirmRedirectUrl } from "@/components/auth/ResendConfirm";
 import { Button, ButtonLink, EmptyState, Input, useToast } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
 import { friendlyError } from "@/lib/format";
@@ -20,6 +21,8 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState("");
+  // 로그인 화면으로 갈 때도 가려던 곳(next)을 함께 넘겨요
+  const loginHref = next === "/dashboard" ? "/login" : `/login?next=${encodeURIComponent(next)}`;
 
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [k]: e.target.value });
 
@@ -44,7 +47,8 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
       password: form.password,
       options: {
         data: { nickname: form.nickname.trim() },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        // 확인 링크를 누르면 가입하기 전에 보던 화면(스티커 등록·양도 QR·제보 등)으로 돌아가요
+        emailRedirectTo: confirmRedirectUrl(next),
       },
     });
     setLoading(false);
@@ -54,13 +58,13 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
           ? "이미 가입된 이메일이에요. 로그인해 주세요."
           : /rate limit/i.test(error.message)
             ? "가입 요청이 너무 많아요. 잠시 후 다시 시도해 주세요."
-            : friendlyError(error, "회원가입에 실패했습니다. 잠시 후 다시 시도해 주세요."),
+            : friendlyError(error, "가입하지 못했어요. 잠시 후 다시 시도해 주세요."),
       });
       return;
     }
     if (data.session) {
       // 이메일 확인을 쓰지 않는 설정이면 바로 로그인됩니다.
-      toast.success("가입되었습니다! 환영해요.");
+      toast.success("가입했어요! 환영해요.");
       router.replace(next === "/dashboard" ? "/dashboard?welcome=1" : next);
       router.refresh();
     } else {
@@ -74,11 +78,14 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
         <EmptyState
           icon={<MailCheck className="h-7 w-7" />}
           title="가입 확인 메일을 보냈어요"
-          description={`${sentTo} 메일함(스팸함 포함)에서 확인 링크를 누르면 가입이 끝나요.`}
+          description={`${sentTo} 메일함(스팸함 포함)에서 확인 링크를 누르면 가입이 끝나요.${next === "/dashboard" ? "" : " 확인을 마치면 보던 화면으로 이어서 갈 수 있어요."}`}
           action={
-            <ButtonLink href="/login" full>
-              로그인 화면으로
-            </ButtonLink>
+            <div className="space-y-3">
+              <ButtonLink href={loginHref} full>
+                로그인 화면으로
+              </ButtonLink>
+              <ResendConfirm email={sentTo} next={next} justSent />
+            </div>
           }
         />
       </div>
@@ -92,7 +99,7 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
       footer={
         <>
           이미 계정이 있나요?{" "}
-          <Link href={next === "/dashboard" ? "/login" : `/login?next=${encodeURIComponent(next)}`} className="font-semibold text-brand-700 underline-offset-2 hover:underline">
+          <Link href={loginHref} className="font-semibold text-brand-700 underline-offset-2 hover:underline">
             로그인
           </Link>
         </>
