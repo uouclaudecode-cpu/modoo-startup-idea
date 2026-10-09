@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BadgeCheck, CalendarClock, Gift, MapPin, Siren } from "lucide-react";
 import { ButtonLink, Card } from "@/components/ui";
+import { ShareButton } from "@/components/ui/ShareButton";
 import { PinMap, type MapPin as PinMapPin } from "@/components/map/PinMap";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { ALERT_STATUS, vehicleTitle, wonLabel, type AlertCard, type Reward, type Sighting, type Trust } from "@/lib/alerts";
@@ -117,6 +118,15 @@ export default async function AlertPage({ params, searchParams }: { params: Prom
           )}
         </div>
       </Card>
+
+      {open && (
+        <ShareButton
+          title={`🚨 ${vehicleTitle(a.vehicle)} 도난 경보`}
+          text={`${a.place_label ?? "근처"}에서 ${vehicleTitle(a.vehicle)}을(를) 도둑맞았어요. 비슷한 걸 보면 알려 주세요!`}
+          path={`/alerts/${a.id}`}
+          label="카카오톡·단톡방에 공유해서 같이 찾기"
+        />
+      )}
 
       <PinMap pins={pins} className="h-64" />
 

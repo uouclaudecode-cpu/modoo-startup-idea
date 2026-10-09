@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bike, Camera, Check, ChevronRight, EyeOff, Lock, MapPinned, MessagesSquare, Route, ScanLine, Tag, Wrench } from "lucide-react";
+import { Bike, Camera, Check, ChevronRight, EyeOff, Lock, MapPinned, MessagesSquare, Route, ScanLine, Search, Tag, Wrench } from "lucide-react";
 import { site } from "@/config/site";
 import { ButtonLink, Card, StatusBadge } from "@/components/ui";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
@@ -73,6 +73,20 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             QR 스캔하기
           </ButtonLink>
         </div>
+      </section>
+
+      {/* 누구나 쓰는 도구: 구매 전 도난 조회 · 도난 다발 지도 */}
+      <section className="grid grid-cols-2 gap-3">
+        <Link href="/check" className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70 transition-shadow hover:shadow-lift">
+          <Search aria-hidden className="h-6 w-6 text-brand-600" />
+          <p className="mt-2 font-bold">사기 전 도난 조회</p>
+          <p className="mt-0.5 text-[13px] leading-snug text-ink-muted">QR·차대번호로 장물인지 확인</p>
+        </Link>
+        <Link href="/stats" className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70 transition-shadow hover:shadow-lift">
+          <MapPinned aria-hidden className="h-6 w-6 text-rose-600" />
+          <p className="mt-2 font-bold">도난 다발 지도</p>
+          <p className="mt-0.5 text-[13px] leading-snug text-ink-muted">어디서 많이 도둑맞을까?</p>
+        </Link>
       </section>
 
       {/* 작동 방식 */}

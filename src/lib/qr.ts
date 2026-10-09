@@ -4,6 +4,9 @@ export function scanUrl(qrToken: string) {
   return `${base}/scan/${qrToken}`;
 }
 
+/** QR 아래에 적는 조회 번호 (코드 앞 8자리, 4자리씩 띄어서). 도난 조회(/check)에 넣으면 돼요. */
+export const lookupCode = (token: string) => `${token.slice(0, 4)} ${token.slice(4, 8)}`;
+
 /** 스캔하거나 입력한 글자에서 QR 토큰만 꺼냅니다. (주소 전체 또는 토큰만 모두 허용) */
 export function extractToken(text: string): string | null {
   const t = text.trim();

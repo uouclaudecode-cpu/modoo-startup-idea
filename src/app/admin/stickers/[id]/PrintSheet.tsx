@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { Download, Printer } from "lucide-react";
 import { Button, Card, Loading } from "@/components/ui";
-import { scanUrl } from "@/lib/qr";
+import { lookupCode, scanUrl } from "@/lib/qr";
 
 const PER_PAGE = 40; // A4 한 장: 5칸 × 8줄
 
@@ -71,7 +71,7 @@ export function PrintSheet({ codes, label, siteName }: { codes: string[]; label:
             <div key={codes[i]} className="flex h-[33mm] flex-col items-center justify-center rounded-[2mm] border border-dashed border-slate-300 px-[1mm] text-center print:border-slate-200">
               <img src={images[i]} alt={`스티커 QR ${i + 1}`} className="h-[22mm] w-[22mm]" style={{ imageRendering: "pixelated" }} />
               <p className="mt-[0.5mm] text-[7pt] font-extrabold leading-none text-brand-700">{siteName}</p>
-              <p className="mt-[0.5mm] text-[5.5pt] leading-tight text-slate-600">찍어서 내 자전거 등록 · {codes[i].slice(-4)}</p>
+              <p className="mt-[0.5mm] text-[5.5pt] leading-tight text-slate-600">찍어서 등록 · 조회 {lookupCode(codes[i])}</p>
             </div>
           ))}
         </div>

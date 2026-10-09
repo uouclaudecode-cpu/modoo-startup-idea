@@ -5,7 +5,7 @@ import QRCode from "qrcode";
 import { Download, Share2 } from "lucide-react";
 import { Button, Card, useToast } from "@/components/ui";
 import { copyText } from "@/lib/clipboard";
-import { scanUrl } from "@/lib/qr";
+import { lookupCode, scanUrl } from "@/lib/qr";
 
 /** 화면용 QR + 부착용 스티커 이미지(PNG) 저장 + 공유 */
 export function QrCard({
@@ -68,7 +68,7 @@ export function QrCard({
     ctx.fillText("발견하셨다면 QR을 스캔해 주세요", W / 2, 1170);
     ctx.fillStyle = "#64748b";
     ctx.font = "34px 'Pretendard Variable', 'Malgun Gothic', sans-serif";
-    ctx.fillText("등록된 이동수단의 디지털 신분증입니다", W / 2, 1230);
+    ctx.fillText(`등록된 이동수단의 디지털 신분증 · 조회 번호 ${lookupCode(token)}`, W / 2, 1230);
     return new Promise((resolve, reject) => c.toBlob((b) => (b ? resolve(b) : reject(new Error("이미지 생성 실패"))), "image/png"));
   }
 
@@ -122,6 +122,9 @@ export function QrCard({
       <div className="mx-auto w-full max-w-[320px] rounded-2xl bg-white p-3 ring-1 ring-line">
         <canvas ref={canvasRef} className="h-auto w-full" style={{ imageRendering: "pixelated" }} aria-label="QR 코드" />
       </div>
+      <p className="text-[13px] text-ink-muted">
+        조회 번호 <b className="tracking-wider text-ink">{lookupCode(token)}</b> · 구매자가 b-lock-app.vercel.app/check 에서 도난 여부를 확인할 수 있어요
+      </p>
       <p className="text-[15px] font-semibold leading-relaxed">이 QR은 등록된 이동수단의 디지털 신분증입니다.</p>
       <p className="text-[13px] leading-relaxed text-ink-muted">
         QR에는 무작위 코드만 들어 있어요. 이름·연락처 같은 개인정보는 담기지 않아요.
