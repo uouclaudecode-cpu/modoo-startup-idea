@@ -491,7 +491,8 @@ begin
       new.last_recovered_at := null;
       new.owned_since := now();
       new.created_at := now();
-      new.qr_token := public.random_token(18);
+      -- 사용자 권한으로 도는 트리거라 내부 함수 대신 같은 식을 직접 써요
+      new.qr_token := replace(replace(replace(encode(extensions.gen_random_bytes(18), 'base64'), '+', '-'), '/', '_'), '=', '');
       new.odometer_m := 0;
       new.deleted_at := null;
       new.status := 'active';
