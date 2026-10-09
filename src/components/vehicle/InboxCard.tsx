@@ -11,7 +11,7 @@ export type InboxItem = {
   mode: "chat" | "callback" | "none";
   preview: string;
   at: string;
-  /** 발견자가 마지막으로 말했거나, 아직 답하지 않은 새 제보 */
+  /** 발견자가 마지막으로 말했거나, 아직 답하지 않은 새 대화·전화 요청 (주인이 '확인함·연락함'으로 표시하면 빠져요) */
   needsReply: boolean;
 };
 
@@ -41,7 +41,7 @@ export function InboxCard({ items }: { items: InboxItem[] }) {
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-1.5 text-[13px] text-ink-muted">
                   <span className="truncate font-semibold text-ink">{i.vehicleName}</span>· {timeAgo(i.at)}
-                  {i.needsReply && <span className="flex-none font-bold text-rose-600">· 새 메시지</span>}
+                  {i.needsReply && <span className="flex-none font-bold text-rose-600">· {i.mode === "callback" ? "전화 요청" : "새 메시지"}</span>}
                 </span>
                 <span className="block truncate text-[14px]">{i.preview}</span>
               </span>

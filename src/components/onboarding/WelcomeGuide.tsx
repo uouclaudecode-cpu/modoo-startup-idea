@@ -5,17 +5,24 @@ import { cn } from "@/lib/cn";
 
 type Step = { done: boolean; icon: typeof Bike; title: string; text: string; href: string };
 
+type GuideProps = { nickname: string; hasVehicle: boolean; hasSticker: boolean; hasPush: boolean; fresh: boolean };
+
+/** 안내가 보이는지: 등록과 스티커를 끝내면 숨겨요 (알림은 그 뒤에 PushPrompt 가 따로 권해요) */
+export function welcomeGuideVisible({ hasVehicle, hasSticker, fresh }: Pick<GuideProps, "hasVehicle" | "hasSticker" | "fresh">) {
+  return fresh || !(hasVehicle && hasSticker);
+}
+
 /**
  * 처음 시작하는 사람을 위한 안내: 해야 할 일을 순서대로, 끝낸 일은 체크로 보여줘요.
- * 모두 끝내면 보이지 않아요.
+ * hasPush: 내 계정에 알림 받는 기기가 하나라도 있으면 '알림 켜기'를 끝낸 것으로 봐요.
  */
-export function WelcomeGuide({ nickname, hasVehicle, hasSticker, fresh }: { nickname: string; hasVehicle: boolean; hasSticker: boolean; fresh: boolean }) {
+export function WelcomeGuide({ nickname, hasVehicle, hasSticker, hasPush, fresh }: GuideProps) {
   const steps: Step[] = [
     { done: hasVehicle, icon: Bike, title: "이동수단 등록", text: "사진과 특징을 등록하면 QR 신분증이 만들어져요.", href: "/vehicles/new" },
     { done: hasSticker, icon: Tag, title: "QR 스티커 붙이기", text: "받은 스티커를 찍어 연결하거나, 앱 QR을 출력해 주인만 아는 곳에 붙여요.", href: hasVehicle ? "/scan" : "/vehicles/new" },
-    { done: false, icon: Bell, title: "알림 켜기", text: "누가 내 자전거를 찍으면 바로 알려드려요.", href: "/settings" },
+    { done: hasPush, icon: Bell, title: "알림 켜기", text: "누가 내 QR로 제보하거나 메시지를 보내면 바로 알려 드려요.", href: "/settings#push" },
   ];
-  if (!fresh && hasVehicle && hasSticker) return null;
+  if (!welcomeGuideVisible({ hasVehicle, hasSticker, fresh })) return null;
   return (
     <Card className="space-y-3 bg-gradient-to-br from-brand-50 to-white">
       <div>

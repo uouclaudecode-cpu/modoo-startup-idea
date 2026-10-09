@@ -162,7 +162,8 @@ export function PushSettings({ notify_reports, notify_comments, notify_maintenan
   }
 
   return (
-    <Card className="space-y-5">
+    // id="push": MY의 알림 안내·시작 안내에서 이 카드로 바로 와요
+    <Card id="push" className="scroll-mt-20 space-y-5">
       <div className="flex items-start gap-3">
         <span aria-hidden className="grid h-11 w-11 flex-none place-items-center rounded-xl bg-brand-50 text-brand-600">
           <BellRing className="h-5 w-5" />

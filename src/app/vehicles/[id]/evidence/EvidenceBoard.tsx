@@ -4,8 +4,8 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Camera, CircleCheck, FileBadge, Loader2, Trash2 } from "lucide-react";
-import { Button, ButtonLink, Card, Input, useToast } from "@/components/ui";
-import { EVIDENCE_SLOTS, type Evidence, type EvidenceKind } from "@/lib/evidence";
+import { Button, ButtonLink, Card, Input, Modal, useToast } from "@/components/ui";
+import { EVIDENCE_SLOTS, evidenceLabel, type Evidence, type EvidenceKind } from "@/lib/evidence";
 import { formatDateTime, friendlyError } from "@/lib/format";
 import { IMAGE_ACCEPT, MAX_UPLOAD_MB, uploadPhoto } from "@/lib/images";
 import { createClient } from "@/lib/supabase/client";
@@ -25,6 +25,8 @@ export function EvidenceBoard({ vehicleId, items, signed, purchasedOn, purchaseP
   const fileRef = useRef<HTMLInputElement>(null);
   const [target, setTarget] = useState<EvidenceKind | null>(null);
   const [uploading, setUploading] = useState<EvidenceKind | null>(null);
+  // 지울지 묻는 중인 사진 (한 번 눌러 바로 지워지지 않게)
+  const [confirming, setConfirming] = useState<Evidence | null>(null);
   const [deleting, setDeleting] = useState("");
   const [date, setDate] = useState(purchasedOn ?? "");
   const [place, setPlace] = useState(purchasePlace ?? "");
@@ -71,12 +73,17 @@ export function EvidenceBoard({ vehicleId, items, signed, purchasedOn, purchaseP
     setDeleting(ev.id);
     const supabase = createClient();
     const { error } = await supabase.from("vehicle_evidence").delete().eq("id", ev.id);
-    if (!error) await supabase.storage.from("evidence").remove([ev.photo_path]);
+    if (!error) {
+      const { error: fileErr } = await supabase.storage.from("evidence").remove([ev.photo_path]);
+      if (fileErr) console.error(fileErr); // 기록은 지웠어요. 남은 파일은 서버 정리 대기열이 지워요.
+    }
     setDeleting("");
     if (error) {
       console.error(error);
-      return toast.error(friendlyError(error, "지우지 못했어요."));
+      return toast.error(friendlyError(error, "사진을 지우지 못했어요. 잠시 후 다시 시도해 주세요."));
     }
+    setConfirming(null);
+    toast.success("사진을 지웠어요.");
     router.refresh();
   }
 
@@ -121,14 +128,16 @@ export function EvidenceBoard({ vehicleId, items, signed, purchasedOn, purchaseP
         {EVIDENCE_SLOTS.map((slot) => {
           const mine = items.filter((e) => e.kind === slot.kind);
           const canAdd = slot.multi || mine.length === 0;
+          // 여러 장 칸과 차대번호는 한 줄 전체: 그래야 앞·뒤, 왼쪽·오른쪽이 빈칸 없이 짝을 이뤄요
+          const wide = slot.multi || slot.kind === "serial";
           return (
-            <li key={slot.kind} className={slot.multi ? "col-span-2" : ""}>
+            <li key={slot.kind} className={wide ? "col-span-2" : ""}>
               <Card className="space-y-2 p-3">
                 <p className="flex items-center gap-1.5 text-[14px] font-bold">
                   {mine.length > 0 && <CircleCheck aria-hidden className="h-4 w-4 text-emerald-600" />}
                   {slot.label}
                 </p>
-                <div className={slot.multi ? "grid grid-cols-3 gap-2" : ""}>
+                <div className={wide ? "grid grid-cols-3 gap-2" : ""}>
                   {mine.map((ev) => (
                     <div key={ev.id} className="relative">
                       {signed[ev.photo_path] ? (
@@ -140,9 +149,9 @@ export function EvidenceBoard({ vehicleId, items, signed, purchasedOn, purchaseP
                       )}
                       <button
                         type="button"
-                        onClick={() => remove(ev)}
+                        onClick={() => setConfirming(ev)}
                         disabled={deleting === ev.id}
-                        className="absolute right-1 top-1 grid h-8 w-8 place-items-center rounded-full bg-black/55 text-white"
+                        className="absolute right-1 top-1 grid h-9 w-9 place-items-center rounded-full bg-black/60 text-white ring-2 ring-white/80"
                         aria-label={`${slot.label} 사진 지우기`}
                       >
                         {deleting === ev.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
@@ -168,6 +177,33 @@ export function EvidenceBoard({ vehicleId, items, signed, purchasedOn, purchaseP
           );
         })}
       </ul>
+
+      <Modal
+        open={Boolean(confirming)}
+        onClose={() => !deleting && setConfirming(null)}
+        title="이 사진을 지울까요?"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setConfirming(null)} disabled={Boolean(deleting)}>
+              취소
+            </Button>
+            <Button
+              variant="danger"
+              loading={Boolean(confirming) && deleting === confirming?.id}
+              loadingText="지우는 중..."
+              icon={<Trash2 aria-hidden className="h-4 w-4" />}
+              onClick={() => confirming && remove(confirming)}
+            >
+              지우기
+            </Button>
+          </>
+        }
+      >
+        <p>
+          {confirming ? `${evidenceLabel(confirming.kind)} 사진` : "이 사진"}과 올린 시각 기록이 함께 지워지고, 소유 증명서에서도 빠져요. 되돌릴 수 없어요.
+        </p>
+        <p className="mt-2 text-[13px] text-ink-muted">다시 올리면 오늘 날짜로 남아서, 예전부터 가지고 있었다는 증거가 약해져요.</p>
+      </Modal>
 
       <Card>
         <form onSubmit={savePurchase} className="space-y-3">

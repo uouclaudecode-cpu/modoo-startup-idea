@@ -24,7 +24,8 @@ export default async function StickerBatchPage({ params }: { params: Promise<{ i
   const claimed = list.filter((s) => s.vehicle_id).length;
 
   return (
-    <div className="space-y-4">
+    // print:space-y-0 — 인쇄할 때 숨긴 제목 영역 몫의 위 여백이 첫 장에 남지 않게
+    <div className="space-y-4 print:space-y-0">
       <div className="space-y-3 print:hidden">
         <Link href="/admin/stickers" className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
           <ChevronLeft aria-hidden className="h-4 w-4" />
