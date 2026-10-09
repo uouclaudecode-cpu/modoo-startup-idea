@@ -6,8 +6,10 @@ import { Camera, ChevronDown, Clock, ExternalLink, MapPin, MessageCircle, Phone 
 import { Badge, Button, Card } from "@/components/ui";
 import { formatDateTime } from "@/lib/format";
 import type { Report } from "@/lib/types";
+import { MoneyWarning, TrustInfo } from "@/components/alerts/TrustInfo";
+import { hasMoneyRequest, type Trust } from "@/lib/alerts";
 
-export function ReportCard({ report: r, imageUrl }: { report: Report; imageUrl: string | null }) {
+export function ReportCard({ report: r, imageUrl, trust }: { report: Report; imageUrl: string | null; trust: Trust | null }) {
   const [open, setOpen] = useState(false);
   const hasCoords = r.latitude != null && r.longitude != null;
   const place = r.location_text || (hasCoords ? `위도 ${r.latitude!.toFixed(5)}, 경도 ${r.longitude!.toFixed(5)}` : "위치 정보 없음");
@@ -52,6 +54,7 @@ export function ReportCard({ report: r, imageUrl }: { report: Report; imageUrl: 
       {open && (
         <div className="space-y-3 border-t border-line pt-3">
           <p className="whitespace-pre-line rounded-xl bg-slate-50 p-3 text-[15px] leading-relaxed">{r.description}</p>
+          {hasMoneyRequest(`${r.description} ${r.contact ?? ""}`) ? <MoneyWarning trust={trust} anonymous={!r.reporter_id} /> : <TrustInfo trust={trust} anonymous={!r.reporter_id} />}
           {imageUrl ? (
             <a href={imageUrl} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-xl ring-1 ring-line">
               <img src={imageUrl} alt="발견자가 보낸 사진" className="max-h-96 w-full object-cover" />

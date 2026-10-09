@@ -12,6 +12,8 @@ import { formatDateTime, friendlyError, timeAgo } from "@/lib/format";
 import { kakaoMapLink } from "@/lib/map";
 import { createClient } from "@/lib/supabase/client";
 import { ReplyForm } from "./ReplyForm";
+import { CommentMoneyWarning } from "./CommentMoneyWarning";
+import { hasMoneyRequest } from "@/lib/alerts";
 
 type Thread = {
   comment: PostComment;
@@ -173,6 +175,7 @@ function CommentBody({ comment: c, imageUrl, canDelete, loggedIn, postId, reply 
       )}
 
       <p className="whitespace-pre-line text-[15px] leading-relaxed">{c.body}</p>
+      {hasMoneyRequest(c.body) && <CommentMoneyWarning commentId={c.id} loggedIn={loggedIn} />}
 
       {(c.location_text || hasCoords) && (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl bg-orange-50 px-3 py-2 text-sm text-orange-900">

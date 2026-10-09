@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft, EyeOff, MessagesSquare, Pencil, PenSquare, QrCode, ScanLine, Tag, Wrench } from "lucide-react";
+import { ChevronLeft, EyeOff, Siren, MessagesSquare, Pencil, PenSquare, QrCode, ScanLine, Tag, Wrench } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { partsNeedingCare, type VehiclePart } from "@/lib/parts";
 import { formatDistance } from "@/lib/ride/geo";
@@ -52,6 +52,7 @@ export default async function VehicleDetailPage({
     .from("stickers")
     .select("code", { count: "exact", head: true })
     .eq("vehicle_id", vehicle.id);
+  const { data: openAlert } = await supabase.from("theft_alerts").select("id").eq("vehicle_id", vehicle.id).eq("status", "open").maybeSingle();
   const status = displayStatus(vehicle.status, count ?? 0);
 
   const rows: [string, string | null][] = [
@@ -154,6 +155,16 @@ export default async function VehicleDetailPage({
       </Card>
 
       <StatusActions vehicleId={vehicle.id} status={vehicle.status} foundReports={count ?? 0} totalReports={total ?? 0} />
+
+      {openAlert ? (
+        <ButtonLink href={`/alerts/${openAlert.id}`} variant="danger" full size="lg" icon={<Siren aria-hidden className="h-5 w-5" />}>
+          진행 중인 도난 경보 보기
+        </ButtonLink>
+      ) : (
+        <ButtonLink href={`/vehicles/${vehicle.id}/alert`} variant="secondary" full size="lg" className="text-rose-700" icon={<Siren aria-hidden className="h-5 w-5" />}>
+          도둑맞았어요 · 근처에 도난 경보 보내기
+        </ButtonLink>
+      )}
 
       <TradeCard vehicleId={vehicle.id} serialLast4={vehicle.serial_last4 ?? null} searching={vehicle.status === "searching"} />
 

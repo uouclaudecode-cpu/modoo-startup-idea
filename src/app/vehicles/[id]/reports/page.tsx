@@ -8,6 +8,7 @@ import { getOwnedVehicle } from "@/lib/vehicles";
 import { ReportCard } from "./ReportCard";
 import { PinMap, type MapPin } from "@/components/map/PinMap";
 import { formatDateTime } from "@/lib/format";
+import type { Trust } from "@/lib/alerts";
 
 export const metadata: Metadata = { title: "발견 제보" };
 
@@ -16,7 +17,7 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
   const { supabase, vehicle } = await getOwnedVehicle(id, `/vehicles/${id}/reports`);
   const { data, error } = await supabase
     .from("reports")
-    .select("id, vehicle_id, kind, latitude, longitude, location_text, description, image_path, contact, created_at")
+    .select("id, vehicle_id, reporter_id, kind, latitude, longitude, location_text, description, image_path, contact, created_at")
     .eq("vehicle_id", vehicle.id)
     .order("created_at", { ascending: false });
 
@@ -34,6 +35,11 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
     if (urlErr) console.error(urlErr);
     for (const u of urls ?? []) if (u.path && u.signedUrl) signed.set(u.path, u.signedUrl);
   }
+
+  // 로그인한 제보자의 신뢰 정보 (본인인증·도와준 횟수)
+  const reporterIds = [...new Set(reports.map((r) => r.reporter_id).filter((x): x is string => Boolean(x)))];
+  const { data: trustRows } = reporterIds.length ? await supabase.rpc("get_user_trust", { p_users: reporterIds }) : { data: [] };
+  const trust = (trustRows ?? []) as Trust[];
 
   const found = reports.filter((r) => r.kind === "found").length;
   // 위치가 있는 제보를 지도 핀으로 (최신이 1번)
@@ -84,7 +90,7 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
         <ul className="space-y-3">
           {reports.map((r) => (
             <li key={r.id}>
-              <ReportCard report={r} imageUrl={r.image_path ? signed.get(r.image_path) ?? null : null} />
+              <ReportCard report={r} imageUrl={r.image_path ? signed.get(r.image_path) ?? null : null} trust={trust.find((t) => t.user_id === r.reporter_id) ?? null} />
             </li>
           ))}
         </ul>

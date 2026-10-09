@@ -540,3 +540,15 @@ revoke execute on function public.update_reward(uuid, text) from public, anon;
 grant execute on function public.update_reward(uuid, text) to authenticated;
 revoke execute on function public.get_user_trust(uuid[]) from public, anon;
 grant execute on function public.get_user_trust(uuid[]) to authenticated;
+
+-- 돈을 요구하는 댓글: 쓴 사람의 신뢰 정보만 (아이디는 드러내지 않음)
+create or replace function public.get_comment_author_trust(p_comment uuid)
+returns table (member_since timestamptz, helped_count int, false_count int, identity_verified boolean, unpaid_count int)
+language sql stable security definer set search_path = public as $$
+  select t.member_since, t.helped_count, t.false_count, t.identity_verified, t.unpaid_count
+    from public.post_comments c
+    cross join lateral public.get_user_trust(array[c.author_id]) t
+   where c.id = p_comment and c.deleted_at is null and public.post_visible(c.post_id);
+$$;
+revoke execute on function public.get_comment_author_trust(uuid) from public, anon;
+grant execute on function public.get_comment_author_trust(uuid) to authenticated;

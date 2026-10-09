@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { LogoutButton } from "@/components/layout/LogoutButton";
 import { PushSettings } from "@/components/push/PushSettings";
+import { AlertSettings } from "@/components/settings/AlertSettings";
 import { BlockedUsers } from "@/components/settings/BlockedUsers";
 import { Card } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
@@ -43,6 +44,16 @@ export default async function SettingsPage() {
         notify_reports={profile?.notify_reports ?? true}
         notify_comments={profile?.notify_comments ?? true}
         notify_maintenance={profile?.notify_maintenance ?? true}
+      />
+
+      <AlertSettings
+        userId={user.id}
+        optIn={profile?.alert_opt_in ?? false}
+        lat={profile?.alert_lat ?? null}
+        lng={profile?.alert_lng ?? null}
+        label={profile?.alert_area_label ?? null}
+        radius={profile?.alert_radius_m ?? 2000}
+        quiet={profile?.alert_quiet ?? true}
       />
 
       <SettingsSection title="비밀번호 변경">

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { MessagesSquare, PenSquare, Search } from "lucide-react";
+import { ChevronRight, MessagesSquare, PenSquare, Search, Siren } from "lucide-react";
 import { Suspense } from "react";
 import { ButtonLink, EmptyState, ErrorState } from "@/components/ui";
 import { ListRows } from "@/components/skeletons/PageSkeletons";
@@ -54,6 +54,15 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
           글쓰기
         </ButtonLink>
       </div>
+
+      <Link href="/alerts" className="flex items-center gap-3 rounded-2xl bg-rose-50 p-4 ring-1 ring-rose-100 transition-colors hover:bg-rose-100/70">
+        <Siren aria-hidden className="h-6 w-6 flex-none text-rose-600" />
+        <span className="min-w-0 flex-1">
+          <span className="block font-bold text-rose-800">근처 도난 경보</span>
+          <span className="block text-[13px] text-rose-700/80">방금 도둑맞은 자전거·킥보드를 같이 찾아 주세요</span>
+        </span>
+        <ChevronRight aria-hidden className="h-5 w-5 flex-none text-rose-400" />
+      </Link>
 
       {/* 검색 (일반 GET 폼: 주소에 검색어가 남아 공유·뒤로 가기가 돼요) */}
       <form action="/community" className="relative">
