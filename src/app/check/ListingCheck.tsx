@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Copy, ExternalLink, FileSearch, MessageSquareText, ShieldAlert, ShieldCheck, TriangleAlert } from "lucide-react";
+import { Copy, ExternalLink, FileSearch, Info, MessageSquareText, ShieldAlert, ShieldCheck, TriangleAlert } from "lucide-react";
 import { Button, Card, Textarea, useToast } from "@/components/ui";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { vehicleTitle } from "@/lib/alerts";
@@ -12,8 +12,10 @@ import { vehicleImageUrl } from "@/lib/images";
 import type { VehicleType } from "@/lib/types";
 
 type Match = {
-  alert_id: string;
-  lost_at: string;
+  alert_id: string | null;
+  post_id: string | null;
+  alert_open: boolean | null;
+  lost_at: string | null;
   place_label: string | null;
   bounty_amount: number | null;
   vehicle: { type: VehicleType; brand: string | null; model: string | null; color: string | null; image_path: string | null };
@@ -73,7 +75,14 @@ export function ListingCheck() {
             판매 글로 확인하기
           </h2>
           <p className="mt-1 text-[14px] leading-relaxed text-ink-muted">
-            당근·번개장터·중고나라 판매 글 주소를 붙여 넣으세요. 지금 도난 신고된 자전거·킥보드와 브랜드·모델·색상을 비교해요. 주소가 안 열리면 글 내용을 복사해 넣어도 돼요.
+            당근·번개장터·중고나라 판매 글 주소를 붙여 넣으세요. 주소가 안 열리면 글 내용을 복사해 넣어도 돼요.
+          </p>
+        </div>
+        <div className="flex gap-2 rounded-xl bg-brand-50 p-3 text-[13px] leading-relaxed text-brand-900">
+          <Info aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
+          <p>
+            <b>이렇게 확인해요:</b> 판매 글의 <b>글자(제목·설명)</b>를 B-LOCK에 도난·분실 신고된 자전거·킥보드의 브랜드·모델·색상과 비교해요.{" "}
+            <b>사진은 비교하지 않아요.</b> 그래서 B-LOCK에 신고되지 않은 도난품이나, 글에 브랜드·모델을 안 적은 경우는 찾지 못해요.
           </p>
         </div>
         <Textarea
@@ -115,32 +124,47 @@ export function ListingCheck() {
                 <ShieldAlert aria-hidden className="h-7 w-7 flex-none" />
                 <div>
                   <p className="font-extrabold">비슷한 도난 신고가 {res.matches.length}건 있어요</p>
-                  <p className="text-[13px] text-rose-50">사진과 특징을 비교해 보세요. 같은 것 같으면 사지 말고 주인에게 알려 주세요.</p>
+                  <p className="text-[13px] text-rose-50">글자가 겹친 것뿐이라 다른 자전거일 수도 있어요. 사진과 특징을 비교해 보고, 같은 것 같으면 사지 말고 주인에게 알려 주세요.</p>
                 </div>
               </div>
               <ul className="space-y-2">
-                {res.matches.map((m) => (
-                  <li key={m.alert_id}>
-                    <Link href={`/alerts/${m.alert_id}`} className="flex items-center gap-3 rounded-xl p-2 ring-1 ring-line hover:bg-slate-50">
+                {res.matches.map((m, i) => {
+                  const href = m.alert_id ? `/alerts/${m.alert_id}` : m.post_id ? `/community/${m.post_id}` : null;
+                  const body = (
+                    <>
                       <VehicleImage src={vehicleImageUrl(m.vehicle.image_path)} type={m.vehicle.type} alt="" className="h-16 w-16 flex-none rounded-lg" />
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-bold">{vehicleTitle(m.vehicle)}</p>
                         <p className="truncate text-[13px] text-ink-muted">
-                          {formatDate(m.lost_at)} {m.place_label ? `· ${m.place_label}` : ""}
+                          {m.alert_open ? "도난 경보 중" : "주인이 찾는 중"}
+                          {m.lost_at ? ` · ${formatDate(m.lost_at)}` : ""}
+                          {m.place_label ? ` · ${m.place_label}` : ""}
                         </p>
                         <p className="text-[12px] font-semibold text-rose-700">겹치는 정보: {m.matched.map((k) => MATCHED[k]).join(", ")}</p>
                       </div>
-                    </Link>
-                  </li>
-                ))}
+                    </>
+                  );
+                  const cls = "flex items-center gap-3 rounded-xl p-2 ring-1 ring-line";
+                  return (
+                    <li key={m.alert_id ?? m.post_id ?? i}>
+                      {href ? (
+                        <Link href={href} className={`${cls} hover:bg-slate-50`}>
+                          {body}
+                        </Link>
+                      ) : (
+                        <div className={cls}>{body}</div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </>
           ) : (
             <div className="flex items-center gap-3 rounded-xl bg-emerald-600 p-4 text-white">
               <ShieldCheck aria-hidden className="h-7 w-7 flex-none" />
               <div>
-                <p className="font-extrabold">비슷한 도난 신고는 없어요</p>
-                <p className="text-[13px] text-emerald-50">B-LOCK 도난 신고와 비교한 결과예요. 아래 확인 방법도 함께 써 주세요.</p>
+                <p className="font-extrabold">B-LOCK 신고 중에는 비슷한 게 없어요</p>
+                <p className="text-[13px] text-emerald-50">안전하다는 뜻은 아니에요. 아래처럼 판매자에게 인증을 요청하고, 실물의 차대번호도 꼭 확인하세요.</p>
               </div>
             </div>
           )}
