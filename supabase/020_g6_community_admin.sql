@@ -438,7 +438,7 @@ returns void
 language plpgsql
 security definer
 set search_path = public
-as $
+as $$
 begin
   if not public.is_admin() then
     raise exception '관리자만 할 수 있어요.';
@@ -460,7 +460,7 @@ begin
     raise exception '없는 글이나 댓글이에요.';
   end if;
 end;
-$;
+$$;
 
 --  · 도난 경보: 숨겨질 때 관리자가 숨겼으면 reviewed_at 을 찍고, 신고로 자동으로 숨겨지면 비워요.
 --    (admin_set_alert_status·flag_alert 를 고치지 않고 트리거 하나로 처리. is_admin 만 불러요)
@@ -468,14 +468,14 @@ alter table public.theft_alerts add column if not exists reviewed_at timestamptz
 
 create or replace function public.theft_alerts_review_mark()
 returns trigger
-language plpgsql as $
+language plpgsql as $$
 begin
   if new.status = 'hidden' and old.status is distinct from 'hidden' then
     new.reviewed_at := case when public.is_admin() then now() end;
   end if;
   return new;
 end;
-$;
+$$;
 drop trigger if exists theft_alerts_review_mark on public.theft_alerts;
 create trigger theft_alerts_review_mark before update of status on public.theft_alerts
   for each row execute function public.theft_alerts_review_mark();
