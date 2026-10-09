@@ -3,7 +3,7 @@ import { CalendarDays, MapPin, MessageSquare } from "lucide-react";
 import { Card } from "@/components/ui";
 import { PostStatusBadge } from "@/components/community/PostStatusBadge";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
-import { postImageUrl, type LostPost } from "@/lib/community";
+import { postImageUrl, postKind, type LostPost } from "@/lib/community";
 import { cn } from "@/lib/cn";
 import { formatDate, timeAgo } from "@/lib/format";
 import { typeLabel } from "@/lib/types";
@@ -12,6 +12,7 @@ export type PostListItem = Pick<
   LostPost,
   | "id"
   | "author_name"
+  | "kind"
   | "type"
   | "title"
   | "lost_area"
@@ -27,9 +28,10 @@ export type PostListItem = Pick<
   | "created_at"
 >;
 
-/** 커뮤니티 목록의 분실 글 한 줄 */
+/** 커뮤니티 목록의 분실·발견 글 한 줄 */
 export function PostCard({ post: p }: { post: PostListItem }) {
   const resolved = p.status === "resolved";
+  const kind = postKind(p.kind);
   const spec = [typeLabel(p.type), p.color, [p.brand, p.model].filter(Boolean).join(" ")].filter(Boolean).join(" · ");
   return (
     <Link href={`/community/${p.id}`} className="block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
@@ -37,7 +39,7 @@ export function PostCard({ post: p }: { post: PostListItem }) {
         <VehicleImage src={postImageUrl(p)} type={p.type} alt={p.title} className="h-24 w-24 flex-none rounded-xl sm:h-28 sm:w-28" />
         <div className="min-w-0 flex-1 py-0.5">
           <div className="flex items-center gap-2">
-            <PostStatusBadge status={p.status} />
+            <PostStatusBadge status={p.status} kind={kind} />
             {p.has_sticker && (
               <span className="flex-none text-[12px] font-semibold text-brand-700" title="B-LOCK QR 스티커가 붙어 있어요">
                 🏷️ 스티커
@@ -56,7 +58,7 @@ export function PostCard({ post: p }: { post: PostListItem }) {
             {p.lost_on && (
               <span className="flex items-center gap-1">
                 <CalendarDays aria-hidden className="h-3.5 w-3.5" />
-                {formatDate(p.lost_on).slice(5)} 분실
+                {formatDate(p.lost_on).slice(5)} {kind === "found" ? "발견" : "분실"}
               </span>
             )}
           </div>

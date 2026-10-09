@@ -2,11 +2,15 @@ import { publicImageUrl, vehicleImageUrl } from "./images";
 import type { VehicleType } from "./types";
 
 export type PostStatus = "open" | "resolved";
+/** 글 종류: 잃어버린 사람이 올린 글 / 발견한 사람이 주인을 찾는 글 */
+export type PostKind = "lost" | "found";
 
 export type LostPost = {
   id: string;
   author_id: string;
   author_name: string;
+  /** 잃어버렸어요(lost) / 주인을 찾아요(found). 예전 글은 모두 lost */
+  kind: PostKind;
   vehicle_id: string | null;
   type: VehicleType;
   title: string;
@@ -27,6 +31,8 @@ export type LostPost = {
   deleted_at: string | null;
   /** 신고가 쌓였거나 관리자가 숨긴 시각. 숨긴 글은 글쓴이·관리자에게만 보여요. */
   hidden_at: string | null;
+  /** 글쓴이가 내용을 고친 시각 (updated_at 은 댓글 수가 바뀔 때도 바뀌어요) */
+  edited_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -55,9 +61,20 @@ export const POST_STATUS_META: Record<PostStatus, { label: string; emoji: string
   resolved: { label: "찾았어요", emoji: "🔵" },
 };
 
+/** 글 종류별 문구 (발견 글은 '잃어버린 곳' 대신 '발견한 곳') */
+export const POST_KIND_META: Record<PostKind, { label: string; place: string; day: string; status: Record<PostStatus, string> }> = {
+  lost: { label: "잃어버렸어요", place: "잃어버린 곳", day: "잃어버린 날", status: { open: "찾는 중", resolved: "찾았어요" } },
+  found: { label: "주인을 찾아요", place: "발견한 곳", day: "발견한 날", status: { open: "주인 찾는 중", resolved: "주인 찾았어요" } },
+};
+
+/** 예전 글이나 kind 가 없는 응답도 '잃어버렸어요'로 봐요 */
+export function postKind(kind: string | null | undefined): PostKind {
+  return kind === "found" ? "found" : "lost";
+}
+
 /** 목록에서 쓰는 열 (본문 전체는 상세에서만) */
 export const POST_LIST_COLUMNS =
-  "id, author_name, type, title, lost_area, lost_on, color, brand, model, image_bucket, image_path, status, comment_count, has_sticker, created_at";
+  "id, author_name, kind, type, title, lost_area, lost_on, color, brand, model, image_bucket, image_path, status, comment_count, has_sticker, created_at";
 
 export function postImageUrl(p: Pick<LostPost, "image_bucket" | "image_path">) {
   if (!p.image_path) return null;
