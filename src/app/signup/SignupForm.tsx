@@ -58,13 +58,13 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
           ? "이미 가입된 이메일이에요. 로그인해 주세요."
           : /rate limit/i.test(error.message)
             ? "가입 요청이 너무 많아요. 잠시 후 다시 시도해 주세요."
-            : friendlyError(error, "회원가입에 실패했습니다. 잠시 후 다시 시도해 주세요."),
+            : friendlyError(error, "가입하지 못했어요. 잠시 후 다시 시도해 주세요."),
       });
       return;
     }
     if (data.session) {
       // 이메일 확인을 쓰지 않는 설정이면 바로 로그인됩니다.
-      toast.success("가입되었습니다! 환영해요.");
+      toast.success("가입했어요! 환영해요.");
       router.replace(next === "/dashboard" ? "/dashboard?welcome=1" : next);
       router.refresh();
     } else {
@@ -78,7 +78,7 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
         <EmptyState
           icon={<MailCheck className="h-7 w-7" />}
           title="가입 확인 메일을 보냈어요"
-          description={`${sentTo} 메일함(스팸함 포함)에서 확인 링크를 누르면 가입이 끝나요.${next === "/dashboard" ? "" : " 확인을 마치면 보던 화면으로 바로 돌아가요."}`}
+          description={`${sentTo} 메일함(스팸함 포함)에서 확인 링크를 누르면 가입이 끝나요.${next === "/dashboard" ? "" : " 확인을 마치면 보던 화면으로 이어서 갈 수 있어요."}`}
           action={
             <div className="space-y-3">
               <ButtonLink href={loginHref} full>

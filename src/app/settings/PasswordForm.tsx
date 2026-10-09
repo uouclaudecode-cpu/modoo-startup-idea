@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { Button, Input, useToast } from "@/components/ui";
 import { friendlyError } from "@/lib/format";
-import { createClient } from "@/lib/supabase/client";
 
 type Errors = { current?: string; pw?: string; confirm?: string; form?: string };
 
 /**
  * 새 비밀번호로 바꾸기.
  * 설정 화면에서는 지금 비밀번호를 서버에서 먼저 확인해요. (로그인된 휴대폰을 잠깐 빌린 사람이 바꾸지 못하게)
- * 비밀번호 찾기 메일로 들어온 경우(requireCurrent={false})는 메일 링크가 본인 확인이라 바로 바꿔요.
+ * 비밀번호 찾기 메일로 들어온 경우(requireCurrent={false})는 메일 링크가 본인 확인이라 지금 비밀번호 없이 바꿔요.
+ * 이때도 서버가 '메일 링크로 들어온 표시'를 확인하고, 바꾸고 나면 그 표시를 지워요. (남은 시간 동안 다른 사람이 또 바꾸지 못하게)
  */
 export function PasswordForm({ onDone, requireCurrent = true }: { onDone?: () => void; requireCurrent?: boolean }) {
   const toast = useToast();
@@ -20,28 +20,13 @@ export function PasswordForm({ onDone, requireCurrent = true }: { onDone?: () =>
   const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
 
-  /** 바꾸고, 실패하면 보여줄 오류를 돌려줘요 */
+  /** 바꾸고, 실패하면 보여줄 오류를 돌려줘요 (두 경우 모두 서버를 거쳐요) */
   async function save(): Promise<Errors | null> {
-    if (!requireCurrent) {
-      const { error } = await createClient().auth.updateUser({ password: pw });
-      if (!error) return null;
-      console.error(error);
-      return {
-        form:
-          error.code === "same_password" || /different from the old|same password/i.test(error.message)
-            ? "지금 쓰는 비밀번호와 다른 비밀번호로 정해 주세요."
-            : error.code === "weak_password" || /weak|should contain/i.test(error.message)
-              ? "비밀번호가 너무 쉬워요. 더 길게 하거나 영문·숫자·기호를 섞어 주세요."
-              : /session|expired|not authenticated/i.test(error.message)
-                ? "로그인이 만료됐어요. 다시 로그인한 뒤 바꿔 주세요."
-                : friendlyError(error, "바꾸지 못했어요. 잠시 후 다시 시도해 주세요."),
-      };
-    }
     try {
       const res = await fetch("/api/account/password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword: current, password: pw }),
+        body: JSON.stringify(requireCurrent ? { currentPassword: current, password: pw } : { password: pw, recovery: true }),
       });
       if (res.ok) return null;
       const json = (await res.json().catch(() => ({}))) as { error?: string; field?: string };

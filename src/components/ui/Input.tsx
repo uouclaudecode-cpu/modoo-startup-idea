@@ -59,7 +59,8 @@ export function Input({ label, hint, error, required, className, type, reveal = 
             required={required}
             // 글자를 보이게 바꿔도 휴대폰 키보드가 첫 글자를 대문자로 바꾸거나 고치지 않게
             {...(canReveal ? { autoCapitalize: "none", autoCorrect: "off", spellCheck: false } : {})}
-            className={cn(fieldClass, "h-12", canReveal && "pr-14", error && "border-rose-400", className)}
+            // Edge가 따로 붙이는 보기 버튼(::-ms-reveal)은 숨겨요 (눈 버튼이 두 개 보이지 않게)
+            className={cn(fieldClass, "h-12", canReveal && "pr-14 [&::-ms-reveal]:hidden", error && "border-rose-400", className)}
             {...rest}
           />
         );
