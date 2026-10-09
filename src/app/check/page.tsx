@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CheckForm } from "./CheckForm";
+import { ListingCheck } from "./ListingCheck";
 
 export const metadata: Metadata = {
   title: "중고 구매 전 도난 조회",
@@ -18,6 +19,11 @@ export default async function CheckPage({ searchParams }: { searchParams: Promis
         </p>
       </div>
       <CheckForm initial={typeof q === "string" ? q.slice(0, 300) : ""} />
+      <div className="pt-2">
+        <h2 className="text-xl font-extrabold tracking-tight">중고 매물 확인</h2>
+        <p className="mt-1 text-[14px] leading-relaxed text-ink-muted">번호를 모를 때는 판매 글로 확인하고, 판매자에게 인증을 요청하세요.</p>
+      </div>
+      <ListingCheck />
     </div>
   );
 }

@@ -96,7 +96,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
             </Link>
           ))}
         </div>
-        <div role="group" aria-label="종류" className="-mx-4 flex max-w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 py-1 sm:mx-0 sm:max-w-none sm:px-0">
+        <div role="group" aria-label="종류" className="-mx-4 flex max-w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 py-1 sm:mx-0 sm:max-w-none sm:px-0 no-scrollbar">
           {[{ value: "", label: "전체", emoji: "" }, ...VEHICLE_TYPES].map((t) => (
             <Link
               key={t.value || "all"}

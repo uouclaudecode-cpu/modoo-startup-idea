@@ -8,6 +8,7 @@ import { formatDistance } from "@/lib/ride/geo";
 import { createClient } from "@/lib/supabase/server";
 import { durationLabel, INVALID_REASON, monthLabel, WARNING_TEXT, type TradeVerification } from "@/lib/trade";
 import { typeLabel } from "@/lib/types";
+import { PART_META, PART_STATUS_META, partStatus, wearRatio, type PartKind } from "@/lib/parts";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -49,6 +50,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ token: 
   const v = data.vehicle;
   const title = [v.brand, v.model].filter(Boolean).join(" ") || typeLabel(v.type);
   const theftClear = data.searching_count === 0;
+  const now = new Date(data.checked_at).getTime();
 
   return (
     <div className="mx-auto max-w-md space-y-4">
@@ -96,6 +98,45 @@ export default async function VerifyPage({ params }: { params: Promise<{ token: 
           value={`${data.seller.masked_nickname}${data.seller.member_since ? ` · ${monthLabel(data.seller.member_since)} 가입` : ""}`}
         />
       </Card>
+
+      {((data.maintenance_recent?.length ?? 0) > 0 || (data.parts?.length ?? 0) > 0) && (
+        <Card className="space-y-3">
+          <p className="flex items-center gap-2 font-bold">
+            <Wrench aria-hidden className="h-5 w-5 text-brand-600" />
+            정비 이력
+          </p>
+          {(data.parts?.length ?? 0) > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {data.parts!.map((p) => {
+                const meta = PART_META[p.kind as PartKind];
+                if (!meta) return null;
+                const st = partStatus(wearRatio(p, now));
+                return (
+                  <span key={p.kind} className={`rounded-full px-2.5 py-1 text-[12px] font-semibold ring-1 ring-inset ${PART_STATUS_META[st].badge}`}>
+                    {meta.emoji} {meta.label} · {PART_STATUS_META[st].label}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+          {(data.maintenance_recent?.length ?? 0) > 0 && (
+            <ul className="divide-y divide-line/70 text-[14px]">
+              {data.maintenance_recent!.map((l, i) => (
+                <li key={i} className="flex items-center gap-2 py-2">
+                  <span aria-hidden>{PART_META[l.kind as PartKind]?.emoji ?? "🔧"}</span>
+                  <span className="font-semibold">{PART_META[l.kind as PartKind]?.label ?? l.kind}</span>
+                  {l.shop && <span className="truncate text-ink-muted">· {l.shop}</span>}
+                  <span className="ml-auto flex-none tabular-nums text-ink-muted">
+                    {monthLabel(l.serviced_on)}
+                    {l.distance_m > 0 ? ` · ${formatDistance(l.distance_m)}` : ""}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="text-[12px] leading-relaxed text-ink-muted">사면 정비 기록과 소모품 상태가 그대로 넘어와요. 비용·메모는 보여 주지 않아요.</p>
+        </Card>
+      )}
 
       {data.warnings.length > 0 && (
         <Card className="space-y-2 bg-orange-50 ring-orange-200">

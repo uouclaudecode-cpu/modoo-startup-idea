@@ -65,7 +65,7 @@ export default async function MaintenancePage({ params }: { params: Promise<{ id
         <span className="mt-1 block font-semibold text-ink">공기압: {pressureTip(vehicle.type, vehicle.subtype)}</span>
       </p>
       <PartsBoard parts={(parts ?? []) as VehiclePart[]} now={now} lastLife={lastLife} />
-      <MaintenanceDiary logs={(logs ?? []) as MaintenanceLog[]} />
+      <MaintenanceDiary logs={(logs ?? []) as MaintenanceLog[]} ownedSince={vehicle.owned_since ?? null} />
     </div>
   );
 }

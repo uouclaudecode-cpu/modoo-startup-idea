@@ -13,7 +13,7 @@ const labelOf = (kind: string) => PART_META[kind as PartKind]?.label ?? kind;
 const emojiOf = (kind: string) => PART_META[kind as PartKind]?.emoji ?? "🔧";
 
 /** 정비 이력 (최신순) + 항목별 보기 + 총 비용 */
-export function MaintenanceDiary({ logs }: { logs: MaintenanceLog[] }) {
+export function MaintenanceDiary({ logs, ownedSince = null }: { logs: MaintenanceLog[]; /** 지금 주인이 된 때 (이전 기록 표시용) */ ownedSince?: string | null }) {
   const router = useRouter();
   const toast = useToast();
   const [filter, setFilter] = useState<string>("all");
@@ -63,7 +63,7 @@ export function MaintenanceDiary({ logs }: { logs: MaintenanceLog[] }) {
       ) : (
         <>
           {kinds.length > 1 && (
-            <div className="-mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1">
+            <div className="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1">
               {["all", ...kinds].map((k) => (
                 <button
                   key={k}
@@ -87,6 +87,9 @@ export function MaintenanceDiary({ logs }: { logs: MaintenanceLog[] }) {
                   <div className="flex items-center gap-2">
                     <span aria-hidden>{emojiOf(l.kind)}</span>
                     <p className="font-bold">{labelOf(l.kind)}</p>
+                    {ownedSince && l.created_at < ownedSince && (
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-ink-muted">이전 주인 기록</span>
+                    )}
                     <time className="ml-auto text-[13px] tabular-nums text-ink-muted" dateTime={l.serviced_on}>
                       {formatDate(l.serviced_on + "T00:00:00+09:00")}
                     </time>

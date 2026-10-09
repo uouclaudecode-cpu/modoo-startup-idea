@@ -224,7 +224,7 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
 
       {/* 어떤 이동수단으로 탈지 (기록 중에는 바꿀 수 없음) */}
       {t.status === "idle" ? (
-        <div role="radiogroup" aria-label="탈 이동수단" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+        <div role="radiogroup" aria-label="탈 이동수단" className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
           {vehicles.map((v) => (
             <button
               key={v.id}

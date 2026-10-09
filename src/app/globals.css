@@ -53,3 +53,14 @@
     break-after: page;
   }
 }
+
+/* 가로로 미는 칩 줄: 스크롤 막대는 숨기고 손가락으로 밀기만 */
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}

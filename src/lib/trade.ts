@@ -24,6 +24,9 @@ export type TradeVerification =
       serial_last4: string | null;
       sticker_attached: boolean;
       maintenance_count: number;
+      /** 최근 정비 6건 (달 단위, 비용·메모 없음) */
+      maintenance_recent?: { kind: string; serviced_on: string; distance_m: number; shop: string | null }[];
+      parts?: { kind: string; interval_km: number | null; interval_days: number | null; distance_m: number; last_serviced_at: string }[];
       odometer_m: number;
       seller: { masked_nickname: string; member_since: string | null };
       warnings: ("NEW_REGISTRATION" | "RECENT_TRANSFER" | "NO_SERIAL")[];
