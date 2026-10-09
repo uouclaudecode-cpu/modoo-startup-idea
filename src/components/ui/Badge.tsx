@@ -14,7 +14,7 @@ const TONES: Record<Tone, string> = {
 /** 짧은 상태 표시. 색만으로 구분하지 않도록 아이콘이나 글자를 함께 넣어 주세요. */
 export function Badge({ tone = "neutral", icon, children }: { tone?: Tone; icon?: ReactNode; children: ReactNode }) {
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[13px] font-semibold ring-1 ring-inset", TONES[tone])}>
+    <span className={cn("inline-flex flex-none items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[13px] font-semibold ring-1 ring-inset", TONES[tone])}>
       {icon}
       {children}
     </span>

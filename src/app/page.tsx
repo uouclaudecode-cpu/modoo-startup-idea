@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { Bike, Camera, ChevronRight, EyeOff, Lock, MapPinned, MessagesSquare, Route, ScanLine, Tag, Wrench } from "lucide-react";
+import { Bike, Camera, Check, ChevronRight, EyeOff, Lock, MapPinned, MessagesSquare, Route, ScanLine, Tag, Wrench } from "lucide-react";
 import { site } from "@/config/site";
 import { ButtonLink, Card, StatusBadge } from "@/components/ui";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
 import { POST_LIST_COLUMNS } from "@/lib/community";
 import { createClient, getUser } from "@/lib/supabase/server";
+
+/** 첫 화면 배너의 특징 (트래커·구독형 서비스와 다른 점) */
+const HIGHLIGHTS = ["무료", "배터리·충전 없음", "연락처 비공개"];
 
 const STEPS = [
   { icon: Tag, title: "스티커 받기", text: "학교·편의점에 놓인 B-LOCK QR 스티커를 받아요. 없으면 앱에서 QR을 만들어 출력해도 돼요." },
@@ -53,6 +56,14 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         <p className="mt-4 text-[15px] leading-relaxed text-brand-50/90">
           QR 스티커 하나로 등록하고, 잃어버렸을 때 주변 사람의 제보를 받을 수 있습니다.
         </p>
+        <ul aria-label="특징" className="mt-5 flex flex-wrap gap-2 text-[13px] font-semibold">
+          {HIGHLIGHTS.map((t) => (
+            <li key={t} className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 ring-1 ring-inset ring-white/25">
+              <Check aria-hidden className="h-3.5 w-3.5" />
+              {t}
+            </li>
+          ))}
+        </ul>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           {/* 로그인했으면 내 이동수단으로, 아니면 등록 시작 */}
           <ButtonLink href={user ? "/dashboard" : "/vehicles/new"} size="lg" full variant="light" icon={<Bike aria-hidden className="h-5 w-5" />}>
@@ -67,19 +78,19 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       {/* 작동 방식 */}
       <section>
         <h2 className="text-xl font-bold tracking-tight">이렇게 작동해요</h2>
-        <ol className="mt-4 grid gap-3 sm:grid-cols-2">
+        {/* 한 줄로 이어지는 단계 (카드 6개를 늘어놓지 않고 짧게) */}
+        <ol className="mt-4 rounded-2xl bg-white p-5 shadow-card ring-1 ring-line/70">
           {STEPS.map((s, i) => (
-            <li key={s.title}>
-              <Card className="flex h-full items-start gap-4 p-4">
-                <span className="grid h-11 w-11 flex-none place-items-center rounded-xl bg-brand-50 text-brand-600">
-                  <s.icon aria-hidden className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-[13px] font-semibold text-brand-600">STEP {i + 1}</p>
-                  <p className="font-bold">{s.title}</p>
-                  <p className="mt-0.5 text-sm leading-relaxed text-ink-muted">{s.text}</p>
-                </div>
-              </Card>
+            <li key={s.title} className="relative flex gap-4 pb-6 last:pb-0">
+              {i < STEPS.length - 1 && <span aria-hidden className="absolute bottom-1 left-5 top-12 w-px -translate-x-1/2 bg-brand-100" />}
+              <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-brand-600 text-white">
+                <s.icon aria-hidden className="h-5 w-5" />
+              </span>
+              <div className="min-w-0 pt-0.5">
+                <p className="text-xs font-bold text-brand-600">STEP {i + 1}</p>
+                <p className="font-bold leading-snug">{s.title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-ink-muted">{s.text}</p>
+              </div>
             </li>
           ))}
         </ol>

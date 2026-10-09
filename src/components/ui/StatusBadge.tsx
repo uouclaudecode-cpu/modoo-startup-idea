@@ -8,7 +8,7 @@ export function StatusBadge({ status, size = "md" }: { status: DisplayStatus; si
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full font-semibold ring-1 ring-inset",
+        "inline-flex flex-none items-center gap-1.5 whitespace-nowrap rounded-full font-semibold ring-1 ring-inset",
         size === "lg" ? "px-3.5 py-1.5 text-sm" : "px-2.5 py-1 text-[13px]",
         meta.badge,
       )}

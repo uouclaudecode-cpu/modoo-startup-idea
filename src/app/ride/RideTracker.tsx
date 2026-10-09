@@ -240,7 +240,7 @@ export function RideTracker({ vehicles, userId }: { vehicles: RideVehicle[]; use
       </Card>
 
       {/* 시작 / 일시정지 / 종료 */}
-      <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-10 sm:bottom-4">
+      <div className="sticky bottom-[calc(6rem+env(safe-area-inset-bottom))] z-10 sm:bottom-4">
         {t.status === "idle" && (
           <Button size="lg" full className="h-16 text-lg shadow-lift" icon={<Play aria-hidden className="h-6 w-6" />} onClick={start}>
             라이딩 시작

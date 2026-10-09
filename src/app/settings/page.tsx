@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+import { LogoutButton } from "@/components/layout/LogoutButton";
 import { PushSettings } from "@/components/push/PushSettings";
 import { BlockedUsers } from "@/components/settings/BlockedUsers";
 import { Card } from "@/components/ui";
@@ -26,7 +27,7 @@ export default async function SettingsPage() {
   return (
     <div className="mx-auto max-w-xl space-y-5">
       <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
-        <ChevronLeft aria-hidden className="h-4 w-4" />내 이동수단
+        <ChevronLeft aria-hidden className="h-4 w-4" />MY
       </Link>
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">설정</h1>
@@ -51,6 +52,10 @@ export default async function SettingsPage() {
       <Card>
         <BlockedUsers />
       </Card>
+
+      <SettingsSection title="로그아웃" description="이 기기에서 로그아웃하고, 이 기기의 알림도 함께 꺼요.">
+        <LogoutButton />
+      </SettingsSection>
 
       <SettingsSection title="회원 탈퇴" description="계정과 등록한 이동수단·라이딩·정비 기록·커뮤니티 글과 댓글이 모두 지워지고 되돌릴 수 없어요." danger>
         <DeleteAccount email={user.email ?? ""} />

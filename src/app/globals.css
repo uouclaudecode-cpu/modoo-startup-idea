@@ -8,6 +8,17 @@
   }
   body {
     @apply bg-canvas font-sans text-ink antialiased;
+    /* 한글이 단어 중간에서 줄바꿈되지 않게 (긴 주소·영문은 넘치면 줄바꿈) */
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
   }
   :focus-visible {
     @apply outline-none ring-2 ring-brand-500 ring-offset-2;

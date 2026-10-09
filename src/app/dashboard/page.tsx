@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Bike, ChartColumn, Flag, Play, Plus, Printer } from "lucide-react";
+import { Bike, ChartColumn, Flag, Play, Plus, Printer, Settings } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { WelcomeGuide } from "@/components/onboarding/WelcomeGuide";
 import { partsNeedingCare, type VehiclePart } from "@/lib/parts";
-import { ButtonLink, EmptyState, ErrorState } from "@/components/ui";
+import { ButtonLink, Card, EmptyState, ErrorState } from "@/components/ui";
 import { VehicleCard } from "@/components/vehicle/VehicleCard";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
 import { POST_LIST_COLUMNS } from "@/lib/community";
@@ -65,12 +65,21 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-extrabold tracking-tight">안녕하세요, {nickname}님</h1>
-        <p className="mt-1 flex items-center gap-1.5 text-ink-muted">
-          <Bike aria-hidden className="h-4 w-4" />내 이동수단 {list.length}개
-        </p>
-      </div>
+      {/* 내 정보: 닉네임 + 설정으로 바로 가기 */}
+      <Card className="flex items-center gap-4 p-4">
+        <span aria-hidden className="grid h-14 w-14 flex-none place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-xl font-extrabold text-white">
+          {Array.from(String(nickname))[0]}
+        </span>
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-xl font-extrabold tracking-tight">안녕하세요, {nickname}님</h1>
+          <p className="mt-0.5 flex items-center gap-1.5 text-sm text-ink-muted">
+            <Bike aria-hidden className="h-4 w-4" />내 이동수단 {list.length}개
+          </p>
+        </div>
+        <ButtonLink href="/settings" variant="secondary" className="h-10 flex-none rounded-full px-3.5 text-sm" icon={<Settings aria-hidden className="h-4 w-4" />}>
+          설정
+        </ButtonLink>
+      </Card>
 
       <WelcomeGuide nickname={nickname} hasVehicle={list.length > 0} hasSticker={hasSticker} fresh={welcome === "1"} />
 

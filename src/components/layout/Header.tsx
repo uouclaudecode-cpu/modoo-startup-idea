@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { MessagesSquare, QrCode, Route, Settings, ShieldCheck } from "lucide-react";
-import { LogoutButton } from "./LogoutButton";
 import { site } from "@/config/site";
 import { buttonClass } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
@@ -38,10 +37,14 @@ export async function Header() {
             <Link href="/dashboard" className={cn(buttonClass("secondary"), "hidden h-10 px-3 text-sm sm:inline-flex")}>
               내 이동수단
             </Link>
-            <Link href="/settings" className={cn(buttonClass("ghost"), "h-10 w-10 px-0")} aria-label="설정" title="설정">
-              <Settings aria-hidden className="h-4 w-4" />
+            {/* 설정은 글자와 함께 크게 (로그아웃은 설정 화면 맨 아래) */}
+            <Link
+              href="/settings"
+              className="ml-1 inline-flex h-10 items-center gap-1.5 rounded-full bg-slate-100 px-3.5 text-sm font-bold text-ink-soft transition-colors hover:bg-slate-200 active:bg-slate-300"
+            >
+              <Settings aria-hidden className="h-[18px] w-[18px]" />
+              설정
             </Link>
-            <LogoutButton />
           </>
         ) : (
           <Link href="/login" className={cn(buttonClass("primary"), "h-10 px-4 text-sm")}>

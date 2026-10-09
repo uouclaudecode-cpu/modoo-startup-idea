@@ -30,9 +30,9 @@ export function LogoutButton() {
 
   return (
     <form ref={formRef} action="/auth/signout" method="post" onSubmit={onSubmit}>
-      <button type="submit" className={cn(buttonClass("ghost"), "h-10 gap-1.5 px-2.5 text-sm")} aria-label="로그아웃" title="로그아웃" disabled={busy}>
+      <button type="submit" className={cn(buttonClass("secondary", "md", true))} disabled={busy} aria-busy={busy || undefined}>
         {busy ? <Spinner className="h-4 w-4" /> : <LogOut aria-hidden className="h-4 w-4" />}
-        <span className="sm:hidden">로그아웃</span>
+        {busy ? "로그아웃 중..." : "로그아웃"}
       </button>
     </form>
   );
