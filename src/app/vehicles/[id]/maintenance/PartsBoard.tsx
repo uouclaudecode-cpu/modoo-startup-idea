@@ -33,6 +33,12 @@ const todayKst = () => new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 
 export function PartsBoard({ parts, now, lastLife = {} }: { parts: VehiclePart[]; now: number; lastLife?: Record<string, number> }) {
   const [servicing, setServicing] = useState<VehiclePart | null>(null);
   const [editing, setEditing] = useState<VehiclePart | null>(null);
+  // '사용 안 하는 항목'의 켜기로 열었으면 '이 항목 관리하기'를 켠 채로 열어요
+  const [turningOn, setTurningOn] = useState(false);
+  const edit = (p: VehiclePart, turnOn = false) => {
+    setTurningOn(turnOn);
+    setEditing(p);
+  };
   const sorted = [...parts].sort((a, b) => PART_ORDER.indexOf(a.kind) - PART_ORDER.indexOf(b.kind));
   const active = sorted.filter((p) => p.enabled);
   const off = sorted.filter((p) => !p.enabled);
@@ -49,7 +55,7 @@ export function PartsBoard({ parts, now, lastLife = {} }: { parts: VehiclePart[]
       <ul className="space-y-2">
         {active.map((p) => (
           <li key={p.id}>
-            <PartCard part={p} now={now} lastLife={lastLife[p.id] ?? null} onService={() => setServicing(p)} onEdit={() => setEditing(p)} />
+            <PartCard part={p} now={now} lastLife={lastLife[p.id] ?? null} onService={() => setServicing(p)} onEdit={() => edit(p)} />
           </li>
         ))}
       </ul>
@@ -60,12 +66,12 @@ export function PartsBoard({ parts, now, lastLife = {} }: { parts: VehiclePart[]
             <button
               key={p.id}
               type="button"
-              onClick={() => setEditing(p)}
+              onClick={() => edit(p, true)}
               className="flex w-full items-center gap-2 rounded-xl bg-slate-100 px-3 py-2.5 text-left text-sm text-ink-muted hover:bg-slate-200"
             >
               <span aria-hidden>{PART_META[p.kind].emoji}</span>
               {PART_META[p.kind].label}
-              <span className="ml-auto text-[12px]">켜기</span>
+              <span className="ml-auto text-[12px] font-semibold text-brand-700">켜기</span>
             </button>
           ))}
         </div>
@@ -77,7 +83,7 @@ export function PartsBoard({ parts, now, lastLife = {} }: { parts: VehiclePart[]
       </p>
 
       <ServiceModal part={servicing} onClose={() => setServicing(null)} />
-      <IntervalModal part={editing} onClose={() => setEditing(null)} />
+      <IntervalModal part={editing} turnOn={turningOn} onClose={() => setEditing(null)} />
     </section>
   );
 }
@@ -129,7 +135,14 @@ function PartCard({ part, now, lastLife, onService, onEdit }: { part: VehiclePar
       {lastLife != null && part.interval_km != null && (
         <p className="text-[12px] text-ink-muted">
           지난번엔 교체 전까지 <b className="text-ink-soft">{(lastLife / 1000).toLocaleString("ko-KR", { maximumFractionDigits: 0 })}km</b> 탔어요
-          {Math.abs(lastLife / 1000 - part.interval_km) / part.interval_km > 0.3 ? " · 주기를 내 기록에 맞게 바꿔 보세요 (⚙)" : ""}
+          {Math.abs(lastLife / 1000 - part.interval_km) / part.interval_km > 0.3 && (
+            <>
+              {" · "}
+              <button type="button" onClick={onEdit} className="font-semibold text-brand-700 underline underline-offset-2">
+                주기를 내 기록에 맞게 바꾸기
+              </button>
+            </>
+          )}
         </p>
       )}
       {status !== "good" && <p className="text-[13px] leading-relaxed text-ink-soft">{meta.tip}</p>}
@@ -210,7 +223,7 @@ function ServiceModal({ part, onClose }: { part: VehiclePart | null; onClose: ()
     >
       <div className="space-y-3">
         <p className="text-[14px]">
-          지금까지 달린 거리 <b>{part ? (part.distance_m / 1000).toFixed(1) : 0}km</b>가 이력에 남고, 0km부터 다시 셉니다.
+          지금까지 달린 거리 <b>{part ? (part.distance_m / 1000).toFixed(1) : 0}km</b>가 이력에 남고, 0km부터 다시 세어요.
         </p>
         <Input label="정비한 날" type="date" max={todayKst()} value={date} onChange={(e) => setDate(e.target.value)} error={errors.date} required />
         <div className="grid grid-cols-2 gap-3">
@@ -229,7 +242,7 @@ function ServiceModal({ part, onClose }: { part: VehiclePart | null; onClose: ()
 }
 
 /** 주기 바꾸기 · 사용 안 함 · 기본값으로 */
-function IntervalModal({ part, onClose }: { part: VehiclePart | null; onClose: () => void }) {
+function IntervalModal({ part, turnOn = false, onClose }: { part: VehiclePart | null; turnOn?: boolean; onClose: () => void }) {
   const router = useRouter();
   const toast = useToast();
   const [km, setKm] = useState("");
@@ -248,7 +261,7 @@ function IntervalModal({ part, onClose }: { part: VehiclePart | null; onClose: (
     setBaseKm("");
     setKm(part.interval_km != null ? String(part.interval_km) : "");
     setDays(part.interval_days != null ? String(part.interval_days) : "");
-    setEnabled(part.enabled);
+    setEnabled(part.enabled || turnOn);
     setError("");
   }
 
@@ -286,7 +299,16 @@ function IntervalModal({ part, onClose }: { part: VehiclePart | null; onClose: (
       console.error(err);
       return setError(friendlyError(err, "저장하지 못했어요. 다시 시도해 주세요."));
     }
-    toast.success(baseDate ? "주기와 지금 상태를 맞췄어요." : "주기를 바꿨어요.");
+    const label = PART_META[part.kind].label;
+    toast.success(
+      enabled !== part.enabled
+        ? enabled
+          ? `${label} 관리를 켰어요. 시기가 되면 알려 드려요.`
+          : `${label} 관리를 껐어요. 알림을 보내지 않아요.`
+        : baseDate
+          ? "주기와 지금 상태를 맞췄어요."
+          : "주기를 바꿨어요.",
+    );
     setOpenedFor(null);
     onClose();
     router.refresh();
@@ -305,7 +327,7 @@ function IntervalModal({ part, onClose }: { part: VehiclePart | null; onClose: (
             취소
           </Button>
           <Button loading={loading} loadingText="저장 중..." onClick={save}>
-            저장
+            {part && !part.enabled && enabled ? "켜고 저장" : "저장"}
           </Button>
         </>
       }

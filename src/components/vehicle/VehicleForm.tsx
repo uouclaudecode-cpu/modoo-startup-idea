@@ -77,7 +77,7 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
         if (upErr) {
           console.error(upErr);
           imagePath = null;
-          setErrors({ photo: "사진 업로드에 실패했습니다. 다시 시도해주세요." });
+          setErrors({ photo: "사진을 올리지 못했어요. 다시 시도해 주세요." });
           return;
         }
       }
@@ -119,7 +119,7 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
         }
         toast.success("등록하고 스티커도 연결했어요!");
       } else {
-        toast.success("등록되었습니다! 고유 QR이 만들어졌어요.");
+        toast.success("등록했어요! 고유 QR이 만들어졌어요.");
       }
       router.replace(`/vehicles/${data.id}/qr?new=1`);
       router.refresh();
@@ -127,8 +127,8 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
       console.error(err);
       // 저장에 실패하면 먼저 올린 사진을 지워 쓰레기 파일이 남지 않게 합니다.
       if (imagePath) await supabase.storage.from("vehicle-images").remove([imagePath]);
-      setErrors({ form: friendlyError(err, `${editing ? "수정" : "등록"}에 실패했습니다. 잠시 후 다시 시도해 주세요.`) });
-      toast.error(`${editing ? "수정" : "등록"}에 실패했습니다.`);
+      setErrors({ form: friendlyError(err, `${editing ? "수정하지" : "등록하지"} 못했어요. 잠시 후 다시 시도해 주세요.`) });
+      toast.error(`${editing ? "수정하지" : "등록하지"} 못했어요.`);
     } finally {
       setLoading(false);
     }
@@ -174,7 +174,7 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
         <Input label="색상" placeholder="예) 무광 검정" value={form.color} onChange={set("color")} maxLength={30} />
         <Textarea
           label="특징"
-          placeholder="예) 안장 오른쪽에 작은 흠집이 있습니다."
+          placeholder="예) 안장 오른쪽에 작은 흠집이 있어요."
           hint="흠집·스티커·부착물처럼 내 것임을 알아볼 수 있는 특징을 적어 주세요. 소유권을 확인할 때 쓰여요."
           value={form.description}
           onChange={set("description")}
