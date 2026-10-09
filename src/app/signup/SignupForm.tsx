@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MailCheck } from "lucide-react";
 import { AuthCard } from "@/components/auth/AuthCard";
+import { ResendConfirm, confirmRedirectUrl } from "@/components/auth/ResendConfirm";
 import { Button, ButtonLink, EmptyState, Input, useToast } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
 import { friendlyError } from "@/lib/format";
@@ -20,6 +21,8 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState("");
+  // 로그인 화면으로 갈 때도 가려던 곳(next)을 함께 넘겨요
+  const loginHref = next === "/dashboard" ? "/login" : `/login?next=${encodeURIComponent(next)}`;
 
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [k]: e.target.value });
 
@@ -44,7 +47,8 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
       password: form.password,
       options: {
         data: { nickname: form.nickname.trim() },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        // 확인 링크를 누르면 가입하기 전에 보던 화면(스티커 등록·양도 QR·제보 등)으로 돌아가요
+        emailRedirectTo: confirmRedirectUrl(next),
       },
     });
     setLoading(false);
@@ -74,11 +78,14 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
         <EmptyState
           icon={<MailCheck className="h-7 w-7" />}
           title="가입 확인 메일을 보냈어요"
-          description={`${sentTo} 메일함(스팸함 포함)에서 확인 링크를 누르면 가입이 끝나요.`}
+          description={`${sentTo} 메일함(스팸함 포함)에서 확인 링크를 누르면 가입이 끝나요.${next === "/dashboard" ? "" : " 확인을 마치면 보던 화면으로 바로 돌아가요."}`}
           action={
-            <ButtonLink href="/login" full>
-              로그인 화면으로
-            </ButtonLink>
+            <div className="space-y-3">
+              <ButtonLink href={loginHref} full>
+                로그인 화면으로
+              </ButtonLink>
+              <ResendConfirm email={sentTo} next={next} justSent />
+            </div>
           }
         />
       </div>
@@ -92,7 +99,7 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
       footer={
         <>
           이미 계정이 있나요?{" "}
-          <Link href={next === "/dashboard" ? "/login" : `/login?next=${encodeURIComponent(next)}`} className="font-semibold text-brand-700 underline-offset-2 hover:underline">
+          <Link href={loginHref} className="font-semibold text-brand-700 underline-offset-2 hover:underline">
             로그인
           </Link>
         </>

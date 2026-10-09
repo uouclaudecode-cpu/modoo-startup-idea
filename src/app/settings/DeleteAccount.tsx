@@ -6,56 +6,44 @@ import { Button, Input, Modal } from "@/components/ui";
 import { friendlyError } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
 
-/** 내 폴더에 올린 사진들 (탈퇴 전에 지워요. 계정을 지우면 내 폴더를 지울 권한도 사라져서) */
-const MY_BUCKETS = ["vehicle-images", "community-images", "community-secret", "sighting-images", "evidence"] as const;
 const CONFIRM_WORD = "탈퇴";
 
 export function DeleteAccount({ email }: { email: string }) {
   const [open, setOpen] = useState(false);
   const [word, setWord] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  function close() {
+    if (loading) return;
+    setOpen(false);
+    setPassword("");
+    setError("");
+  }
 
   async function remove() {
     setError("");
     setLoading(true);
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      setLoading(false);
-      return setError("로그인이 만료됐어요. 다시 로그인해 주세요.");
-    }
-    // 1) 내가 올린 사진 지우기 (실패해도 탈퇴는 진행하지만 기록은 남겨요)
-    for (const bucket of MY_BUCKETS) {
-      const { data: files, error: listErr } = await supabase.storage.from(bucket).list(user.id, { limit: 1000 });
-      if (listErr) {
-        console.error(listErr);
-        continue;
+    // 서버에서 비밀번호를 확인한 뒤 계정을 지워요. 사진은 미리 지우지 않아서, 실패하면 모든 것이 그대로 남아요.
+    // (지워진 계정의 사진은 데이터베이스가 정리 대기열에 넣어요)
+    try {
+      const res = await fetch("/api/account/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (!res.ok) {
+        const json = (await res.json().catch(() => ({}))) as { error?: string };
+        setLoading(false);
+        return setError(json.error ?? "탈퇴하지 못했어요. 잠시 후 다시 시도해 주세요.");
       }
-      const paths = (files ?? []).map((f) => `${user.id}/${f.name}`);
-      if (paths.length) {
-        const { error: rmErr } = await supabase.storage.from(bucket).remove(paths);
-        if (rmErr) console.error(rmErr);
-      }
-    }
-    // 2) 내 이동수단이 받은 발견 제보 사진 지우기 (제보한 사람의 사진이라 계정과 함께 정리)
-    const { data: reportRows, error: repErr } = await supabase.from("reports").select("image_path").not("image_path", "is", null);
-    if (repErr) console.error(repErr);
-    const reportPaths = (reportRows ?? []).map((r) => r.image_path as string).filter(Boolean);
-    if (reportPaths.length) {
-      const { error: rmErr } = await supabase.storage.from("report-images").remove(reportPaths);
-      if (rmErr) console.error(rmErr);
-    }
-    // 3) 계정 지우기 (연결된 데이터는 데이터베이스가 함께 지움, 남은 사진은 정리 대기열로)
-    const { error: delErr } = await supabase.rpc("delete_my_account");
-    if (delErr) {
-      console.error(delErr);
+    } catch (err) {
+      console.error(err);
       setLoading(false);
-      return setError(friendlyError(delErr, "탈퇴하지 못했어요. 잠시 후 다시 시도해 주세요."));
+      return setError(friendlyError(err, "탈퇴하지 못했어요. 잠시 후 다시 시도해 주세요."));
     }
-    await supabase.auth.signOut().catch(() => {}); // 이미 지워진 계정이라 실패해도 괜찮아요
+    await createClient().auth.signOut().catch(() => {}); // 이미 지워진 계정이라 실패해도 괜찮아요
     try {
       // 이 기기에 남은 라이딩 진행 기록도 정리
       Object.keys(localStorage)
@@ -74,14 +62,14 @@ export function DeleteAccount({ email }: { email: string }) {
       </Button>
       <Modal
         open={open}
-        onClose={() => !loading && setOpen(false)}
+        onClose={close}
         title="정말 탈퇴할까요?"
         footer={
           <>
-            <Button variant="ghost" onClick={() => setOpen(false)} disabled={loading}>
+            <Button variant="ghost" onClick={close} disabled={loading}>
               취소
             </Button>
-            <Button variant="danger" loading={loading} loadingText="지우는 중..." disabled={word.trim() !== CONFIRM_WORD} onClick={remove}>
+            <Button variant="danger" loading={loading} loadingText="지우는 중..." disabled={word.trim() !== CONFIRM_WORD || !password} onClick={remove}>
               탈퇴하기
             </Button>
           </>
@@ -92,6 +80,14 @@ export function DeleteAccount({ email }: { email: string }) {
             <b>{email}</b> 계정과 등록한 이동수단·QR·라이딩·정비 기록·커뮤니티 글과 댓글이 모두 지워져요. 붙여 둔 QR 스티커도 더 이상 쓸 수 없어요.
           </p>
           <Input label={`확인을 위해 '${CONFIRM_WORD}'라고 입력해 주세요`} value={word} onChange={(e) => setWord(e.target.value)} autoComplete="off" />
+          <Input
+            label="비밀번호"
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            hint="본인 확인을 위해 지금 쓰는 비밀번호를 적어 주세요. 기억나지 않으면 로그아웃한 뒤 '비밀번호를 잊었어요'로 다시 정할 수 있어요."
+          />
           {error && (
             <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
               {error}
