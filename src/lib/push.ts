@@ -89,6 +89,29 @@ export async function getPushState(): Promise<PushState> {
  * 알림 켜기: 권한 묻기 → 구독 → 내 계정에 기기 저장.
  * 반드시 버튼 클릭 안에서 불러 주세요. 실패하면 사용자에게 보여줄 한국어 메시지로 오류를 던져요.
  */
+/** 이 브라우저의 알림 구독만 만들어요 (저장은 하지 않음). 로그인 없는 발견자 대화 알림에도 써요. */
+export async function browserPushSubscription(): Promise<{ endpoint: string; p256dh: string; auth: string }> {
+  if (!VAPID_PUBLIC_KEY) throw new Error("알림 기능 준비 중이에요.");
+  if (needsInstallForPush()) throw new Error("iPhone은 홈 화면에 추가한 앱에서만 알림을 받을 수 있어요.");
+  if (!isPushSupported()) throw new Error("이 브라우저는 알림을 지원하지 않아요. 크롬·삼성 인터넷·Safari에서 열어 주세요.");
+  const permission = Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
+  if (permission === "denied") throw new Error("알림이 차단돼 있어요. 브라우저 설정에서 알림을 허용해 주세요.");
+  if (permission !== "granted") throw new Error("알림을 받으려면 '허용'을 눌러 주세요.");
+  const key = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+  const reg = await readyRegistration();
+  let sub = await reg.pushManager.getSubscription();
+  if (sub && !sameKey(sub, key)) {
+    await sub.unsubscribe();
+    sub = null;
+  }
+  sub ??= await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+  const json = sub.toJSON();
+  if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth || !isAllowedPushEndpoint(json.endpoint)) {
+    throw new Error("이 브라우저의 알림은 아직 지원하지 않아요. 크롬·삼성 인터넷·Safari에서 열어 주세요.");
+  }
+  return { endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth };
+}
+
 export async function subscribePush(): Promise<void> {
   if (!VAPID_PUBLIC_KEY) throw new Error("알림 기능 준비 중이에요.");
   if (needsInstallForPush()) throw new Error("iPhone은 홈 화면에 추가한 앱에서만 알림을 받을 수 있어요.");

@@ -53,6 +53,8 @@ export type Report = {
   id: string;
   /** 로그인한 제보자만 (주인에게만 보임) */
   reporter_id?: string | null;
+  /** 발견자가 고른 연락 방법 */
+  contact_mode?: "chat" | "callback" | "none";
   vehicle_id: string;
   kind: "found" | "contact";
   latitude: number | null;

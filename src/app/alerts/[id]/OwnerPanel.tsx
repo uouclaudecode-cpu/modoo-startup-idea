@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element -- 비공개 사진은 서명 주소라 기본 img 사용 */
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CircleCheck, Link2, Megaphone, ShieldCheck, Trash2 } from "lucide-react";
+import { CircleCheck, FileText, Link2, Megaphone, ShieldCheck, Trash2 } from "lucide-react";
 import { Scanner } from "@/app/scan/Scanner";
 import { MoneyWarning, TrustInfo } from "@/components/alerts/TrustInfo";
 import { Button, ButtonLink, Card, Input, Modal, useToast } from "@/components/ui";
@@ -108,6 +108,10 @@ export function OwnerPanel({
           <p className="text-[13px] text-ink-muted">들어온 제보</p>
         </div>
       </Card>
+
+      <ButtonLink href={`/alerts/${alert.id}/police`} variant="secondary" full size="lg" icon={<FileText aria-hidden className="h-5 w-5" />}>
+        112 도난 신고서 만들기 (인쇄·문자)
+      </ButtonLink>
 
       {rewards.length > 0 && (
         <Card className="space-y-3">

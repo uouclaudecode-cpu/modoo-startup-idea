@@ -7,10 +7,11 @@ import { Badge, Button, Card } from "@/components/ui";
 import { formatDateTime } from "@/lib/format";
 import type { Report } from "@/lib/types";
 import { MoneyWarning, TrustInfo } from "@/components/alerts/TrustInfo";
+import { OwnerChat } from "./OwnerChat";
 import { hasMoneyRequest, type Trust } from "@/lib/alerts";
 
 export function ReportCard({ report: r, imageUrl, trust }: { report: Report; imageUrl: string | null; trust: Trust | null }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(r.contact_mode === "chat");
   const hasCoords = r.latitude != null && r.longitude != null;
   const place = r.location_text || (hasCoords ? `위도 ${r.latitude!.toFixed(5)}, 경도 ${r.longitude!.toFixed(5)}` : "위치 정보 없음");
   // 지도 API가 아닌 무료 링크: 카카오맵 앱/웹에서 위치를 보여줍니다.
@@ -47,7 +48,7 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: Report; ima
         </li>
         <li className="flex items-center gap-2 text-ink-soft">
           <Phone aria-hidden className="h-4 w-4 flex-none" />
-          {r.contact ? "연락 가능" : "연락처 없음"}
+          {r.contact_mode === "chat" ? "익명 대화 가능" : r.contact_mode === "callback" ? "콜백 요청 (전화해 달래요)" : r.contact ? "연락 가능" : "연락 안 받기"}
         </li>
       </ul>
 
@@ -68,12 +69,21 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: Report; ima
             </p>
           )}
           {r.contact && (
-            <p className="rounded-xl bg-brand-50 p-3 text-[15px]">
-              <span className="text-[13px] font-semibold text-brand-700">발견자 연락처</span>
-              <br />
-              {r.contact}
-            </p>
+            <div className="flex items-center gap-3 rounded-xl bg-brand-50 p-3 text-[15px]">
+              <p className="min-w-0 flex-1">
+                <span className="text-[13px] font-semibold text-brand-700">{r.contact_mode === "callback" ? "콜백 요청 번호" : "발견자 연락처"}</span>
+                <br />
+                <span className="break-all">{r.contact}</span>
+              </p>
+              {/^[\d\s+()-]{7,}$/.test(r.contact) && (
+                <a href={`tel:${r.contact.replace(/[^\d+]/g, "")}`} className="inline-flex h-10 flex-none items-center gap-1.5 rounded-xl bg-brand-600 px-3 text-sm font-semibold text-white">
+                  <Phone aria-hidden className="h-4 w-4" />
+                  전화
+                </a>
+              )}
+            </div>
           )}
+          {r.contact_mode === "chat" && <OwnerChat reportId={r.id} createdAt={r.created_at} trust={trust} anonymous={!r.reporter_id} />}
           {mapHref && (
             <a
               href={mapHref}

@@ -17,7 +17,7 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
   const { supabase, vehicle } = await getOwnedVehicle(id, `/vehicles/${id}/reports`);
   const { data, error } = await supabase
     .from("reports")
-    .select("id, vehicle_id, reporter_id, kind, latitude, longitude, location_text, description, image_path, contact, created_at")
+    .select("id, vehicle_id, reporter_id, contact_mode, kind, latitude, longitude, location_text, description, image_path, contact, created_at")
     .eq("vehicle_id", vehicle.id)
     .order("created_at", { ascending: false });
 
