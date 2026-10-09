@@ -104,7 +104,7 @@ export function PoliceReport({ alert, vehicle, stickerCodes, qrValue, photos, ma
           </div>
           <Input label="연락처" type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" />
           <Input
-            label="차대번호 전체 (선택)"
+            label="차대번호·프레임 번호 전체 (선택)"
             hint={vehicle.serial_last4 ? `등록된 번호 끝 4자리: ${vehicle.serial_last4}` : "프레임에 새겨진 번호를 적으면 수사에 도움이 돼요."}
             value={serial}
             onChange={(e) => setSerial(e.target.value.toUpperCase())}

@@ -90,8 +90,8 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
         )}
         {mode === "serial" && (
           <>
-            <p className="text-[14px] leading-relaxed text-ink-soft">이 기기에는 스티커가 없어요. 프레임에 새겨진 차대번호 전체를 직접 보고 적어 주세요. (판매자가 불러 주는 번호 말고 실물을 확인하세요)</p>
-            <Input label="차대번호 (전체)" value={last4} maxLength={40} onChange={(e) => setLast4(e.target.value.toUpperCase())} autoComplete="off" autoCapitalize="characters" />
+            <p className="text-[14px] leading-relaxed text-ink-soft">이 기기에는 스티커가 없어요. 프레임에 새겨진 차대번호(프레임·시리얼 번호) 전체를 직접 보고 적어 주세요. 자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요. (판매자가 불러 주는 번호 말고 실물을 확인하세요)</p>
+            <Input label="차대번호 (프레임·시리얼 번호 전체)" value={last4} maxLength={40} onChange={(e) => setLast4(e.target.value.toUpperCase())} autoComplete="off" autoCapitalize="characters" />
           </>
         )}
         {mode === "none" && (

@@ -247,7 +247,7 @@ export function OwnerPanel({
               )}
             </div>
           ) : alert.vehicle.has_serial ? (
-            <Input label="차대번호 (전체)" hint="되찾은 이동수단 프레임에 새겨진 번호" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
+            <Input label="차대번호 (프레임·시리얼 번호 전체)" hint="자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
           ) : (
             <p className="text-[14px] text-ink-soft">스티커·차대번호가 없어 바로 끝낼 수 있어요.</p>
           )}

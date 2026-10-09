@@ -129,7 +129,7 @@ export function TradeCard({ vehicleId, serialLast4, searching }: { vehicleId: st
       <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
         <Hash aria-hidden className="h-4 w-4 flex-none text-ink-muted" />
         <p className="min-w-0 flex-1 text-[14px]">
-          차대번호 <b className="text-ink">{serialLast4 ? `••••${serialLast4}` : "등록 안 함"}</b>
+          차대번호(프레임 번호) <b className="text-ink">{serialLast4 ? `••••${serialLast4}` : "등록 안 함"}</b>
           <span className="block text-[12px] text-ink-muted">프레임에 새겨진 번호예요. 같은 번호는 다른 계정에 등록할 수 없어요.</span>
         </p>
         <Button variant="secondary" className="h-9 flex-none px-3 text-sm" onClick={() => setSerialOpen(true)}>
@@ -171,9 +171,9 @@ export function TradeCard({ vehicleId, serialLast4, searching }: { vehicleId: st
       >
         <form id="serial-form" onSubmit={saveSerial} className="space-y-3">
           <p className="text-[14px] leading-relaxed text-ink-soft">
-            보통 페달 아래(바텀 브래킷)나 뒷바퀴 쪽 프레임에 새겨져 있어요. 번호 전체는 암호처럼 바꿔 저장하고, 화면에는 끝 4자리만 보여요. 비워서 저장하면 지워져요.
+            흔히 '프레임 번호'·'시리얼 번호'라고 불러요. 자전거는 자전거를 뒤집으면 페달 사이 프레임 아랫면(바텀 브래킷)에, 전동킥보드는 발판 아래나 핸들 기둥에 새겨져 있어요. 없는 자전거도 있는데, 그럴 땐 숨은 QR 스티커만으로도 충분해요. 번호 전체는 암호처럼 바꿔 저장하고, 화면에는 끝 4자리만 보여요. 비워서 저장하면 지워져요.
           </p>
-          <Input label="차대번호" placeholder="예: WTU123A4567B" value={serial} onChange={(e) => setSerial(e.target.value)} error={serialError} autoComplete="off" autoCapitalize="characters" />
+          <Input label="차대번호 (프레임·시리얼 번호)" placeholder="예: WTU123A4567B" value={serial} onChange={(e) => setSerial(e.target.value)} error={serialError} autoComplete="off" autoCapitalize="characters" />
         </form>
       </Modal>
 

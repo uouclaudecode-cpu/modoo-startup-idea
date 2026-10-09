@@ -69,7 +69,7 @@ export function CheckForm({ initial }: { initial: string }) {
           className="space-y-3"
         >
           <Input
-            label="QR 아래 조회 번호 · 차대번호 · QR 주소"
+            label="QR 아래 조회 번호 · 차대번호(프레임 번호) · QR 주소"
             placeholder="예) aB3x Kp9Q  또는  WTU123A4567B"
             value={value}
             onChange={(e) => setValue(e.target.value)}
