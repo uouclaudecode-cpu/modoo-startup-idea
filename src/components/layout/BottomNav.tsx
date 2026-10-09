@@ -5,17 +5,32 @@ import { usePathname } from "next/navigation";
 import { Home, MessagesSquare, Route, ScanLine, UserRound } from "lucide-react";
 import { cn } from "@/lib/cn";
 
+/**
+ * 주소가 이 경로들 중 하나이거나 그 아래 화면인지.
+ * 글자 앞부분만 비교하면 "/r"가 "/ride"·"/report"까지 잡아서, 경로 단위로 비교해요.
+ */
+const under = (p: string, paths: string[]) => paths.some((x) => p === x || p.startsWith(`${x}/`));
+
+// 탭마다 그 탭에서 이어지는 화면도 함께 켜져요 (어느 메뉴에 있는지 놓치지 않게)
 const TABS = [
-  { href: "/", label: "홈", icon: Home, match: (p: string) => p === "/" },
-  { href: "/community", label: "커뮤니티", icon: MessagesSquare, match: (p: string) => p.startsWith("/community") },
-  // 가운데: 가장 자주 쓰는 QR 스캔을 크게
-  { href: "/scan", label: "QR 스캔", icon: ScanLine, match: (p: string) => p.startsWith("/scan"), primary: true },
-  { href: "/ride", label: "라이딩", icon: Route, match: (p: string) => p.startsWith("/ride") },
+  // 홈 → 도난 다발 지도·통계
+  { href: "/", label: "홈", icon: Home, match: (p: string) => p === "/" || under(p, ["/stats"]) },
+  // 커뮤니티 → 근처 도난 경보
+  { href: "/community", label: "커뮤니티", icon: MessagesSquare, match: (p: string) => under(p, ["/community", "/alerts"]) },
+  // 가운데: 가장 자주 쓰는 QR 스캔을 크게. 스캔·조회 번호로 들어오는 화면(제보, 익명 대화, 도난 조회, 인증 링크)도 여기
+  {
+    href: "/scan",
+    label: "QR 스캔",
+    icon: ScanLine,
+    match: (p: string) => under(p, ["/scan", "/check", "/report", "/r", "/t", "/v", "/c"]),
+    primary: true,
+  },
+  { href: "/ride", label: "라이딩", icon: Route, match: (p: string) => under(p, ["/ride", "/rides"]) },
   {
     href: "/dashboard",
     label: "MY",
     icon: UserRound,
-    match: (p: string) => ["/dashboard", "/vehicles", "/settings", "/stickers", "/admin"].some((x) => p.startsWith(x)),
+    match: (p: string) => under(p, ["/dashboard", "/vehicles", "/settings", "/stickers", "/admin", "/notifications"]),
   },
 ];
 

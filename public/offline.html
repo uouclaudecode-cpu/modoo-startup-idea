@@ -1,0 +1,122 @@
+<!doctype html>
+<!--
+  B-LOCK 오프라인 안내 화면 (서비스 워커가 미리 저장해 두고, 인터넷이 끊기면 보여줘요).
+  배포 때마다 바뀌는 CSS·JS나 로그인 상태에 기대지 않도록 스타일을 이 파일 안에 모두 넣었어요.
+  이 파일을 고치면 public/sw.js의 CACHE 이름도 올려 주세요 (그래야 설치된 앱이 새 파일을 받아요).
+-->
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#2552e8" />
+    <title>오프라인 | B-LOCK</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        background: #f6f8fb;
+        color: #0f172a;
+        font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        word-break: keep-all;
+        overflow-wrap: break-word;
+        padding: calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+      }
+      .brand {
+        max-width: 448px;
+        margin: 0 auto 24px;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: #1d41cc;
+      }
+      .box {
+        max-width: 448px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 48px 24px;
+        border-radius: 18px;
+        background: rgb(255 241 242 / 0.6);
+        box-shadow: inset 0 0 0 1px #fecdd3;
+      }
+      .icon {
+        display: grid;
+        place-items: center;
+        width: 56px;
+        height: 56px;
+        margin-bottom: 16px;
+        border-radius: 18px;
+        background: #fff;
+        color: #e11d48;
+        box-shadow: inset 0 0 0 1px #fecdd3;
+      }
+      h1 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.5;
+      }
+      p {
+        margin: 6px 0 0;
+        max-width: 384px;
+        font-size: 14px;
+        line-height: 1.625;
+        color: #334155;
+      }
+      button {
+        margin-top: 24px;
+        width: 100%;
+        max-width: 320px;
+        height: 44px;
+        border: 0;
+        border-radius: 14px;
+        background: #2552e8;
+        color: #fff;
+        font: inherit;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:active {
+        background: #1e37a5;
+      }
+      button:focus-visible {
+        outline: 2px solid #3b6cf6;
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="brand">B-LOCK</p>
+    <main class="box" role="alert">
+      <span class="icon" aria-hidden="true">
+        <!-- 와이파이 꺼짐 아이콘 (lucide wifi-off) -->
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h.01" />
+          <path d="M8.5 16.429a5 5 0 0 1 7 0" />
+          <path d="M5 12.859a10 10 0 0 1 5.17-2.69" />
+          <path d="M19 12.859a10 10 0 0 0-2.007-1.523" />
+          <path d="M2 8.82a15 15 0 0 1 4.177-2.643" />
+          <path d="M22 8.82a15 15 0 0 0-11.288-3.764" />
+          <path d="m2 2 20 20" />
+        </svg>
+      </span>
+      <h1>인터넷 연결을 확인해 주세요</h1>
+      <p>연결되면 다시 시도해 주세요. QR 스캔 결과 보기와 제보 보내기는 인터넷이 있어야 돼요.</p>
+      <button type="button" onclick="location.reload()">다시 시도</button>
+    </main>
+  </body>
+</html>

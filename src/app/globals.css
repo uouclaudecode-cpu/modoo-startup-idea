@@ -6,6 +6,12 @@
   html {
     -webkit-text-size-adjust: 100%;
   }
+  /* 휴대폰: 입력칸으로 이동하거나 화면을 내릴 때 아래 고정 메뉴에 가리지 않게 */
+  @media (max-width: 639px) {
+    html {
+      scroll-padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+    }
+  }
   body {
     @apply bg-canvas font-sans text-ink antialiased;
     /* 한글이 단어 중간에서 줄바꿈되지 않게 (긴 주소·영문은 넘치면 줄바꿈) */
@@ -25,9 +31,15 @@
   }
 }
 
-/* 스티커 인쇄: A4, 한 묶음(40칸)마다 새 페이지 */
 @media print {
+  /* 기본 인쇄(소유 확인서·경찰 신고용 정리서 등): A4에 보통 여백.
+     집·사무실 프린터는 종이 끝 몇 mm를 못 찍어서, 여백이 없으면 첫 줄이 잘려요. */
   @page {
+    size: A4;
+    margin: 14mm 12mm;
+  }
+  /* 스티커 시트만 여백 없이 A4를 꽉 채워요 (시트 안쪽에 6mm 여백이 따로 있어요) */
+  @page stickers {
     size: A4;
     margin: 0;
   }
@@ -35,7 +47,9 @@
     background: #fff;
     padding: 0 !important;
   }
+  /* 스티커 인쇄: 한 묶음(40칸)마다 새 페이지 */
   .sticker-page {
+    page: stickers;
     break-after: page;
   }
 }

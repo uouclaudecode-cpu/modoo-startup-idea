@@ -1,12 +1,30 @@
 // B-LOCK 서비스 워커: 앱 설치를 가능하게 하고, 인터넷이 끊겼을 때 안내 화면을 보여줍니다.
 // 개인 정보가 담긴 화면은 저장(캐시)하지 않습니다. 오프라인 안내 화면 하나만 저장합니다.
 // 앱을 닫아 두어도 발견 제보·댓글·정비 알림(웹 푸시)을 받아 휴대폰 알림으로 띄워요.
-const CACHE = "b-lock-v2";
-const OFFLINE_URL = "/offline";
+//
+// 오프라인 화면은 스타일이 파일 안에 다 들어 있는 public/offline.html이에요.
+// (예전처럼 /offline 화면을 저장하면 그때의 로그인 상태·배포 CSS에 묶여서, 몇 주 뒤엔 깨져 보일 수 있었어요)
+// offline.html을 고치면 아래 CACHE 이름을 올려 주세요 → 이 파일이 바뀌어 설치된 앱이 새로 받아요.
+const CACHE = "b-lock-v3";
+const OFFLINE_URL = "/offline.html";
 const ICON = "/icons/icon-192.png";
+// 인터넷이 될 때 가끔(6시간에 한 번) 오프라인 화면을 새로 받아 둬요
+const REFRESH_MS = 6 * 60 * 60 * 1000;
+let lastRefresh = 0;
+
+function cacheOffline(mode) {
+  return caches.open(CACHE).then((cache) => cache.add(new Request(OFFLINE_URL, { cache: mode })));
+}
+
+function refreshOffline() {
+  if (Date.now() - lastRefresh < REFRESH_MS) return Promise.resolve();
+  lastRefresh = Date.now();
+  return cacheOffline("no-cache").catch(() => {});
+}
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.add(new Request(OFFLINE_URL, { cache: "reload" }))));
+  lastRefresh = Date.now();
+  event.waitUntil(cacheOffline("reload"));
   self.skipWaiting();
 });
 
@@ -22,7 +40,18 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   // 화면 이동만 다룹니다. 인터넷이 되면 항상 서버에서 새로 받아요.
   if (event.request.mode !== "navigate") return;
-  event.respondWith(fetch(event.request).catch(() => caches.match(OFFLINE_URL)));
+  event.respondWith(
+    fetch(event.request)
+      .then((res) => {
+        try {
+          event.waitUntil(refreshOffline());
+        } catch {
+          // 이벤트가 이미 끝났으면 다음 화면 이동 때 다시 받아요
+        }
+        return res;
+      })
+      .catch(() => caches.match(OFFLINE_URL).then((cached) => cached || Response.error())),
+  );
 });
 
 // 알림을 누르면 열 주소: 우리 사이트 안의 주소만 (다른 사이트로 보내는 알림은 첫 화면으로)

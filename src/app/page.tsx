@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bike, Camera, Check, ChevronRight, EyeOff, Lock, MapPinned, MessagesSquare, Route, ScanLine, Search, Tag, Wrench } from "lucide-react";
+import { Bike, Camera, Check, ChevronRight, EyeOff, Lock, MapPinned, MessagesSquare, Route, ScanLine, Search, Siren, Tag, Wrench } from "lucide-react";
 import { site } from "@/config/site";
 import { ButtonLink, Card, StatusBadge } from "@/components/ui";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
@@ -18,8 +18,11 @@ const STEPS = [
   { icon: MapPinned, title: "스티커를 찍어 제보", text: "발견한 사람이 스티커를 찍으면 위치·사진이 주인에게만 전달돼요." },
 ];
 
-/** 최근 '찾는 중' 글 3개 (불러오지 못해도 첫 화면은 그대로 보여요) */
-async function recentPosts() {
+/**
+ * 최근 '찾는 중' 글 3개.
+ * 불러오지 못해도 첫 화면은 그대로 보여요. 이때는 null을 돌려줘서 '글이 없어요' 대신 '불러오지 못했어요'를 보여줘요.
+ */
+async function recentPosts(): Promise<PostListItem[] | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("lost_posts")
@@ -30,7 +33,7 @@ async function recentPosts() {
     .limit(3);
   if (error) {
     console.error(error);
-    return [];
+    return null;
   }
   return (data ?? []) as PostListItem[];
 }
@@ -54,7 +57,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           디지털 신분증을 만들어주세요.
         </h1>
         <p className="mt-4 text-[15px] leading-relaxed text-brand-50/90">
-          QR 스티커 하나로 등록하고, 잃어버렸을 때 주변 사람의 제보를 받을 수 있습니다.
+          QR 스티커 하나로 등록하고, 잃어버렸을 때 주변 사람의 제보를 받을 수 있어요.
         </p>
         <ul aria-label="특징" className="mt-5 flex flex-wrap gap-2 text-[13px] font-semibold">
           {HIGHLIGHTS.map((t) => (
@@ -75,18 +78,29 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </div>
       </section>
 
-      {/* 누구나 쓰는 도구: 구매 전 도난 조회 · 도난 다발 지도 */}
-      <section className="grid grid-cols-2 gap-3">
-        <Link href="/check" className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70 transition-shadow hover:shadow-lift">
-          <Search aria-hidden className="h-6 w-6 text-brand-600" />
-          <p className="mt-2 font-bold">사기 전 도난 조회</p>
-          <p className="mt-0.5 text-[13px] leading-snug text-ink-muted">QR·차대번호로 장물인지 확인</p>
+      {/* 누구나 쓰는 도구: 근처 도난 경보 · 도난 조회 · 도난 다발 지도 */}
+      <section aria-label="누구나 쓰는 도구" className="space-y-3">
+        {/* 가장 급한 공개 정보라 맨 위에 넓게 (커뮤니티의 경보 배너와 같은 모양) */}
+        <Link href="/alerts" className="flex items-center gap-3 rounded-2xl bg-rose-50 p-4 ring-1 ring-rose-100 transition-colors hover:bg-rose-100/70">
+          <Siren aria-hidden className="h-6 w-6 flex-none text-rose-600" />
+          <span className="min-w-0 flex-1">
+            <span className="block font-bold text-rose-800">근처 도난 경보</span>
+            <span className="block text-[13px] text-rose-700/80">방금 도둑맞은 자전거·킥보드를 같이 찾아 주세요</span>
+          </span>
+          <ChevronRight aria-hidden className="h-5 w-5 flex-none text-rose-400" />
         </Link>
-        <Link href="/stats" className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70 transition-shadow hover:shadow-lift">
-          <MapPinned aria-hidden className="h-6 w-6 text-rose-600" />
-          <p className="mt-2 font-bold">도난 다발 지도</p>
-          <p className="mt-0.5 text-[13px] leading-snug text-ink-muted">어디서 많이 도둑맞을까?</p>
-        </Link>
+        <div className="grid grid-cols-2 gap-3">
+          <Link href="/check" className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70 transition-shadow hover:shadow-lift">
+            <Search aria-hidden className="h-6 w-6 text-brand-600" />
+            <p className="mt-2 font-bold">도난 조회</p>
+            <p className="mt-0.5 text-[13px] leading-snug text-ink-muted">중고로 사기 전 QR·차대번호로 확인</p>
+          </Link>
+          <Link href="/stats" className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-line/70 transition-shadow hover:shadow-lift">
+            <MapPinned aria-hidden className="h-6 w-6 text-rose-600" />
+            <p className="mt-2 font-bold">도난 다발 지도</p>
+            <p className="mt-0.5 text-[13px] leading-snug text-ink-muted">어디서 많이 도둑맞을까?</p>
+          </Link>
+        </div>
       </section>
 
       {/* 작동 방식 */}
@@ -140,7 +154,15 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             전체 보기 <ChevronRight aria-hidden className="h-4 w-4" />
           </Link>
         </div>
-        {posts.length > 0 ? (
+        {posts === null ? (
+          <p role="alert" className="mt-4 rounded-2xl bg-rose-50/60 p-4 text-center text-[15px] text-ink-soft ring-1 ring-rose-200">
+            글을 불러오지 못했어요. 잠시 후 새로고침하거나{" "}
+            <Link href="/community" className="font-semibold text-brand-700 underline">
+              커뮤니티
+            </Link>
+            에서 확인해 주세요.
+          </p>
+        ) : posts.length > 0 ? (
           <ul className="mt-4 space-y-3">
             {posts.map((p) => (
               <li key={p.id}>

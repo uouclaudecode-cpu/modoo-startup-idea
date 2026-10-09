@@ -11,7 +11,7 @@ export default async function ClaimStickerPage({ params }: { params: Promise<{ c
   const { code: raw } = await params;
   const code = decodeURIComponent(raw);
   if (!/^[A-Za-z0-9_-]{16,64}$/.test(code)) {
-    return <ErrorState title="⚠️ B-LOCK 스티커가 아니에요." description="QR을 다시 찍어 주세요." />;
+    return <ErrorState title="B-LOCK 스티커가 아니에요" description="QR이 훼손됐거나 잘못된 주소일 수 있어요. QR을 다시 찍어 주세요." />;
   }
 
   const supabase = await createClient();
@@ -26,12 +26,12 @@ export default async function ClaimStickerPage({ params }: { params: Promise<{ c
   ]);
   if (statusErr || vErr) {
     console.error(statusErr ?? vErr);
-    return <ErrorState title="인터넷 연결을 확인해주세요." description="스티커 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요." />;
+    return <ErrorState title="인터넷 연결을 확인해 주세요" description="스티커 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요." />;
   }
   if (status === "claimed") {
     return (
       <ErrorState
-        title="이미 등록된 스티커예요."
+        title="이미 등록된 스티커예요"
         description="다른 이동수단에 등록된 스티커는 다시 등록할 수 없어요. 새 스티커를 받아 주세요."
         action={
           <ButtonLink href="/dashboard" full>
@@ -42,7 +42,7 @@ export default async function ClaimStickerPage({ params }: { params: Promise<{ c
     );
   }
   if (status !== "unclaimed") {
-    return <ErrorState title="⚠️ B-LOCK 스티커가 아니에요." description="QR이 훼손됐거나 잘못된 주소일 수 있어요." />;
+    return <ErrorState title="B-LOCK 스티커가 아니에요" description="QR이 훼손됐거나 잘못된 주소일 수 있어요. QR을 다시 찍어 주세요." />;
   }
 
   return (

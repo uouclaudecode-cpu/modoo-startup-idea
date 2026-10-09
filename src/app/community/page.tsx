@@ -79,16 +79,16 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
         />
       </form>
 
+      {/* 거르기: 주소가 바뀌는 링크라서 탭(tab) 대신 링크 묶음 + 지금 고른 것 표시(aria-current). 누르기 쉽게 높이 40px */}
       <div className="flex flex-wrap items-center gap-2">
-        <div role="tablist" aria-label="상태" className="flex rounded-xl bg-slate-100 p-1">
+        <div role="group" aria-label="상태" className="flex rounded-xl bg-slate-100 p-1">
           {STATUS_TABS.map((t) => (
             <Link
               key={t.value}
               href={href({ status: t.value, page: "1" })}
-              role="tab"
-              aria-selected={status === t.value}
+              aria-current={status === t.value ? "true" : undefined}
               className={cn(
-                "whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-semibold",
+                "inline-flex h-10 items-center whitespace-nowrap rounded-lg px-3.5 text-sm font-semibold",
                 status === t.value ? "bg-white text-ink shadow-card" : "text-ink-muted hover:text-ink",
               )}
             >
@@ -96,18 +96,18 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
             </Link>
           ))}
         </div>
-        <div className="-mx-4 flex max-w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 pb-1 sm:mx-0 sm:max-w-none sm:px-0">
+        <div role="group" aria-label="종류" className="-mx-4 flex max-w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 py-1 sm:mx-0 sm:max-w-none sm:px-0">
           {[{ value: "", label: "전체", emoji: "" }, ...VEHICLE_TYPES].map((t) => (
             <Link
               key={t.value || "all"}
               href={href({ type: t.value, page: "1" })}
               aria-current={type === t.value ? "true" : undefined}
               className={cn(
-                "flex-none whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold ring-1 ring-inset",
+                "inline-flex h-10 flex-none items-center gap-1 whitespace-nowrap rounded-full px-3.5 text-sm font-semibold ring-1 ring-inset",
                 type === t.value ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink-soft ring-line hover:bg-slate-50",
               )}
             >
-              {t.emoji && <span aria-hidden>{t.emoji} </span>}
+              {t.emoji && <span aria-hidden>{t.emoji}</span>}
               {t.label}
             </Link>
           ))}
