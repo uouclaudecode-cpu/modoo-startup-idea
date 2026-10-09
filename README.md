@@ -69,7 +69,7 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3.4 · Supabas
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | 웹 푸시 공개 키 | 공개 값 |
 | `VAPID_PRIVATE_KEY` | 웹 푸시 서명 키 | **비밀** |
 | `PUSH_WEBHOOK_SECRET` | DB → `/api/push` 호출 확인용 (`app_private.push_config.secret`과 같아야 함) | **비밀** |
-| `NEXT_PUBLIC_OPERATOR_NAME`, `NEXT_PUBLIC_CONTACT_EMAIL` | 약관·방침·문의하기의 운영자·연락처 | 공개 값 |
+| `NEXT_PUBLIC_OPERATOR_NAME`, `NEXT_PUBLIC_CONTACT_EMAIL` | 약관·방침·문의하기의 운영자·연락처 (선택, 비우면 site.ts 기본값) | 공개 값 |
 
 ## 배포 (Vercel)
 1. Vercel → Add New → Project → 이 저장소 Import
@@ -94,7 +94,7 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3.4 · Supabas
 ## 커뮤니티 안전 · 회원 관리
 - **신고·차단**: 글·댓글 ⋯ 메뉴에서 신고(서로 다른 3명이면 자동 숨김)·차단(그 사람 글·댓글이 나에게 안 보임). 관리자는 `/admin/reports`에서 숨기기·다시 보이기·삭제.
 - **설정** `/settings`: 닉네임 변경(지난 글·댓글 이름도 바뀜), 알림, 비밀번호 변경, 차단 목록, 회원 탈퇴(사진 정리 후 계정·연결 데이터 삭제).
-- **비밀번호 찾기** `/forgot-password` → 메일 링크 → `/auth/callback` → `/reset-password`. 기본 메일 서버는 시간당 보낼 수 있는 양이 적어서, 출시 후에는 Supabase에 직접 SMTP(예: Resend)를 연결하는 걸 권장해요(연결하면 메일 문구도 한국어로 바꿀 수 있어요).
+- **비밀번호 찾기** `/forgot-password` → 메일 링크 → `/auth/callback` → `/reset-password`. Supabase 기본 메일 서버는 **프로젝트 팀원 이메일로만**, 시간당 2통까지만 보내서 일반 사용자는 메일을 못 받아요. 출시 전에 SMTP를 꼭 연결하세요(Gmail로 5분, 한국어 메일 문구 포함): [docs/email-templates.md](docs/email-templates.md)
 - **약관**: `/terms`, `/privacy`, `/location-terms`, `/contact` 초안. 출시 전 법률 검토와 위치정보사업 신고·등록 필요 여부 확인을 권장해요.
 
 ## 푸시 알림

@@ -29,6 +29,9 @@ export function ForgotPasswordForm({ expired = false }: { expired?: boolean }) {
       console.error(err);
       // 가입 여부를 알려주지 않도록, 요청 한도 같은 경우만 따로 안내해요.
       if (/rate limit|security purposes/i.test(err.message)) return setError("요청이 너무 많아요. 몇 분 뒤에 다시 시도해 주세요.");
+      // 메일 서버 쪽 문제(발송 실패·허용되지 않은 주소)는 다시 눌러도 안 되니 문의로 안내해요.
+      if (/sending|not authorized|smtp/i.test(err.message) || err.status === 500)
+        return setError("지금 메일을 보내지 못했어요. 잠시 뒤 다시 시도하거나, 화면 맨 아래 '문의하기'로 알려 주시면 도와드릴게요.");
       return setError(friendlyError(err, "메일을 보내지 못했어요. 잠시 후 다시 시도해 주세요."));
     }
     setSent(value);
