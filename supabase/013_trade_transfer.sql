@@ -260,9 +260,9 @@ begin
   select exists (select 1 from public.stickers s where s.vehicle_id = v.id) into v_sticker;
   select count(*) into v_logs from public.maintenance_logs where vehicle_id = v.id;
 
-  if v.created_at > now() - interval '14 days' then v_warn := v_warn || 'NEW_REGISTRATION'; end if;
-  if v.owned_since > now() - interval '30 days' and v_transfers > 0 then v_warn := v_warn || 'RECENT_TRANSFER'; end if;
-  if v.serial_hash is null then v_warn := v_warn || 'NO_SERIAL'; end if;
+  if v.created_at > now() - interval '14 days' then v_warn := array_append(v_warn, 'NEW_REGISTRATION'); end if;
+  if v.owned_since > now() - interval '30 days' and v_transfers > 0 then v_warn := array_append(v_warn, 'RECENT_TRANSFER'); end if;
+  if v.serial_hash is null then v_warn := array_append(v_warn, 'NO_SERIAL'); end if;
 
   return json_build_object(
     'valid', true,
