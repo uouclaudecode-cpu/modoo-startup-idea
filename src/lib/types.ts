@@ -31,6 +31,8 @@ export type Vehicle = {
   serial_last4?: string | null;
   /** 도난 조회에 넣는 읽기 쉬운 8자리 번호 */
   lookup_code?: string | null;
+  /** 앱 QR을 출력한 때 (027) */
+  qr_printed_at?: string | null;
   /** 자전거 종류 (로드·MTB 등) */
   subtype?: string | null;
   /** 지금 주인이 갖게 된 시각 (등록 또는 양도) */

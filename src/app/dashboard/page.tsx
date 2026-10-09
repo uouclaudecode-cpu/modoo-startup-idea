@@ -141,7 +141,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const { count: stickerCount } = liveIds.length
     ? await supabase.from("stickers").select("code", { count: "exact", head: true }).eq("claimed_by", user.id).in("vehicle_id", liveIds)
     : { count: 0 };
-  const hasSticker = (stickerCount ?? 0) > 0 || list.some((v) => Boolean(v.sticker_spot));
+  const hasSticker = (stickerCount ?? 0) > 0 || list.some((v) => Boolean(v.sticker_spot) || Boolean(v.qr_printed_at));
   const fresh = welcome === "1";
   // 알림 안내: 알림 받는 기기가 없을 때. 시작 안내가 보이는 동안은 거기 '알림 켜기'가 있어서 빼요 (수색 중이면 함께 보여요).
   const urgentPush = list.some((v) => v.status === "searching") || (myAlerts ?? []).length > 0;
@@ -193,7 +193,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         </div>
       </div>
 
-      <WelcomeGuide nickname={nickname} hasVehicle={list.length > 0} hasSticker={hasSticker} hasPush={hasPush} fresh={fresh} />
+      <WelcomeGuide nickname={nickname} hasVehicle={list.length > 0} hasSticker={hasSticker} hasPush={hasPush} fresh={fresh} firstVehicleId={list[list.length - 1]?.id ?? null} />
 
       {showPushPrompt && <PushPrompt userId={user.id} urgent={urgentPush} />}
 

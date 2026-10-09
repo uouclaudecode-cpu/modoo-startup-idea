@@ -7,7 +7,7 @@ import { POST_LIST_COLUMNS } from "@/lib/community";
 import { createClient, getUser } from "@/lib/supabase/server";
 
 const STEPS = [
-  { icon: Tag, title: "스티커 받기", text: "학교·편의점에 놓인 B-LOCK QR 스티커를 받아요. 없으면 앱에서 QR을 만들어 출력해도 돼요." },
+  { icon: Tag, title: "스티커 받기", text: "학교·가게에 놓인 B-LOCK QR 스티커를 받아요. 근처에 없으면 앱에서 원하는 크기로 출력해도 돼요." },
   { icon: ScanLine, title: "찍어서 내 자전거에 등록", text: "스티커를 찍어 내 자전거·킥보드에 연결해요. 앱에서도 같은 QR을 확인·저장할 수 있어요." },
   { icon: EyeOff, title: "주인만 아는 곳에 부착", text: "안장 밑처럼 눈에 안 띄는 곳에 붙이고, 붙인 위치는 나만 보이게 적어 둬요." },
   { icon: MessagesSquare, title: "잃어버리면 커뮤니티에", text: "분실 글을 올리면 '수색 중'으로 바뀌고, 본 사람들이 댓글로 알려 줘요." },

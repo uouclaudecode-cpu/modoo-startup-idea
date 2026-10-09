@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft, EyeOff, PartyPopper, ScanLine } from "lucide-react";
+import { ChevronLeft, EyeOff, MapPin, PartyPopper, Printer, ScanLine } from "lucide-react";
 import { site } from "@/config/site";
 import { ButtonLink } from "@/components/ui";
 import { formatDate } from "@/lib/format";
@@ -37,7 +37,7 @@ export default async function VehicleQrPage({
         <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 p-4 text-emerald-800 ring-1 ring-emerald-200">
           <PartyPopper aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
           <p className="text-[15px] leading-relaxed">
-            <b>등록이 끝났어요!</b> 받은 B-LOCK 스티커가 있으면 붙이고, 없다면 아래 QR을 저장해서 출력해 붙여 주세요.
+            <b>등록이 끝났어요!</b> 받은 B-LOCK 스티커가 있으면 연결하고, 없다면 아래 &lsquo;크기 골라 출력하기&rsquo;로 뽑아 붙여 주세요.
           </p>
         </div>
       )}
@@ -70,9 +70,17 @@ export default async function VehicleQrPage({
         caption="앱에서 만든 QR이에요. 저장해서 출력해 붙여도 돼요."
       />
 
-      <ButtonLink href="/scan" variant="secondary" full size="lg" icon={<ScanLine aria-hidden className="h-5 w-5" />}>
-        받은 스티커 찍어서 연결하기
+      <ButtonLink href={`/vehicles/${vehicle.id}/qr/print`} full size="lg" icon={<Printer aria-hidden className="h-5 w-5" />}>
+        크기 골라 출력하기
       </ButtonLink>
+      <div className="grid grid-cols-2 gap-2">
+        <ButtonLink href="/scan" variant="secondary" icon={<ScanLine aria-hidden className="h-4 w-4" />}>
+          스티커 연결
+        </ButtonLink>
+        <ButtonLink href="/get-sticker" variant="secondary" icon={<MapPin aria-hidden className="h-4 w-4" />}>
+          스티커 받는 곳
+        </ButtonLink>
+      </div>
     </div>
   );
 }

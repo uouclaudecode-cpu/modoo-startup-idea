@@ -5,6 +5,7 @@ import { Card, EmptyState } from "@/components/ui";
 import { requireAdmin } from "@/lib/admin";
 import { formatDateTime } from "@/lib/format";
 import { NewBatchForm } from "./NewBatchForm";
+import { SpotManager, type AdminSpot } from "./SpotManager";
 
 export const metadata: Metadata = { title: "스티커 관리", robots: { index: false } };
 
@@ -16,6 +17,11 @@ export default async function AdminStickersPage() {
     .select("id, label, quantity, created_at")
     .order("created_at", { ascending: false });
   if (error) console.error(error);
+  const { data: spots, error: spotErr } = await supabase
+    .from("sticker_spots")
+    .select("id, name, address, hours, note, lat, lng, active")
+    .order("created_at", { ascending: true });
+  if (spotErr) console.error(spotErr);
 
   return (
     <div className="mx-auto max-w-xl space-y-5">
@@ -26,6 +32,7 @@ export default async function AdminStickersPage() {
         </p>
       </div>
       <NewBatchForm />
+      <SpotManager spots={(spots ?? []) as AdminSpot[]} />
       <section className="space-y-2">
         <h2 className="font-bold">만든 묶음</h2>
         {error && <p className="text-sm text-rose-600">목록을 불러오지 못했어요. 새로고침해 주세요.</p>}
