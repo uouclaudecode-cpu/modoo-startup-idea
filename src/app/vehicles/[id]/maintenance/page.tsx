@@ -30,6 +30,11 @@ export default async function MaintenancePage({ params }: { params: Promise<{ id
     console.error(pErr ?? lErr);
     return <ErrorState title="정비 정보를 불러오지 못했어요" description="인터넷 연결을 확인하고 새로고침해 주세요." />;
   }
+  // 부품별 지난번 실제 수명: 가장 최근 정비 기록에 남은 '그때까지 달린 거리'
+  const lastLife: Record<string, number> = {};
+  for (const l of (logs ?? []) as MaintenanceLog[]) {
+    if (l.part_id && l.distance_m > 0 && lastLife[l.part_id] == null) lastLife[l.part_id] = l.distance_m;
+  }
   // 서버와 브라우저가 같은 기준 시각으로 남은 기간을 계산하도록 넘겨요.
   const now = Date.now();
 
@@ -50,7 +55,7 @@ export default async function MaintenancePage({ params }: { params: Promise<{ id
           라이딩
         </ButtonLink>
       </div>
-      <PartsBoard parts={(parts ?? []) as VehiclePart[]} now={now} />
+      <PartsBoard parts={(parts ?? []) as VehiclePart[]} now={now} lastLife={lastLife} />
       <MaintenanceDiary logs={(logs ?? []) as MaintenanceLog[]} />
     </div>
   );

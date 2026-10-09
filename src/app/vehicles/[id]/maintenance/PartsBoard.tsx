@@ -30,7 +30,7 @@ const DEFAULTS: Record<PartKind, { km: number | null; days: number | null }> = {
 
 const todayKst = () => new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
 
-export function PartsBoard({ parts, now }: { parts: VehiclePart[]; now: number }) {
+export function PartsBoard({ parts, now, lastLife = {} }: { parts: VehiclePart[]; now: number; lastLife?: Record<string, number> }) {
   const [servicing, setServicing] = useState<VehiclePart | null>(null);
   const [editing, setEditing] = useState<VehiclePart | null>(null);
   const sorted = [...parts].sort((a, b) => PART_ORDER.indexOf(a.kind) - PART_ORDER.indexOf(b.kind));
@@ -49,7 +49,7 @@ export function PartsBoard({ parts, now }: { parts: VehiclePart[]; now: number }
       <ul className="space-y-2">
         {active.map((p) => (
           <li key={p.id}>
-            <PartCard part={p} now={now} onService={() => setServicing(p)} onEdit={() => setEditing(p)} />
+            <PartCard part={p} now={now} lastLife={lastLife[p.id] ?? null} onService={() => setServicing(p)} onEdit={() => setEditing(p)} />
           </li>
         ))}
       </ul>
@@ -82,7 +82,7 @@ export function PartsBoard({ parts, now }: { parts: VehiclePart[]; now: number }
   );
 }
 
-function PartCard({ part, now, onService, onEdit }: { part: VehiclePart; now: number; onService: () => void; onEdit: () => void }) {
+function PartCard({ part, now, lastLife, onService, onEdit }: { part: VehiclePart; now: number; lastLife: number | null; onService: () => void; onEdit: () => void }) {
   const meta = PART_META[part.kind];
   const ratio = wearRatio(part, now);
   const status = partStatus(ratio);
@@ -126,6 +126,12 @@ function PartCard({ part, now, onService, onEdit }: { part: VehiclePart; now: nu
           </span>
         </div>
       </div>
+      {lastLife != null && part.interval_km != null && (
+        <p className="text-[12px] text-ink-muted">
+          지난번엔 교체 전까지 <b className="text-ink-soft">{(lastLife / 1000).toLocaleString("ko-KR", { maximumFractionDigits: 0 })}km</b> 탔어요
+          {Math.abs(lastLife / 1000 - part.interval_km) / part.interval_km > 0.3 ? " · 주기를 내 기록에 맞게 바꿔 보세요 (⚙)" : ""}
+        </p>
+      )}
       {status !== "good" && <p className="text-[13px] leading-relaxed text-ink-soft">{meta.tip}</p>}
       <Button variant={status === "good" ? "secondary" : "primary"} full icon={<CircleCheckBig aria-hidden className="h-4 w-4" />} onClick={onService}>
         정비 완료 ({meta.doneLabel})
@@ -232,10 +238,14 @@ function IntervalModal({ part, onClose }: { part: VehiclePart | null; onClose: (
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [openedFor, setOpenedFor] = useState<string | null>(null);
+  const [baseDate, setBaseDate] = useState("");
+  const [baseKm, setBaseKm] = useState("");
 
   // 모달을 열 때 현재 값으로 채우기
   if (part && openedFor !== part.id) {
     setOpenedFor(part.id);
+    setBaseDate("");
+    setBaseKm("");
     setKm(part.interval_km != null ? String(part.interval_km) : "");
     setDays(part.interval_days != null ? String(part.interval_days) : "");
     setEnabled(part.enabled);
@@ -255,15 +265,28 @@ function IntervalModal({ part, onClose }: { part: VehiclePart | null; onClose: (
     if (kmNum == null && daysNum == null) return setError("거리나 기간 중 하나는 정해 주세요.");
     if (kmNum != null && (!Number.isFinite(kmNum) || kmNum < 1 || kmNum > 100000)) return setError("거리는 1~100,000km 사이로 적어 주세요.");
     if (daysNum != null && (!Number.isInteger(daysNum) || daysNum < 1 || daysNum > 3650)) return setError("기간은 1~3650일 사이 정수로 적어 주세요.");
+    const baseKmNum = baseKm.trim() === "" ? null : Number(baseKm.replace(/[,\s]/g, ""));
+    if (baseKmNum != null && (!Number.isFinite(baseKmNum) || baseKmNum < 0 || baseKmNum > 100000)) return setError("그동안 탄 거리는 0~100,000km로 적어 주세요.");
+    if (baseKmNum != null && !baseDate) return setError("마지막으로 교체한 날도 골라 주세요.");
+    if (baseDate && baseDate > todayKst()) return setError("오늘 이후 날짜는 고를 수 없어요.");
     setError("");
     setLoading(true);
-    const { error: err } = await createClient().from("vehicle_parts").update({ interval_km: kmNum, interval_days: daysNum, enabled }).eq("id", part.id);
+    const supabase = createClient();
+    const { error: err } = await supabase.from("vehicle_parts").update({ interval_km: kmNum, interval_days: daysNum, enabled }).eq("id", part.id);
+    if (!err && baseDate) {
+      const { error: bErr } = await supabase.rpc("set_part_baseline", { p_part: part.id, p_last: baseDate, p_km: baseKmNum ?? 0 });
+      if (bErr) {
+        setLoading(false);
+        console.error(bErr);
+        return setError(friendlyError(bErr, "지금 상태를 맞추지 못했어요."));
+      }
+    }
     setLoading(false);
     if (err) {
       console.error(err);
       return setError(friendlyError(err, "저장하지 못했어요. 다시 시도해 주세요."));
     }
-    toast.success("주기를 바꿨어요.");
+    toast.success(baseDate ? "주기와 지금 상태를 맞췄어요." : "주기를 바꿨어요.");
     setOpenedFor(null);
     onClose();
     router.refresh();
@@ -309,6 +332,14 @@ function IntervalModal({ part, onClose }: { part: VehiclePart | null; onClose: (
           <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} className="h-4 w-4 accent-brand-600" />
           이 항목 관리하기 (끄면 알림을 보내지 않아요)
         </label>
+        <div className="space-y-2 rounded-xl ring-1 ring-line p-3">
+          <p className="text-sm font-semibold">지금 상태 맞추기 (선택)</p>
+          <p className="text-[12px] leading-relaxed text-ink-muted">이미 타던 이동수단이면, 마지막으로 교체한 날과 그 뒤로 대략 탄 거리를 적어 주세요. 그 기준으로 다시 계산해요. (정비 기록은 남기지 않아요)</p>
+          <div className="grid grid-cols-2 gap-3">
+            <Input label="마지막 교체일" type="date" max={todayKst()} value={baseDate} onChange={(e) => setBaseDate(e.target.value)} />
+            <Input label="그 뒤로 탄 거리 (km)" inputMode="decimal" placeholder="예) 800" value={baseKm} onChange={(e) => setBaseKm(e.target.value)} />
+          </div>
+        </div>
         {error && (
           <p role="alert" className="text-sm text-rose-600">
             {error}

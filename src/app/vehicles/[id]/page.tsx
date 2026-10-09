@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft, EyeOff, Siren, MessagesSquare, Pencil, PenSquare, QrCode, ScanLine, Tag, Wrench } from "lucide-react";
+import { ChevronLeft, EyeOff, FileBadge, Siren, MessagesSquare, Pencil, PenSquare, QrCode, ScanLine, Tag, Wrench } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { partsNeedingCare, type VehiclePart } from "@/lib/parts";
 import { formatDistance } from "@/lib/ride/geo";
@@ -152,6 +152,19 @@ export default async function VehicleDetailPage({
             위치 적기
           </ButtonLink>
         </div>
+      </Card>
+
+      <Card className="flex items-center gap-3 p-4">
+        <span aria-hidden className="grid h-11 w-11 flex-none place-items-center rounded-xl bg-emerald-50 text-emerald-600">
+          <FileBadge className="h-5 w-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-bold">소유 증명</p>
+          <p className="text-[13px] text-ink-muted">차대번호·영수증·사진을 모아 경찰·보험 제출용 증명서로</p>
+        </div>
+        <ButtonLink href={`/vehicles/${vehicle.id}/evidence`} variant="secondary" className="flex-none">
+          열기
+        </ButtonLink>
       </Card>
 
       <StatusActions vehicleId={vehicle.id} status={vehicle.status} foundReports={count ?? 0} totalReports={total ?? 0} />

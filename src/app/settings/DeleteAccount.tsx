@@ -7,7 +7,7 @@ import { friendlyError } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
 
 /** 내 폴더에 올린 사진들 (탈퇴 전에 지워요. 계정을 지우면 내 폴더를 지울 권한도 사라져서) */
-const MY_BUCKETS = ["vehicle-images", "community-images", "community-secret"] as const;
+const MY_BUCKETS = ["vehicle-images", "community-images", "community-secret", "sighting-images", "evidence"] as const;
 const CONFIRM_WORD = "탈퇴";
 
 export function DeleteAccount({ email }: { email: string }) {
