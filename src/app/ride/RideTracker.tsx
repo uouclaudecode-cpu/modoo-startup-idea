@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BatteryMedium, History, MapPin, Pause, Play, Satellite, ShieldCheck, Square, SunMedium, Trash2 } from "lucide-react";
+import { BatteryMedium, ChevronRight, History, MapPin, Pause, Play, Satellite, ShieldCheck, Square, SunMedium, Trash2 } from "lucide-react";
 import { Button, Card, Modal, useToast } from "@/components/ui";
 import { RideMap } from "@/components/ride/RideMap";
 import { cn } from "@/lib/cn";
-import { friendlyError } from "@/lib/format";
+import { formatDateTime, friendlyError } from "@/lib/format";
 import { averageSpeed, formatDistance, formatDuration, toPathJson } from "@/lib/ride/geo";
 import { useRideTracker, type GpsState, type RideResult } from "@/lib/ride/useRideTracker";
 import { createClient } from "@/lib/supabase/client";
@@ -15,13 +15,16 @@ import { typeEmoji, type VehicleType } from "@/lib/types";
 import { Input } from "@/components/ui";
 import { usesBattery } from "@/lib/subtypes";
 
+/** 라이딩 화면 아래에 보여 줄 최근 기록 */
+export type RecentRide = { id: string; started_at: string; elapsed_sec: number; distance_m: number; vehicle_type: string | null; vehicle_name: string | null };
+
 export type RideVehicle = { id: string; name: string; type: VehicleType; subtype?: string | null; odometer_m: number };
 
 const LAST_VEHICLE_KEY = "b-lock:last-ride-vehicle";
 /** 이보다 짧으면 저장할 의미가 없어서 버리기만 제안 */
 const MIN_SAVE_METERS = 10;
 
-export function RideTracker({ vehicles, userId }: { vehicles: RideVehicle[]; userId: string }) {
+export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideVehicle[]; userId: string; recent?: RecentRide[] }) {
   const router = useRouter();
   const toast = useToast();
   const t = useRideTracker(userId);
@@ -183,9 +186,12 @@ export function RideTracker({ vehicles, userId }: { vehicles: RideVehicle[]; use
     <div className="mx-auto max-w-xl space-y-4">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-extrabold tracking-tight">라이딩</h1>
-        <Link href="/rides" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:underline">
+        <Link
+          href="/rides"
+          className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-white px-3.5 text-sm font-semibold text-brand-700 ring-1 ring-inset ring-line hover:bg-slate-50"
+        >
           <History aria-hidden className="h-4 w-4" />
-          기록 보기
+          내 기록
         </Link>
       </div>
 
@@ -308,6 +314,51 @@ export function RideTracker({ vehicles, userId }: { vehicles: RideVehicle[]; use
           </div>
         )}
       </div>
+
+      {/* 쉬는 중일 때만: 최근 기록 (눌러서 지도·공유 카드·GPX) */}
+      {t.status === "idle" && !result && (
+        <section aria-labelledby="recent-rides" className="space-y-2 pt-2">
+          <div className="flex items-center justify-between px-1">
+            <h2 id="recent-rides" className="text-lg font-bold tracking-tight">
+              최근 라이딩
+            </h2>
+            {recent.length > 0 && (
+              <Link href="/rides" className="text-sm font-semibold text-brand-700 hover:underline">
+                전체 기록·통계
+              </Link>
+            )}
+          </div>
+          {recent.length === 0 ? (
+            <p className="rounded-2xl bg-slate-50 p-4 text-[14px] leading-relaxed text-ink-muted">
+              아직 기록이 없어요. 라이딩을 마치면 여기에 쌓이고, 눌러서 지도·공유 카드·GPX 파일을 볼 수 있어요.
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {recent.map((r) => (
+                <li key={r.id}>
+                  <Link href={`/rides/${r.id}`} className="block">
+                    <Card className="flex items-center gap-3 p-4 hover:shadow-lift">
+                      <span aria-hidden className="grid h-11 w-11 flex-none place-items-center rounded-xl bg-brand-50 text-xl">
+                        {r.vehicle_type ? typeEmoji(r.vehicle_type as VehicleType) : "🚲"}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold tabular-nums">
+                          {formatDistance(r.distance_m)} <span className="text-sm font-medium text-ink-muted">· {formatDuration(r.elapsed_sec)}</span>
+                        </p>
+                        <p className="truncate text-[13px] text-ink-muted">
+                          {formatDateTime(r.started_at)} · {r.vehicle_name ?? "삭제한 이동수단"}
+                        </p>
+                      </div>
+                      <span className="flex-none text-[12px] font-semibold text-brand-700">공유·GPX</span>
+                      <ChevronRight aria-hidden className="h-5 w-5 flex-none text-ink-faint" />
+                    </Card>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
 
       {/* 종료 확인: 저장 / 계속 타기 / 버리기 */}
       <Modal

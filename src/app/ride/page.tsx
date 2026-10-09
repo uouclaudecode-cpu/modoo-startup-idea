@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Bike, Plus } from "lucide-react";
 import { ButtonLink, EmptyState, ErrorState } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
-import { RideTracker, type RideVehicle } from "./RideTracker";
+import { RideTracker, type RecentRide, type RideVehicle } from "./RideTracker";
 
 export const metadata: Metadata = { title: "라이딩" };
 
@@ -14,11 +14,25 @@ export default async function RidePage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/ride");
 
-  const { data, error } = await supabase
-    .from("vehicles")
-    .select("id, name, type, subtype, odometer_m")
-    .is("deleted_at", null)
-    .order("created_at", { ascending: true });
+  const [{ data, error }, recentRes] = await Promise.all([
+    supabase.from("vehicles").select("id, name, type, subtype, odometer_m").is("deleted_at", null).order("created_at", { ascending: true }),
+    supabase
+      .from("rides")
+      .select("id, started_at, elapsed_sec, distance_m, vehicle:vehicles(name, type)")
+      .eq("owner_id", user.id)
+      .order("started_at", { ascending: false })
+      .limit(3),
+  ]);
+  // 최근 기록은 덤이라 실패해도 라이딩 화면은 보여요
+  if (recentRes.error) console.error(recentRes.error);
+  const recent: RecentRide[] = ((recentRes.data ?? []) as unknown as { id: string; started_at: string; elapsed_sec: number; distance_m: number; vehicle: { name: string; type: string } | null }[]).map((r) => ({
+    id: r.id,
+    started_at: r.started_at,
+    elapsed_sec: r.elapsed_sec,
+    distance_m: r.distance_m,
+    vehicle_type: r.vehicle?.type ?? null,
+    vehicle_name: r.vehicle?.name ?? null,
+  }));
   if (error) {
     console.error(error);
     return <ErrorState title="이동수단을 불러오지 못했어요" description="인터넷 연결을 확인하고 새로고침해 주세요." />;
@@ -38,5 +52,5 @@ export default async function RidePage() {
       />
     );
   }
-  return <RideTracker vehicles={vehicles} userId={user.id} />;
+  return <RideTracker vehicles={vehicles} userId={user.id} recent={recent} />;
 }
