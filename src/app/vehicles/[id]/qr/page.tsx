@@ -22,7 +22,7 @@ export default async function VehicleQrPage({
   // 이 이동수단에 연결한 B-LOCK 스티커 (본인이 등록한 것만 보여요)
   const { data: stickers, error } = await supabase
     .from("stickers")
-    .select("code, claimed_at")
+    .select("code, claimed_at, lookup_code")
     .eq("vehicle_id", vehicle.id)
     .order("claimed_at", { ascending: true });
   if (error) console.error(error);
@@ -55,6 +55,7 @@ export default async function VehicleQrPage({
         <QrCard
           key={s.code}
           token={s.code}
+          lookup={s.lookup_code}
           vehicleName={vehicle.name}
           siteName={site.name}
           caption={`등록한 스티커 QR${s.claimed_at ? ` · ${formatDate(s.claimed_at)} 등록` : ""}. 붙인 스티커와 같은지 확인해 보세요.`}
@@ -63,6 +64,7 @@ export default async function VehicleQrPage({
 
       <QrCard
         token={vehicle.qr_token}
+        lookup={vehicle.lookup_code}
         vehicleName={vehicle.name}
         siteName={site.name}
         caption="앱에서 만든 QR이에요. 저장해서 출력해 붙여도 돼요."

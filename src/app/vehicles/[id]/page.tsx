@@ -45,7 +45,7 @@ export default async function VehicleDetailPage({
         .select("id, vehicle_id, kind, interval_km, interval_days, distance_m, last_serviced_at, enabled")
         .eq("vehicle_id", vehicle.id),
       // 스티커는 조회 번호(앞 8자리)만 화면으로 넘겨요
-      supabase.from("stickers").select("code, claimed_at").eq("vehicle_id", vehicle.id).order("claimed_at", { ascending: true }),
+      supabase.from("stickers").select("code, claimed_at, lookup_code").eq("vehicle_id", vehicle.id).order("claimed_at", { ascending: true }),
       supabase.from("theft_alerts").select("id").eq("vehicle_id", vehicle.id).eq("status", "open").maybeSingle(),
     ]);
   if (partsErr) console.error(partsErr);
@@ -53,8 +53,8 @@ export default async function VehicleDetailPage({
   const now = Date.now();
   const care = partsNeedingCare((parts ?? []) as VehiclePart[], now);
   const urgentCare = care.some((c) => partStatus(c.ratio) === "replace");
-  const stickers: LinkedSticker[] = ((stickerRows ?? []) as { code: string; claimed_at: string | null }[]).map((s) => ({
-    code8: s.code.slice(0, 8),
+  const stickers: LinkedSticker[] = ((stickerRows ?? []) as { code: string; claimed_at: string | null; lookup_code: string | null }[]).map((s) => ({
+    code8: s.lookup_code ?? s.code.slice(0, 8),
     claimedAt: s.claimed_at,
   }));
   const status = displayStatus(vehicle.status, count ?? 0);

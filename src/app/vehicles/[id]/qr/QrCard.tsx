@@ -13,8 +13,11 @@ export function QrCard({
   vehicleName,
   siteName,
   caption,
+  lookup,
 }: {
   token: string;
+  /** 데이터베이스가 정한 읽기 쉬운 조회 번호 (없으면 예전 방식: 코드 앞 8자리) */
+  lookup?: string | null;
   vehicleName: string;
   siteName: string;
   /** 카드 위쪽 설명 (예: 앱 QR / 스티커 QR) */
@@ -68,7 +71,7 @@ export function QrCard({
     ctx.fillText("발견하셨다면 QR을 스캔해 주세요", W / 2, 1170);
     ctx.fillStyle = "#64748b";
     ctx.font = "34px 'Pretendard Variable', 'Malgun Gothic', sans-serif";
-    ctx.fillText(`등록된 이동수단의 디지털 신분증 · 조회 번호 ${lookupCode(token)}`, W / 2, 1230);
+    ctx.fillText(`등록된 이동수단의 디지털 신분증 · 조회 번호 ${lookupCode(lookup || token)}`, W / 2, 1230);
     return new Promise((resolve, reject) => c.toBlob((b) => (b ? resolve(b) : reject(new Error("이미지 생성 실패"))), "image/png"));
   }
 
@@ -114,7 +117,7 @@ export function QrCard({
   }
 
   async function copyLookup() {
-    const ok = await copyText(lookupCode(token));
+    const ok = await copyText(lookupCode(lookup || token));
     if (ok) toast.success("조회 번호를 복사했어요. 중고거래 채팅에 붙여넣어 주세요.");
     else toast.error("복사하지 못했어요. 번호를 길게 눌러 복사해 주세요.");
   }
@@ -132,7 +135,7 @@ export function QrCard({
       <div className="mx-auto flex w-full max-w-[320px] items-center justify-between gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-left">
         <div className="min-w-0">
           <p className="text-[12px] font-semibold text-ink-muted">조회 번호</p>
-          <p className="whitespace-nowrap font-mono text-xl font-extrabold tracking-[0.12em] text-ink">{lookupCode(token)}</p>
+          <p className="whitespace-nowrap font-mono text-xl font-extrabold tracking-[0.12em] text-ink">{lookupCode(lookup || token)}</p>
         </div>
         <Button variant="secondary" className="h-10 flex-none px-3 text-sm" icon={<Copy aria-hidden className="h-4 w-4" />} onClick={copyLookup}>
           복사

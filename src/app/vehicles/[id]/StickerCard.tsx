@@ -2,10 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { EyeOff, QrCode, ScanLine, Tag, Unlink } from "lucide-react";
+import { EyeOff, QrCode, ScanLine, Tag, Unlink, Copy } from "lucide-react";
 import { Button, ButtonLink, Card, Modal, useToast } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { formatDate, friendlyError } from "@/lib/format";
+import { copyText } from "@/lib/clipboard";
 import { lookupCode } from "@/lib/qr";
 import { createClient } from "@/lib/supabase/client";
 
@@ -38,6 +39,12 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
   function ask(s: LinkedSticker) {
     setReason("lost");
     setTarget(s);
+  }
+
+  async function copyCode(code8: string) {
+    const ok = await copyText(lookupCode(code8));
+    if (ok) toast.success("조회 번호를 복사했어요.");
+    else toast.error("복사하지 못했어요.");
   }
 
   async function unlink() {
@@ -77,6 +84,9 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
                 스티커 · 조회 <b className="tracking-wide text-ink">{lookupCode(s.code8)}</b>
                 {s.claimedAt && <span className="block text-[12px] text-ink-muted">{formatDate(s.claimedAt)} 연결</span>}
               </p>
+              <Button variant="ghost" className="h-9 flex-none px-2.5 text-sm" aria-label="조회 번호 복사" icon={<Copy aria-hidden className="h-4 w-4" />} onClick={() => copyCode(s.code8)}>
+                복사
+              </Button>
               <Button variant="ghost" className="h-9 flex-none px-3 text-sm text-rose-600" onClick={() => ask(s)}>
                 연결 끊기
               </Button>

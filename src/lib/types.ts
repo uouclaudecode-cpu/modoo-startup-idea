@@ -29,6 +29,8 @@ export type Vehicle = {
   status: VehicleStatus;
   /** 차대번호 끝 4자리 (전체 번호는 해시로만 저장) */
   serial_last4?: string | null;
+  /** 도난 조회에 넣는 읽기 쉬운 8자리 번호 */
+  lookup_code?: string | null;
   /** 지금 주인이 갖게 된 시각 (등록 또는 양도) */
   owned_since?: string | null;
   deleted_at: string | null;

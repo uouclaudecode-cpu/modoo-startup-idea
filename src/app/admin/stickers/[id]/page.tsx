@@ -16,7 +16,7 @@ export default async function StickerBatchPage({ params }: { params: Promise<{ i
   const { supabase } = await requireAdmin(`/admin/stickers/${id}`);
   const [{ data: batch, error: bErr }, { data: stickers, error: sErr }] = await Promise.all([
     supabase.from("sticker_batches").select("id, label, quantity, created_at").eq("id", id).maybeSingle(),
-    supabase.from("stickers").select("code, vehicle_id").eq("batch_id", id).order("created_at"),
+    supabase.from("stickers").select("code, vehicle_id, lookup_code").eq("batch_id", id).order("created_at"),
   ]);
   if (bErr || sErr) throw bErr ?? sErr;
   if (!batch) notFound();
@@ -38,7 +38,7 @@ export default async function StickerBatchPage({ params }: { params: Promise<{ i
           </p>
         </div>
       </div>
-      <PrintSheet codes={list.map((s) => s.code)} label={batch.label} siteName={site.name} />
+      <PrintSheet codes={list.map((s) => s.code)} lookups={list.map((s) => (s as { lookup_code?: string | null }).lookup_code ?? null)} label={batch.label} siteName={site.name} />
     </div>
   );
 }

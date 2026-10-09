@@ -18,7 +18,7 @@ const PER_PAGE = 40; // A4 한 장: 5칸 × 8줄
  * - A4(210×297mm) 가운데: 좌우 여백 9.75mm, 위 여백 12.9mm
  * 다른 라벨지를 쓰면 아래 print: 값(칸 크기·여백)만 바꾸면 돼요.
  */
-export function PrintSheet({ codes, label, siteName }: { codes: string[]; label: string; siteName: string }) {
+export function PrintSheet({ codes, lookups = [], label, siteName }: { codes: string[]; lookups?: (string | null)[]; label: string; siteName: string }) {
   const [images, setImages] = useState<string[] | null>(null);
   const [error, setError] = useState("");
 
@@ -36,7 +36,7 @@ export function PrintSheet({ codes, label, siteName }: { codes: string[]; label:
   }, [codes]);
 
   function downloadCsv() {
-    const rows = ["번호,코드,QR주소", ...codes.map((c, i) => `${i + 1},${c},${scanUrl(c)}`)];
+    const rows = ["번호,코드,조회번호,QR주소", ...codes.map((c, i) => `${i + 1},${c},${lookupCode(lookups[i] || c)},${scanUrl(c)}`)];
     // 엑셀에서 한글이 깨지지 않도록 BOM을 붙입니다.
     const blob = new Blob(["﻿" + rows.join("\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");
@@ -87,7 +87,7 @@ export function PrintSheet({ codes, label, siteName }: { codes: string[]; label:
             >
               <img src={images[i]} alt={`스티커 QR ${i + 1}`} className="h-[22mm] w-[22mm]" style={{ imageRendering: "pixelated" }} />
               <p className="mt-[0.5mm] text-[7pt] font-extrabold leading-none text-brand-700">{siteName}</p>
-              <p className="mt-[0.5mm] text-[5.5pt] leading-tight text-slate-600">찍어서 등록 · 조회 {lookupCode(codes[i])}</p>
+              <p className="mt-[0.5mm] text-[5.5pt] leading-tight text-slate-600">찍어서 등록 · 조회 {lookupCode(lookups[i] || codes[i])}</p>
             </div>
           ))}
         </div>
