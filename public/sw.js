@@ -8,22 +8,28 @@
 const CACHE = "b-lock-v3";
 const OFFLINE_URL = "/offline.html";
 const ICON = "/icons/icon-192.png";
-// 인터넷이 될 때 가끔(6시간에 한 번) 오프라인 화면을 새로 받아 둬요
+// 인터넷이 될 때 가끔(6시간에 한 번) 오프라인 화면을 새로 받아 둬요.
+// 서비스 워커는 쉬면 금방 꺼져서 변수 값이 사라지므로, 저장된 사본의 Date(받은 시각)로 판단해요.
 const REFRESH_MS = 6 * 60 * 60 * 1000;
-let lastRefresh = 0;
 
 function cacheOffline(mode) {
   return caches.open(CACHE).then((cache) => cache.add(new Request(OFFLINE_URL, { cache: mode })));
 }
 
 function refreshOffline() {
-  if (Date.now() - lastRefresh < REFRESH_MS) return Promise.resolve();
-  lastRefresh = Date.now();
-  return cacheOffline("no-cache").catch(() => {});
+  return caches
+    .open(CACHE)
+    .then((cache) =>
+      cache.match(OFFLINE_URL).then((res) => {
+        const at = res ? Date.parse(res.headers.get("date") || "") : 0;
+        if (at && Date.now() - at < REFRESH_MS) return;
+        return cache.add(new Request(OFFLINE_URL, { cache: "no-cache" }));
+      }),
+    )
+    .catch(() => {});
 }
 
 self.addEventListener("install", (event) => {
-  lastRefresh = Date.now();
   event.waitUntil(cacheOffline("reload"));
   self.skipWaiting();
 });

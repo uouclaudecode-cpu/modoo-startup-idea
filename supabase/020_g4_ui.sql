@@ -4,7 +4,7 @@
 -- 도난 경보가 걸린 이동수단의 QR을 찍으면 /scan 화면에서 '도난 경보 보기'와 약속한 사례금을 보여줘요.
 -- 그래야 바로 옆에 있는 사람이 경보 화면에서 목격 제보를 남기고 사례금 대상이 될 수 있어요.
 -- 돌려주는 것은 경보 번호와 사례금뿐이에요 (정확한 위치·소유자 정보 없음).
--- 경보 화면(get_alert)과 같은 기준: 진행 중(open)이고 기한이 남은 경보, 지운 이동수단 제외.
+-- nearby_alerts와 같은 기준: status='open', expires_at > now(), 지운 이동수단 제외.
 -- 숨김(hidden)·취소·만료·해결된 경보는 status가 'open'이 아니라서 자연히 빠져요.
 
 create or replace function public.get_alert_by_token(p_token text)

@@ -30,7 +30,7 @@ const TABS = [
     href: "/dashboard",
     label: "MY",
     icon: UserRound,
-    match: (p: string) => under(p, ["/dashboard", "/vehicles", "/settings", "/stickers", "/admin", "/notifications"]),
+    match: (p: string) => under(p, ["/dashboard", "/vehicles", "/settings", "/stickers", "/admin"]),
   },
 ];
 
