@@ -16,7 +16,7 @@ export default async function RidePage() {
 
   const { data, error } = await supabase
     .from("vehicles")
-    .select("id, name, type, odometer_m")
+    .select("id, name, type, subtype, odometer_m")
     .is("deleted_at", null)
     .order("created_at", { ascending: true });
   if (error) {

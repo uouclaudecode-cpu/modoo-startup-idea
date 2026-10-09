@@ -13,7 +13,9 @@ import { computeTotals, newlyEarned, type Badge, type BadgeRide } from "@/lib/ri
 import { fetchAllPages } from "@/lib/ride/fetchAll";
 import { averageSpeed, formatDistance, formatDuration, fromPathJson } from "@/lib/ride/geo";
 import { createClient } from "@/lib/supabase/server";
+import { fetchElevation } from "@/lib/ride/export";
 import { DeleteRideButton } from "./DeleteRideButton";
+import { RideExport } from "./RideExport";
 
 export const metadata: Metadata = { title: "라이딩 결과" };
 
@@ -65,7 +67,7 @@ export default async function RideDetailPage({ params, searchParams }: { params:
 
   const { data: ride, error } = await supabase
     .from("rides")
-    .select("id, vehicle_id, started_at, ended_at, elapsed_sec, moving_sec, distance_m, max_speed_kmh, path, vehicle:vehicles(id, name, odometer_m, deleted_at)")
+    .select("id, vehicle_id, started_at, ended_at, elapsed_sec, moving_sec, distance_m, max_speed_kmh, battery_start, battery_end, path, vehicle:vehicles(id, name, odometer_m, deleted_at)")
     .eq("id", id)
     .maybeSingle();
   if (error) throw error;
@@ -73,18 +75,24 @@ export default async function RideDetailPage({ params, searchParams }: { params:
   const vehicle = ride.vehicle as unknown as { id: string; name: string; odometer_m: number; deleted_at: string | null } | null;
 
   // 소모품 알림과 새 배지 계산은 서로 상관없어서 동시에 받아요.
-  const [care, earned] = await Promise.all([
+  const path = fromPathJson(ride.path);
+  const [care, earned, elev] = await Promise.all([
     vehicle && !vehicle.deleted_at ? loadCare(supabase, vehicle.id) : Promise.resolve([]),
     done ? loadNewBadges(supabase, user.id, ride) : Promise.resolve<Badge[]>([]),
+    ride.distance_m >= 500 ? fetchElevation(path) : Promise.resolve(null),
   ]);
-
-  const path = fromPathJson(ride.path);
   const stats: [string, string][] = [
     ["시간", formatDuration(ride.elapsed_sec)],
     ["이동 시간", formatDuration(ride.moving_sec)],
     ["평균 속도", `${averageSpeed(ride.distance_m, ride.moving_sec).toFixed(1)} km/h`],
     ["최고 속도", `${(ride.max_speed_kmh ?? 0).toFixed(1)} km/h`],
   ];
+  if (elev) stats.push(["오르막", `+${elev.gain} m`], ["최고 고도", `${elev.max} m`]);
+  // 배터리: 쓴 만큼으로 1회 충전 주행거리를 어림해요 (5% 이상 썼을 때만)
+  const bs = ride.battery_start as number | null, be = ride.battery_end as number | null;
+  const used = bs != null && be != null ? bs - be : null;
+  if (bs != null && be != null) stats.push(["배터리", `${bs}% → ${be}%`]);
+  if (used != null && used >= 5 && ride.distance_m >= 1000) stats.push(["1회 충전 예상", `약 ${Math.round(ride.distance_m / 10 / used)} km`]);
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
@@ -125,6 +133,8 @@ export default async function RideDetailPage({ params, searchParams }: { params:
           </p>
         )}
       </Card>
+
+      {path.length > 1 && <RideExport rideId={ride.id} />}
 
       {vehicle && !vehicle.deleted_at && care.length > 0 && <MaintenanceAlert vehicleId={vehicle.id} vehicleName={vehicle.name} items={care} />}
 

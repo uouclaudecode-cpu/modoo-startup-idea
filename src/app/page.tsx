@@ -1,13 +1,10 @@
 import Link from "next/link";
-import { Bike, Camera, Check, ChevronRight, EyeOff, Lock, MapPinned, MessagesSquare, Route, ScanLine, Search, Siren, Tag, Wrench } from "lucide-react";
+import { Bike, Camera, ChevronRight, EyeOff, Lock, MapPinned, MessagesSquare, Route, ScanLine, Search, Siren, Tag, Wrench } from "lucide-react";
 import { site } from "@/config/site";
 import { ButtonLink, Card, StatusBadge } from "@/components/ui";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
 import { POST_LIST_COLUMNS } from "@/lib/community";
 import { createClient, getUser } from "@/lib/supabase/server";
-
-/** 첫 화면 배너의 특징 (트래커·구독형 서비스와 다른 점) */
-const HIGHLIGHTS = ["무료", "배터리·충전 없음", "연락처 비공개"];
 
 const STEPS = [
   { icon: Tag, title: "스티커 받기", text: "학교·편의점에 놓인 B-LOCK QR 스티커를 받아요. 없으면 앱에서 QR을 만들어 출력해도 돼요." },
@@ -59,15 +56,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         <p className="mt-4 text-[15px] leading-relaxed text-brand-50/90">
           QR 스티커 하나로 등록하고, 잃어버렸을 때 주변 사람의 제보를 받을 수 있어요.
         </p>
-        <ul aria-label="특징" className="mt-5 flex flex-wrap gap-2 text-[13px] font-semibold">
-          {HIGHLIGHTS.map((t) => (
-            <li key={t} className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 ring-1 ring-inset ring-white/25">
-              <Check aria-hidden className="h-3.5 w-3.5" />
-              {t}
-            </li>
-          ))}
-        </ul>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-7 flex flex-col gap-3 sm:flex-row">
           {/* 로그인했으면 내 이동수단으로, 아니면 등록 시작 */}
           <ButtonLink href={user ? "/dashboard" : "/vehicles/new"} size="lg" full variant="light" icon={<Bike aria-hidden className="h-5 w-5" />}>
             {user ? "내 이동수단 보기" : "내 이동수단 등록하기"}

@@ -3,10 +3,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Bike, ChartColumn, ChevronRight, Flag, History, Play, Plus, Printer, Siren } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
+import { MaintenanceOverview } from "@/components/maintenance/MaintenanceOverview";
 import { PushPrompt } from "@/components/onboarding/PushPrompt";
 import { WelcomeGuide, welcomeGuideVisible } from "@/components/onboarding/WelcomeGuide";
 import { InboxCard, type InboxItem } from "@/components/vehicle/InboxCard";
-import { partsNeedingCare, type VehiclePart } from "@/lib/parts";
+import { partStatus, partsNeedingCare, type VehiclePart } from "@/lib/parts";
 import { ButtonLink, Card, EmptyState, ErrorState } from "@/components/ui";
 import { VehicleCard } from "@/components/vehicle/VehicleCard";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
@@ -204,7 +205,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         </ButtonLink>
       )}
 
-      {careByVehicle.map(({ v, items }) => (
+      <MaintenanceOverview vehicles={list} parts={(allParts ?? []) as VehiclePart[]} now={now} />
+      {careByVehicle.filter(({ items }) => items.some((i) => partStatus(i.ratio) === "replace")).map(({ v, items }) => (
         <MaintenanceAlert key={v.id} vehicleId={v.id} vehicleName={v.name} items={items} now={now} />
       ))}
 

@@ -13,6 +13,7 @@ import { typeLabel } from "@/lib/types";
 import { getOwnedVehicle } from "@/lib/vehicles";
 import { StatusActions } from "./StatusActions";
 import { StickerCard, type LinkedSticker } from "./StickerCard";
+import { ParkingCard, type ParkingSpot } from "@/components/vehicle/ParkingCard";
 import { TradeCard } from "./TradeCard";
 
 export const metadata: Metadata = { title: "이동수단 상세" };
@@ -48,6 +49,7 @@ export default async function VehicleDetailPage({
       supabase.from("stickers").select("code, claimed_at, lookup_code").eq("vehicle_id", vehicle.id).order("claimed_at", { ascending: true }),
       supabase.from("theft_alerts").select("id").eq("vehicle_id", vehicle.id).eq("status", "open").maybeSingle(),
     ]);
+  const { data: parking } = await supabase.from("parking_spots").select("lat, lng, note, parked_at").eq("vehicle_id", vehicle.id).maybeSingle();
   if (partsErr) console.error(partsErr);
   if (stickerErr) console.error(stickerErr);
   const now = Date.now();
@@ -144,6 +146,8 @@ export default async function VehicleDetailPage({
           </ButtonLink>
         )
       )}
+
+      <ParkingCard spot={(parking as ParkingSpot | null) ?? null} vehicleName={vehicle.name} />
 
       <StickerCard vehicleId={vehicle.id} stickers={stickers} stickerSpot={vehicle.sticker_spot} />
 

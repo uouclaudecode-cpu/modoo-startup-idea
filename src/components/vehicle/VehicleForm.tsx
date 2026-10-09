@@ -11,8 +11,9 @@ import { friendlyError } from "@/lib/format";
 import { prepareImage, vehicleImageUrl } from "@/lib/images";
 import { createClient } from "@/lib/supabase/client";
 import { VEHICLE_TYPES, type Vehicle, type VehicleType } from "@/lib/types";
+import { BIKE_SUBTYPES } from "@/lib/subtypes";
 
-type Form = { type: VehicleType; name: string; brand: string; model: string; color: string; description: string };
+type Form = { type: VehicleType; subtype: string; name: string; brand: string; model: string; color: string; description: string };
 
 /**
  * 이동수단 등록 폼. vehicle을 넘기면 정보 수정 폼이 됩니다. (QR은 바뀌지 않음)
@@ -24,6 +25,7 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
   const editing = Boolean(vehicle);
   const [form, setForm] = useState<Form>({
     type: vehicle?.type ?? "bicycle",
+    subtype: vehicle?.subtype ?? "",
     name: vehicle?.name ?? "",
     brand: vehicle?.brand ?? "",
     model: vehicle?.model ?? "",
@@ -84,6 +86,8 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
 
       const fields = {
         type: form.type,
+        // 자전거일 때만 종류를 저장해요 (킥보드·기타는 비움)
+        subtype: form.type === "bicycle" ? form.subtype || null : null,
         name: form.name.trim(),
         brand: form.brand.trim() || null,
         model: form.model.trim() || null,
@@ -166,6 +170,28 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
             ))}
           </div>
         </fieldset>
+        {form.type === "bicycle" && (
+          <fieldset>
+            <legend className="mb-1.5 block text-sm font-semibold text-ink-soft">자전거 종류 (선택)</legend>
+            <div className="flex flex-wrap gap-2">
+              {BIKE_SUBTYPES.map((t) => (
+                <button
+                  key={t.value}
+                  type="button"
+                  aria-pressed={form.subtype === t.value}
+                  onClick={() => setForm({ ...form, subtype: form.subtype === t.value ? "" : t.value })}
+                  className={cn(
+                    "h-10 rounded-full px-4 text-sm font-semibold ring-1 ring-inset transition-colors",
+                    form.subtype === t.value ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink-soft ring-line hover:bg-slate-50",
+                  )}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-1.5 text-[12px] text-ink-muted">고르면 권장 공기압을 알려 드리고, 전기자전거는 배터리도 기록할 수 있어요.</p>
+          </fieldset>
+        )}
         <Input label="이름" placeholder="예) 출퇴근용 자전거" value={form.name} onChange={set("name")} error={errors.name} maxLength={40} required />
         <div className="grid grid-cols-2 gap-3">
           <Input label="브랜드" placeholder="예) 삼천리" value={form.brand} onChange={set("brand")} maxLength={40} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { LocateFixed, MapPinOff } from "lucide-react";
+import { Bike, LocateFixed, MapPinOff } from "lucide-react";
 import { Skeleton } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import {
@@ -10,6 +10,7 @@ import {
   onNaverAuthFailure,
   type NaverMaps,
   type NMap,
+  type NLayer,
   type NMarker,
   type NPolyline,
 } from "@/lib/naverMap";
@@ -47,6 +48,9 @@ export function RideMap({ path, current = null, follow = false, fit = false, cla
   const [why, setWhy] = useState<MapUnavailableError["reason"] | null>(null);
   // 사용자가 지도를 끌어서 옮기면 따라가기를 잠시 멈춤
   const [tracking, setTracking] = useState(true);
+  // 자전거도로 레이어 (네이버 지도)
+  const bikeRef = useRef<NLayer | null>(null);
+  const [bikeOn, setBikeOn] = useState(false);
 
   // 1) 지도 만들기 (한 번)
   useEffect(() => {
@@ -152,6 +156,14 @@ export function RideMap({ path, current = null, follow = false, fit = false, cla
     if (follow && tracking) map.panTo(pos);
   }, [current, follow, tracking, mode]);
 
+  function toggleBike() {
+    const maps = mapsRef.current, map = mapRef.current;
+    if (!maps?.BicycleLayer || !map) return;
+    if (!bikeRef.current) bikeRef.current = new maps.BicycleLayer();
+    bikeRef.current.setMap(bikeOn ? null : map);
+    setBikeOn(!bikeOn);
+  }
+
   function recenter() {
     const maps = mapsRef.current, map = mapRef.current;
     if (!maps || !map || !current) return;
@@ -173,6 +185,20 @@ export function RideMap({ path, current = null, follow = false, fit = false, cla
         </div>
       )}
       {mode === "fallback" && <PathSketch path={path} current={current} reason={why} />}
+      {mode === "naver" && mapsRef.current?.BicycleLayer && (
+        <button
+          type="button"
+          onClick={toggleBike}
+          aria-pressed={bikeOn}
+          className={cn(
+            "absolute left-3 top-3 inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold shadow-lift ring-1",
+            bikeOn ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink ring-line",
+          )}
+        >
+          <Bike aria-hidden className="h-4 w-4" />
+          자전거도로
+        </button>
+      )}
       {mode === "naver" && follow && current && !tracking && (
         <button
           type="button"

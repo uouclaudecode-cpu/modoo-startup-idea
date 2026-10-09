@@ -12,6 +12,8 @@ export default async function NewAlertPage({ params }: { params: Promise<{ id: s
   const { supabase, vehicle } = await getOwnedVehicle(id, `/vehicles/${id}/alert`);
   const { data: open } = await supabase.from("theft_alerts").select("id").eq("vehicle_id", vehicle.id).eq("status", "open").maybeSingle();
   if (open) redirect(`/alerts/${open.id}`);
+  // 마지막으로 세운 곳이 있으면 잃어버린 곳으로 미리 채워요
+  const { data: parking } = await supabase.from("parking_spots").select("lat, lng, note, parked_at").eq("vehicle_id", vehicle.id).maybeSingle();
   return (
     <div className="mx-auto max-w-xl space-y-4">
       <Link href={`/vehicles/${vehicle.id}`} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
@@ -24,7 +26,7 @@ export default async function NewAlertPage({ params }: { params: Promise<{ id: s
           잃어버린 곳 근처에서 경보 알림을 켠 사람들에게 사진과 특징이 바로 전달돼요. 내 이름·연락처는 보이지 않아요.
         </p>
       </div>
-      <AlertForm vehicleId={vehicle.id} isNew={Date.now() - new Date(vehicle.created_at).getTime() < 86400e3} />
+      <AlertForm vehicleId={vehicle.id} parking={parking ?? null} isNew={Date.now() - new Date(vehicle.created_at).getTime() < 86400e3} />
     </div>
   );
 }

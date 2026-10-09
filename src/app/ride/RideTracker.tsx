@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { History, Pause, Play, Satellite, Square, SunMedium, Trash2 } from "lucide-react";
+import { BatteryMedium, History, MapPin, Pause, Play, Satellite, ShieldCheck, Square, SunMedium, Trash2 } from "lucide-react";
 import { Button, Card, Modal, useToast } from "@/components/ui";
 import { RideMap } from "@/components/ride/RideMap";
 import { cn } from "@/lib/cn";
@@ -12,8 +12,10 @@ import { averageSpeed, formatDistance, formatDuration, toPathJson } from "@/lib/
 import { useRideTracker, type GpsState, type RideResult } from "@/lib/ride/useRideTracker";
 import { createClient } from "@/lib/supabase/client";
 import { typeEmoji, type VehicleType } from "@/lib/types";
+import { Input } from "@/components/ui";
+import { usesBattery } from "@/lib/subtypes";
 
-export type RideVehicle = { id: string; name: string; type: VehicleType; odometer_m: number };
+export type RideVehicle = { id: string; name: string; type: VehicleType; subtype?: string | null; odometer_m: number };
 
 const LAST_VEHICLE_KEY = "b-lock:last-ride-vehicle";
 /** 이보다 짧으면 저장할 의미가 없어서 버리기만 제안 */
@@ -30,6 +32,13 @@ export function RideTracker({ vehicles, userId }: { vehicles: RideVehicle[]; use
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [confirmDiscard, setConfirmDiscard] = useState(false);
+  // 마칠 때: 주차 위치 저장 · 배터리 (전기자전거·킥보드)
+  const [savePark, setSavePark] = useState(true);
+  const [parkNote, setParkNote] = useState("");
+  const [batStart, setBatStart] = useState("");
+  const [batEnd, setBatEnd] = useState("");
+  // 킥보드 출발 전 안전 확인
+  const [safetyOpen, setSafetyOpen] = useState(false);
 
   const activeVehicleId = t.vehicleId ?? vehicleId;
   const vehicle = vehicles.find((v) => v.id === activeVehicleId);
@@ -82,7 +91,15 @@ export function RideTracker({ vehicles, userId }: { vehicles: RideVehicle[]; use
     };
   }, [t.status, pause]);
 
+  /** 시작 버튼: 전동킥보드는 출발 전 안전 확인을 먼저 보여 줘요 */
+  function requestStart() {
+    const v = vehicles.find((x) => x.id === vehicleId);
+    if (v?.type === "kickboard") return setSafetyOpen(true);
+    start();
+  }
+
   function start() {
+    setSafetyOpen(false);
     try {
       localStorage.setItem(LAST_VEHICLE_KEY, vehicleId);
     } catch {
@@ -125,8 +142,30 @@ export function RideTracker({ vehicles, userId }: { vehicles: RideVehicle[]; use
       setSaveError(friendlyError(error, "저장하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요."));
       return;
     }
+    // 이어서 배터리·주차 위치 (실패해도 라이딩 저장은 이미 끝났어요)
+    const supabase = createClient();
+    const bs = batStart.trim() === "" ? null : Number(batStart);
+    const be = batEnd.trim() === "" ? null : Number(batEnd);
+    if ((bs != null || be != null) && vehicle && usesBattery(vehicle.type, vehicle.subtype)) {
+      const { error: bErr } = await supabase.rpc("set_ride_battery", { p_ride: data, p_start: bs, p_end: be });
+      if (bErr) toast.error(friendlyError(bErr, "배터리 기록은 저장하지 못했어요."));
+    }
+    const last = result.path[result.path.length - 1];
+    if (savePark && last) {
+      const { error: pErr } = await supabase.rpc("save_parking", {
+        p_vehicle: result.vehicleId,
+        p_lat: last.lat,
+        p_lng: last.lng,
+        p_accuracy: t.accuracy,
+        p_note: parkNote.trim() || null,
+      });
+      if (pErr) console.error(pErr);
+    }
     t.clear();
     setResult(null);
+    setBatStart("");
+    setBatEnd("");
+    setParkNote("");
     toast.success("라이딩을 저장했어요! 소모품 거리에도 더했어요.");
     router.push(`/rides/${data}?done=1`);
   }
@@ -242,7 +281,7 @@ export function RideTracker({ vehicles, userId }: { vehicles: RideVehicle[]; use
       {/* 시작 / 일시정지 / 종료 */}
       <div className="sticky bottom-[calc(6rem+env(safe-area-inset-bottom))] z-10 sm:bottom-4">
         {t.status === "idle" && (
-          <Button size="lg" full className="h-16 text-lg shadow-lift" icon={<Play aria-hidden className="h-6 w-6" />} onClick={start}>
+          <Button size="lg" full className="h-16 text-lg shadow-lift" icon={<Play aria-hidden className="h-6 w-6" />} onClick={requestStart}>
             라이딩 시작
           </Button>
         )}
@@ -311,6 +350,30 @@ export function RideTracker({ vehicles, userId }: { vehicles: RideVehicle[]; use
             ) : (
               <p className="text-[14px]">움직인 거리가 너무 짧아서 저장할 기록이 없어요.</p>
             )}
+            {result.distance >= MIN_SAVE_METERS && (
+              <div className="space-y-2 rounded-xl bg-slate-50 p-3">
+                <label className="flex items-center gap-2 text-[14px] font-semibold">
+                  <input type="checkbox" className="h-5 w-5 accent-brand-600" checked={savePark} onChange={(e) => setSavePark(e.target.checked)} />
+                  <MapPin aria-hidden className="h-4 w-4 text-brand-600" />
+                  여기 세웠어요 (주차 위치 저장)
+                </label>
+                {savePark && (
+                  <Input label="세운 곳 메모 (선택)" placeholder="예) 학생회관 뒤 거치대 맨 왼쪽" value={parkNote} maxLength={100} onChange={(e) => setParkNote(e.target.value)} />
+                )}
+              </div>
+            )}
+            {result.distance >= MIN_SAVE_METERS && vehicle && usesBattery(vehicle.type, vehicle.subtype) && (
+              <div className="space-y-2 rounded-xl bg-slate-50 p-3">
+                <p className="flex items-center gap-2 text-[14px] font-semibold">
+                  <BatteryMedium aria-hidden className="h-4 w-4 text-brand-600" />
+                  배터리 (선택) · 1회 충전 주행거리를 계산해요
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input label="출발 %" inputMode="numeric" placeholder="예) 90" value={batStart} onChange={(e) => setBatStart(e.target.value.replace(/\D/g, "").slice(0, 3))} />
+                  <Input label="도착 %" inputMode="numeric" placeholder="예) 65" value={batEnd} onChange={(e) => setBatEnd(e.target.value.replace(/\D/g, "").slice(0, 3))} />
+                </div>
+              </div>
+            )}
             {saveError && (
               <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
                 {saveError}
@@ -329,6 +392,31 @@ export function RideTracker({ vehicles, userId }: { vehicles: RideVehicle[]; use
             )}
           </div>
         )}
+      </Modal>
+
+      {/* 전동킥보드 출발 전 안전 확인 (법으로 정해진 것들) */}
+      <Modal
+        open={safetyOpen}
+        onClose={() => setSafetyOpen(false)}
+        title="출발 전 안전 확인"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setSafetyOpen(false)}>
+              취소
+            </Button>
+            <Button icon={<ShieldCheck aria-hidden className="h-4 w-4" />} onClick={start}>
+              모두 확인했어요
+            </Button>
+          </>
+        }
+      >
+        <ul className="space-y-2 text-[15px] leading-relaxed">
+          <li>🪖 헬멧을 썼어요</li>
+          <li>🧍 혼자 타요 (2명 이상 탑승 금지)</li>
+          <li>🪪 원동기 이상 운전면허가 있어요</li>
+          <li>🚫 보도(인도)가 아닌 자전거도로·차도 가장자리로 다녀요</li>
+        </ul>
+        <p className="mt-3 text-[13px] text-ink-muted">개인형 이동장치는 도로교통법에 따라 위 내용을 지켜야 해요. 어기면 범칙금이 있어요.</p>
       </Modal>
 
       <Modal

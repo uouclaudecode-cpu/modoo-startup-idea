@@ -17,11 +17,20 @@ function localNow(offsetMin = 0) {
   return d.toISOString().slice(0, 16);
 }
 
-export function AlertForm({ vehicleId, isNew }: { vehicleId: string; isNew: boolean }) {
+export function AlertForm({
+  vehicleId,
+  isNew,
+  parking = null,
+}: {
+  vehicleId: string;
+  isNew: boolean;
+  /** 마지막으로 세운 곳 (라이딩을 마칠 때 저장) */
+  parking?: { lat: number; lng: number; note: string | null; parked_at: string } | null;
+}) {
   const router = useRouter();
   const [lostAt, setLostAt] = useState(localNow(30));
-  const [place, setPlace] = useState<PickedLocation | null>(null);
-  const [placeLabel, setPlaceLabel] = useState("");
+  const [place, setPlace] = useState<PickedLocation | null>(parking ? { lat: parking.lat, lng: parking.lng } : null);
+  const [placeLabel, setPlaceLabel] = useState(parking?.note ?? "");
   const [marks, setMarks] = useState("");
   const [police, setPolice] = useState("");
   const [radius, setRadius] = useState(1000);
@@ -63,6 +72,9 @@ export function AlertForm({ vehicleId, isNew }: { vehicleId: string; isNew: bool
       <Card className="space-y-4">
         <Input label="잃어버린 시각" type="datetime-local" value={lostAt} max={localNow()} onChange={(e) => setLostAt(e.target.value)} />
         <LocationPicker label="잃어버린 곳 (지도를 눌러 핀 꽂기)" value={place} onChange={setPlace} />
+        {parking && (
+          <p className="-mt-2 rounded-xl bg-brand-50 px-3 py-2 text-[13px] text-brand-800">마지막으로 세운 곳을 미리 넣어 뒀어요. 다른 곳에서 잃어버렸다면 지도에서 옮겨 주세요.</p>
+        )}
         <Input label="장소 설명 (선택)" placeholder="예: 학생회관 앞 거치대" value={placeLabel} maxLength={100} onChange={(e) => setPlaceLabel(e.target.value)} />
         <Textarea
           label="눈에 띄는 특징 (선택)"

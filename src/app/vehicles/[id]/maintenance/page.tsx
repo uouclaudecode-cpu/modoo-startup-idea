@@ -7,6 +7,8 @@ import type { MaintenanceLog, VehiclePart } from "@/lib/parts";
 import { getOwnedVehicle } from "@/lib/vehicles";
 import { MaintenanceDiary } from "./MaintenanceDiary";
 import { PartsBoard } from "./PartsBoard";
+import { ManualDistance } from "@/components/maintenance/ManualDistance";
+import { pressureTip } from "@/lib/subtypes";
 
 export const metadata: Metadata = { title: "소모품·정비 다이어리" };
 
@@ -48,13 +50,20 @@ export default async function MaintenancePage({ params }: { params: Promise<{ id
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">소모품·정비</h1>
           <p className="mt-1 text-sm text-ink-muted">
-            누적 주행 <b className="text-ink">{formatDistance(vehicle.odometer_m ?? 0)}</b> · 라이딩을 기록하면 자동으로 쌓여요
+            누적 주행 <b className="text-ink">{formatDistance(vehicle.odometer_m ?? 0)}</b>
           </p>
         </div>
-        <ButtonLink href="/ride" variant="secondary" className="flex-none" icon={<Play aria-hidden className="h-4 w-4" />}>
-          라이딩
-        </ButtonLink>
       </div>
+      <div className="grid grid-cols-2 gap-2">
+        <ButtonLink href="/ride" variant="secondary" icon={<Play aria-hidden className="h-4 w-4" />}>
+          라이딩 기록
+        </ButtonLink>
+        <ManualDistance vehicleId={vehicle.id} />
+      </div>
+      <p className="rounded-xl bg-slate-50 p-3 text-[13px] leading-relaxed text-ink-soft">
+        라이딩을 기록하면 거리가 자동으로 쌓여요. 앱 없이 탔다면 &lsquo;탄 거리 더하기&rsquo;로 직접 더해 주세요. 날짜로 정하는 항목(공기압 등)은 라이딩과 상관없이 계산돼요.
+        <span className="mt-1 block font-semibold text-ink">공기압: {pressureTip(vehicle.type, vehicle.subtype)}</span>
+      </p>
       <PartsBoard parts={(parts ?? []) as VehiclePart[]} now={now} lastLife={lastLife} />
       <MaintenanceDiary logs={(logs ?? []) as MaintenanceLog[]} />
     </div>
