@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LogoutButton } from "@/components/layout/LogoutButton";
 import { PushSettings } from "@/components/push/PushSettings";
 import { AlertSettings } from "@/components/settings/AlertSettings";
@@ -55,6 +55,16 @@ export default async function SettingsPage() {
         radius={profile?.alert_radius_m ?? 2000}
         quiet={profile?.alert_quiet ?? true}
       />
+
+      <SettingsSection title="집·회사 가림" description="공유 카드·경로 파일에서 집이나 회사 근처 길을 빼요. 정한 곳은 나만 볼 수 있어요.">
+        <Link
+          href="/settings/privacy-zones"
+          className="flex h-12 items-center justify-between rounded-xl bg-slate-50 px-4 text-[15px] font-semibold ring-1 ring-inset ring-line hover:bg-slate-100"
+        >
+          가림 장소 정하기
+          <ChevronRight aria-hidden className="h-4 w-4 text-ink-faint" />
+        </Link>
+      </SettingsSection>
 
       <SettingsSection title="비밀번호 변경">
         <PasswordForm />

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { UUID_RE } from "@/lib/community";
-import { buildGpx, trimEnds } from "@/lib/ride/export";
+import { buildGpx, shareSegments } from "@/lib/ride/export";
 import { fromPathJson } from "@/lib/ride/geo";
 import { createClient } from "@/lib/supabase/server";
 
-/** 내 라이딩을 GPX 파일로 내려받기 (?trim=1 이면 앞뒤 300m를 가려요) */
+/** 내 라이딩을 GPX 파일로 내려받기 (?trim=1 이면 앞뒤 300m와 가림 장소를 빼요) */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!UUID_RE.test(id)) return new NextResponse("없는 기록이에요.", { status: 404 });
@@ -22,8 +22,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   }
   if (!ride) return new NextResponse("없는 기록이에요.", { status: 404 });
 
-  let path = fromPathJson(ride.path);
-  if (new URL(req.url).searchParams.get("trim") === "1") path = trimEnds(path, 300);
+  const full = fromPathJson(ride.path);
+  let path: typeof full | (typeof full)[] = full;
+  // 공유용: 앞뒤 300m와 가림 장소(집·회사 등)를 빼요
+  if (new URL(req.url).searchParams.get("trim") === "1") {
+    const { data: zones, error: zErr } = await supabase.from("privacy_zones").select("lat, lng, radius_m").eq("owner_id", user.id);
+    if (zErr) console.error(zErr);
+    path = shareSegments(full, zones ?? []);
+  }
   const day = new Date(new Date(ride.started_at).getTime() + 9 * 3600e3).toISOString().slice(0, 10);
   const gpx = buildGpx({ name: `B-LOCK 라이딩 ${day}`, path, startedAt: ride.started_at, endedAt: ride.ended_at });
   return new NextResponse(gpx, {

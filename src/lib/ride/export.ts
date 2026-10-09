@@ -19,19 +19,44 @@ export function trimEnds(path: LatLng[], meters = 300): LatLng[] {
   return cut([...head].reverse()).reverse();
 }
 
+export type Zone = { lat: number; lng: number; radius_m: number };
+
+/**
+ * 공유용 경로: 앞뒤 300m를 자르고, 가림 장소(집·회사 등) 원 안의 점을 빼요.
+ * 빠진 곳에서 선이 끊기도록 여러 토막으로 돌려줘요. (2점 미만 토막은 버려요)
+ */
+export function shareSegments(path: LatLng[], zones: Zone[], endsMeters = 300): LatLng[][] {
+  const out: LatLng[][] = [];
+  let cur: LatLng[] = [];
+  for (const p of trimEnds(path, endsMeters)) {
+    if (zones.some((z) => distance(p, z) <= z.radius_m)) {
+      if (cur.length > 1) out.push(cur);
+      cur = [];
+    } else cur.push(p);
+  }
+  if (cur.length > 1) out.push(cur);
+  return out;
+}
+
 const esc = (s: string) => s.replace(/[<>&"']/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" })[c]!);
 
-/** GPX 1.1 (스트라바·가민·코모트 등에서 불러올 수 있어요) */
-export function buildGpx({ name, path, startedAt, endedAt }: { name: string; path: LatLng[]; startedAt: string; endedAt: string }) {
+/** GPX 1.1 (스트라바·가민·코모트 등에서 불러올 수 있어요). 토막이 여러 개면 trkseg 를 나눠요 */
+export function buildGpx({ name, path, startedAt, endedAt }: { name: string; path: LatLng[] | LatLng[][]; startedAt: string; endedAt: string }) {
+  const segs: LatLng[][] = path.length > 0 && Array.isArray(path[0]) ? (path as LatLng[][]) : [path as LatLng[]];
+  const all = segs.flat();
   const t0 = new Date(startedAt).getTime();
   const t1 = Math.max(new Date(endedAt).getTime(), t0);
-  const seg: number[] = [0];
-  for (let i = 1; i < path.length; i++) seg.push(seg[i - 1] + distance(path[i - 1], path[i]));
-  const total = seg[seg.length - 1] || 1;
-  const pts = path
-    .map((p, i) => {
-      const t = new Date(t0 + ((t1 - t0) * seg[i]) / total).toISOString();
-      return `      <trkpt lat="${p.lat.toFixed(6)}" lon="${p.lng.toFixed(6)}"><time>${t}</time></trkpt>`;
+  const acc: number[] = [0];
+  for (let i = 1; i < all.length; i++) acc.push(acc[i - 1] + distance(all[i - 1], all[i]));
+  const total = acc[acc.length - 1] || 1;
+  let k = 0;
+  const body = segs
+    .map((s) => {
+      const pts = s.map((p) => {
+        const t = new Date(t0 + ((t1 - t0) * acc[k++]) / total).toISOString();
+        return `      <trkpt lat="${p.lat.toFixed(6)}" lon="${p.lng.toFixed(6)}"><time>${t}</time></trkpt>`;
+      });
+      return ["    <trkseg>", ...pts, "    </trkseg>"].join("\n");
     })
     .join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -40,9 +65,7 @@ export function buildGpx({ name, path, startedAt, endedAt }: { name: string; pat
   <trk>
     <name>${esc(name)}</name>
     <type>cycling</type>
-    <trkseg>
-${pts}
-    </trkseg>
+${body}
   </trk>
 </gpx>
 `;

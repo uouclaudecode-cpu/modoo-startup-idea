@@ -269,6 +269,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <p className="px-4 py-2.5 text-[12px] font-bold text-ink-muted">운영자</p>
             <MenuRow href="/admin" icon={ChartColumn} label="운영 통계" />
             <MenuRow href="/admin/stickers" icon={Printer} label="스티커 관리 · 받는 곳" />
+            <MenuRow href="/admin/areas" icon={MapPin} label="관심 구역 통계" />
             <MenuRow href="/admin/reports" icon={Flag} label="신고 처리" />
           </Card>
         )}

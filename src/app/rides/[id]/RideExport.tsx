@@ -58,7 +58,11 @@ export function RideExport({ rideId }: { rideId: string }) {
           <b className="text-ink-soft">경로 파일 저장</b>: 스트라바·가민 같은 다른 운동 앱에 이 라이딩을 옮길 때 쓰는 파일(GPX)이에요. 다른 앱을 안 쓰면 몰라도 괜찮아요.
         </p>
         <p>
-          집·회사 위치가 드러나지 않게 출발·도착 근처 300m는 빼고 만들어요.{" "}
+          집·회사 위치가 드러나지 않게 출발·도착 근처 300m와{" "}
+          <a href="/settings/privacy-zones" className="font-semibold text-brand-700 underline">
+            가림 장소
+          </a>
+          는 빼고 만들어요.{" "}
           <a href={`/rides/${rideId}/gpx`} className="underline">
             빼지 않은 전체 경로 파일
           </a>

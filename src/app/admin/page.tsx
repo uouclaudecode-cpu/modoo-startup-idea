@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Fragment, type ReactNode } from "react";
-import { Bike, ChevronRight, CircleCheck, Flag, ImageOff, Megaphone, Printer, QrCode, RefreshCw, Route, SearchCheck, Users, UserCog, Siren } from "lucide-react";
+import { Bike, ChevronRight, CircleCheck, Flag, ImageOff, Megaphone, Printer, QrCode, RefreshCw, Route, SearchCheck, Users, UserCog, Siren, MapPinned } from "lucide-react";
 import { BarChart, type BarDatum } from "@/components/admin/BarChart";
 import { RATE_TEXT, RateBar, rateTone } from "@/components/admin/RateBar";
 import { StatCard } from "@/components/admin/StatCard";
@@ -119,6 +119,9 @@ function QuickLinks({ pending }: { pending: PendingCounts | null }) {
       <ButtonLink href="/admin/alerts" variant="secondary" icon={<Siren aria-hidden className="h-4 w-4" />}>
         경보 신고
         <CountBadge n={pending ? pending.alerts_flagged + pending.alerts_hidden : 0} />
+      </ButtonLink>
+      <ButtonLink href="/admin/areas" variant="secondary" className="col-span-2" icon={<MapPinned aria-hidden className="h-4 w-4" />}>
+        관심 구역 통계
       </ButtonLink>
     </nav>
   );

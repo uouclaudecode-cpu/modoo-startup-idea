@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { ogFonts, ShieldLogo } from "@/lib/ogImage";
-import { trimEnds } from "@/lib/ride/export";
+import { shareSegments, type Zone } from "@/lib/ride/export";
 import { averageSpeed, formatDistance, formatDuration, type LatLng } from "@/lib/ride/geo";
 
 export type RideCardData = {
@@ -10,12 +10,15 @@ export type RideCardData = {
   max_speed_kmh: number | null;
   path: LatLng[];
   vehicleName: string | null;
+  /** 공유에서 뺄 가림 장소 */
+  zones?: Zone[];
 };
 
 const SIZE = 1080;
 
 /** 경로를 SVG path 문자열로 (북쪽이 위, 가로세로 비율 유지) */
-function toSvgPath(pts: LatLng[], w: number, h: number) {
+function toSvgPath(segs: LatLng[][], w: number, h: number) {
+  const pts = segs.flat();
   if (pts.length < 2) return "";
   const k = Math.cos((pts[0].lat * Math.PI) / 180);
   const xs = pts.map((p) => p.lng * k), ys = pts.map((p) => p.lat);
@@ -23,13 +26,14 @@ function toSvgPath(pts: LatLng[], w: number, h: number) {
   const span = Math.max(maxX - minX, maxY - minY, 0.0005);
   const s = Math.min(w, h) / span;
   const ox = (w - (maxX - minX) * s) / 2, oy = (h - (maxY - minY) * s) / 2;
-  return xs.map((x, i) => `${i ? "L" : "M"}${(ox + (x - minX) * s).toFixed(1)} ${(oy + (maxY - ys[i]) * s).toFixed(1)}`).join(" ");
+  const pt = (p: LatLng) => `${(ox + (p.lng * k - minX) * s).toFixed(1)} ${(oy + (maxY - p.lat) * s).toFixed(1)}`;
+  return segs.map((seg) => seg.map((p, i) => `${i ? "L" : "M"}${pt(p)}`).join(" ")).join(" ");
 }
 
-/** 라이딩 공유 카드 (정사각형 PNG). 집 근처가 드러나지 않게 앞뒤 300m는 그리지 않아요 */
+/** 라이딩 공유 카드 (정사각형 PNG). 집 근처가 드러나지 않게 앞뒤 300m와 가림 장소는 그리지 않아요 */
 export async function renderRideCard(ride: RideCardData) {
   const vehicle = ride.vehicleName ? { name: ride.vehicleName } : null;
-  const d = toSvgPath(trimEnds(ride.path, 300), 840, 520);
+  const d = toSvgPath(shareSegments(ride.path, ride.zones ?? []), 840, 520);
   const day = new Date(new Date(ride.started_at).getTime() + 9 * 3600e3).toISOString().slice(0, 10).replace(/-/g, ".");
   const stats: [string, string][] = [
     ["이동 시간", formatDuration(ride.moving_sec)],
