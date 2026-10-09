@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { ArrowRightLeft, CircleCheck, Clock, Lock, ScanLine, Tag } from "lucide-react";
@@ -9,8 +10,36 @@ import { createClient } from "@/lib/supabase/client";
 import { transferUrl } from "@/lib/trade";
 
 type Stage = "form" | "waiting" | "done" | "expired";
+/** 구매자가 실물을 확인하는 방법: 숨은 스티커 / 차대번호 / 눈으로만 */
+type Check = "sticker" | "serial" | "none";
 
-export function TransferStart({ vehicleId, vehicleName, searching }: { vehicleId: string; vehicleName: string; searching: boolean }) {
+// 넘기면 무엇이 어떻게 되는지 (accept_transfer 와 같게 유지)
+const FATE: [string, string][] = [
+  ["함께 넘어가요", "정비 기록 · QR 스티커 · 차대번호 등록"],
+  ["새로 바뀌어요", "앱 QR (내가 출력해 붙여 둔 예전 앱 QR은 더 이상 안 돼요)"],
+  ["나에게 남아요", "라이딩 기록"],
+  ["지워져요", "발견 제보·대화 · 구매 정보 · 등록 사진 · 소유 증명 자료 (발급한 증명서도 무효) · 스티커 위치 메모"],
+];
+
+const CHECK_STEP: Record<Check, string> = {
+  sticker: "구매자가 숨은 스티커를 찍거나 QR 아래 조회 번호를 넣어 같은 기기인지 확인해요. 스티커 위치를 알려 주세요.",
+  serial: "구매자가 프레임에 새겨진 차대번호를 직접 보고 적어서 같은 기기인지 확인해요.",
+  none: "구매자가 사진과 실물이 같은지 눈으로 확인해요.",
+};
+
+export function TransferStart({
+  vehicleId,
+  vehicleName,
+  searching,
+  check,
+  stickerCount,
+}: {
+  vehicleId: string;
+  vehicleName: string;
+  searching: boolean;
+  check: Check;
+  stickerCount: number;
+}) {
   const toast = useToast();
   const [stage, setStage] = useState<Stage>("form");
   const [password, setPassword] = useState("");
@@ -109,7 +138,7 @@ export function TransferStart({ vehicleId, vehicleName, searching }: { vehicleId
         <CircleCheck aria-hidden className="h-12 w-12 text-emerald-600" />
         <p className="text-xl font-extrabold">양도가 끝났어요</p>
         <p className="text-[15px] leading-relaxed text-ink-muted">
-          {vehicleName}은(는) 이제 구매자의 이동수단이에요. 이 기기의 정보·제보·QR 권한은 모두 넘어갔어요.
+          {vehicleName}은(는) 이제 구매자의 이동수단이에요. 정비 기록과 스티커는 함께 넘어갔고, 발견 제보·구매 정보·사진은 지웠어요. 라이딩 기록은 내 기록에 남아 있어요.
         </p>
         <ButtonLink href="/dashboard" full size="lg" className="mt-2">
           MY로 가기
@@ -141,7 +170,7 @@ export function TransferStart({ vehicleId, vehicleName, searching }: { vehicleId
               </li>
               <li className="flex gap-2">
                 <Tag aria-hidden className="mt-0.5 h-4 w-4 flex-none text-brand-600" />
-                구매자가 자전거의 숨은 스티커를 찍어 같은 기기인지 확인해요.
+                {CHECK_STEP[check]}
               </li>
               <li className="flex gap-2">
                 <ArrowRightLeft aria-hidden className="mt-0.5 h-4 w-4 flex-none text-brand-600" />
@@ -172,9 +201,38 @@ export function TransferStart({ vehicleId, vehicleName, searching }: { vehicleId
           <p className="font-bold">넘기기 전에 확인해 주세요</p>
           <ul className="list-disc space-y-1 pl-5">
             <li>돈을 받은 뒤에 QR을 보여 주세요. 넘긴 뒤에는 되돌릴 수 없어요.</li>
-            <li>정비 기록·스티커는 함께 넘어가요. 라이딩 기록과 발견 제보는 나에게 남거나 지워져요.</li>
+            <li>구매자가 받는 순간 나는 이 이동수단을 더 이상 볼 수 없어요.</li>
             <li>QR은 10분 동안만 쓸 수 있어요.</li>
           </ul>
+        </div>
+
+        <div className="space-y-2 rounded-xl bg-slate-50 p-4">
+          <p className="font-bold">넘기면 이렇게 돼요</p>
+          <dl className="grid grid-cols-[6.5rem_1fr] gap-x-3 gap-y-2 text-[14px] leading-relaxed">
+            {FATE.map(([k, v]) => (
+              <div key={k} className="contents">
+                <dt className="font-semibold text-ink-muted">{k}</dt>
+                <dd className="text-ink-soft">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <div className="flex items-start gap-2 rounded-xl bg-slate-50 p-4 text-[14px] leading-relaxed text-ink-soft">
+          <Tag aria-hidden className="mt-0.5 h-4 w-4 flex-none text-brand-600" />
+          {check === "sticker" ? (
+            <p>
+              구매자가 {stickerCount > 1 ? `연결된 스티커 ${stickerCount}장 중 하나를` : "숨은 스티커를"} 찍어서 확인해요. 떨어졌거나 잃어버린 스티커가 있다면 먼저{" "}
+              <Link href={`/vehicles/${vehicleId}`} className="font-semibold text-brand-700 underline">
+                이동수단 화면
+              </Link>
+              에서 그 스티커의 연결을 끊어 주세요. 자전거에 붙은 스티커는 없는데 연결만 남아 있으면 구매자가 받을 수 없어요.
+            </p>
+          ) : check === "serial" ? (
+            <p>스티커가 없어서 구매자가 프레임에 새겨진 차대번호를 직접 보고 확인해요.</p>
+          ) : (
+            <p>스티커도 차대번호도 없어서 구매자가 사진과 실물을 눈으로만 확인해요. 넘기기 전에 이동수단 화면에서 차대번호를 등록하면 더 안전해요.</p>
+          )}
         </div>
         <Input
           label="비밀번호 다시 입력"

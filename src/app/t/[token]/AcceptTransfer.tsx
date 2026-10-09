@@ -8,7 +8,7 @@ import { Button, Card, Input } from "@/components/ui";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { friendlyError } from "@/lib/format";
 import { vehicleImageUrl } from "@/lib/images";
-import { extractToken } from "@/lib/qr";
+import { extractLookupCode, extractToken } from "@/lib/qr";
 import { createClient } from "@/lib/supabase/client";
 import type { TransferPeek } from "@/lib/trade";
 import { typeLabel } from "@/lib/types";
@@ -26,7 +26,8 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
   const [loading, setLoading] = useState(false);
 
   const mode = peek.requires_sticker ? "sticker" : peek.has_serial ? "serial" : "none";
-  const check = mode === "sticker" ? (extractToken(code) ?? code.trim()) : mode === "serial" ? last4.trim() : "";
+  // 스티커: 찍은 QR(코드 전체) 또는 QR 아래 조회 번호 8자리 (서버가 대소문자 구분 없이 앞 8자리와 맞춰 봐요)
+  const check = mode === "sticker" ? (extractToken(code) ?? extractLookupCode(code) ?? code.trim()) : mode === "serial" ? last4.trim() : "";
   const ready = mode === "sticker" ? Boolean(check) : mode === "serial" ? check.replace(/[^A-Za-z0-9]/g, "").length >= 5 : agree;
 
   async function accept() {
@@ -64,7 +65,7 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
         {mode === "sticker" && (
           <>
             <p className="text-[14px] leading-relaxed text-ink-soft">
-              판매자에게 숨은 스티커 위치를 물어보고, 자전거에 붙은 그 스티커를 찍어 주세요. 같은 기기인지 확인해요.
+              판매자에게 숨은 스티커 위치를 물어보고, 자전거에 붙은 그 스티커를 찍어 주세요. 같은 기기인지 확인해요. 카메라가 안 되면 스티커의 QR 바로 아래에 적힌 조회 번호 8자리를 넣어도 돼요.
             </p>
             {scanned ? (
               <p className="flex items-center gap-2 rounded-xl bg-emerald-50 p-3 text-[14px] font-semibold text-emerald-800">
@@ -84,7 +85,16 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
               />
             )}
             {!scanned && (
-              <Input label="또는 스티커 아래 주소·코드 입력" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" placeholder="https://…/scan/…" />
+              <Input
+                label="또는 스티커 QR 아래 조회 번호(8자리)"
+                placeholder="예) aB3x Kp9Q"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                autoComplete="off"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+              />
             )}
           </>
         )}
@@ -109,7 +119,7 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
       </Card>
 
       <div className="rounded-2xl bg-slate-100 p-4 text-[13px] leading-relaxed text-ink-soft">
-        받으면 정비 기록과 스티커가 내 계정으로 넘어오고, 이전 주인은 이 기기를 더 이상 볼 수 없어요. 받은 뒤 스티커를 새 곳에 숨기고 위치를 적어 두세요.
+        받으면 정비 기록·QR 스티커·차대번호 등록이 내 계정으로 넘어오고, 이전 주인은 이 기기를 더 이상 볼 수 없어요. 등록 사진과 구매 정보는 넘어오지 않으니 받은 뒤 새로 넣어 주세요. 앱 QR은 새로 만들어져요. 스티커는 새 곳에 숨기고 위치를 적어 두세요.
       </div>
 
       {error && (

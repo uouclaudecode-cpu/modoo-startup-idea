@@ -8,7 +8,14 @@ export const metadata: Metadata = { title: "소유권 넘기기" };
 
 export default async function TransferPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { vehicle } = await getOwnedVehicle(id, `/vehicles/${id}/transfer`);
+  const { supabase, vehicle } = await getOwnedVehicle(id, `/vehicles/${id}/transfer`);
+  // 구매자가 실물을 확인하는 방법 (받는 화면과 같은 순서: 스티커 → 차대번호 → 눈으로 확인)
+  const { count: stickerCount, error } = await supabase
+    .from("stickers")
+    .select("code", { count: "exact", head: true })
+    .eq("vehicle_id", vehicle.id);
+  if (error) console.error(error);
+  const check = stickerCount ? "sticker" : vehicle.serial_last4 ? "serial" : "none";
   return (
     <div className="mx-auto max-w-md space-y-4">
       <Link href={`/vehicles/${vehicle.id}`} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
@@ -19,7 +26,13 @@ export default async function TransferPage({ params }: { params: Promise<{ id: s
         <h1 className="text-2xl font-extrabold tracking-tight">소유권 넘기기</h1>
         <p className="mt-1 text-[15px] leading-relaxed text-ink-muted">직거래 현장에서 구매자가 이 화면의 QR을 찍으면 바로 넘어가요.</p>
       </div>
-      <TransferStart vehicleId={vehicle.id} vehicleName={vehicle.name} searching={vehicle.status === "searching"} />
+      <TransferStart
+        vehicleId={vehicle.id}
+        vehicleName={vehicle.name}
+        searching={vehicle.status === "searching"}
+        check={check}
+        stickerCount={stickerCount ?? 0}
+      />
     </div>
   );
 }
