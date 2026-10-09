@@ -44,7 +44,7 @@ export function WelcomeGuide({ nickname, hasVehicle, hasSticker, hasPush, fresh,
                   <Tag aria-hidden className="h-4 w-4 text-brand-600" />
                   QR 붙이기
                 </span>
-                <span className="block text-[13px] leading-snug text-ink-muted">스티커를 받아 연결하거나, 앱 QR을 원하는 크기로 출력해 주인만 아는 곳에 붙여요.</span>
+                <span className="block text-[13px] leading-snug text-ink-muted">출력한 QR은 바로 붙이면 되고, 받은 스티커는 한 번 찍어서 연결한 뒤 붙여요. 주인만 아는 곳에 숨겨 주세요.</span>
               </span>
             </div>
             {hasVehicle && !hasSticker && (
