@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRightLeft, Camera, CircleHelp, Search, ShieldAlert, ShieldCheck, Siren } from "lucide-react";
 import { Scanner } from "@/app/scan/Scanner";
@@ -186,7 +187,12 @@ export function CheckForm({ initial }: { initial: string }) {
       )}
 
       <p className="text-center text-[12px] leading-relaxed text-ink-muted">
-        조회한 번호는 저장하지 않고, 판매자·주인의 개인정보는 보여 주지 않아요. 경찰에 접수된 도난 여부는 B-LOCK에서 알 수 없어요.
+        조회한 번호는 알아볼 수 없게 바꾼 값(해시)으로만 남겨 조회 횟수 제한·통계에 쓰고, 조회한 사람의 정보는 저장하지 않아요. 도난 신고된
+        이동수단이면 주인에게 조회 사실(방법·시각)만 알려요. 판매자·주인의 개인정보는 보여 주지 않고, 경찰에 접수된 도난 여부는 B-LOCK에서 알 수
+        없어요.{" "}
+        <Link href="/privacy" className="underline underline-offset-2 hover:text-ink">
+          개인정보처리방침
+        </Link>
       </p>
     </div>
   );

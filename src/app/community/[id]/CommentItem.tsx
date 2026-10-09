@@ -105,10 +105,11 @@ function CommentBody({ comment: c, imageUrl, canDelete, loggedIn, postId, reply 
     setConfirm(false);
     if (error) {
       console.error(error);
-      toast.error(friendlyError(error, "댓글을 지우지 못했어요."));
+      toast.error(friendlyError(error, reply ? "답글을 지우지 못했어요." : "댓글을 지우지 못했어요."));
       return;
     }
-    toast.success("댓글을 지웠어요.");
+    // 댓글을 지우면 달린 답글도 데이터베이스가 함께 지워요 (댓글 수도 다시 셈)
+    toast.success(reply ? "답글을 지웠어요." : "댓글을 지웠어요.");
     router.refresh();
   }
 

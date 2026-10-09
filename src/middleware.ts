@@ -4,7 +4,7 @@ import { safeNext } from "@/lib/safeNext";
 
 /**
  * 모든 요청마다 로그인 상태(쿠키)를 새로 고칩니다.
- * 로그인이 필요한 화면(/dashboard, /vehicles)에 로그인하지 않고 들어오면 로그인 화면으로 보냅니다.
+ * 로그인이 필요한 화면(/dashboard, /vehicles, 글쓰기·글 고치기, 알림함 등)에 로그인하지 않고 들어오면 로그인 화면으로 보냅니다.
  */
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -30,7 +30,17 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const needsLogin = path.startsWith("/dashboard") || path.startsWith("/vehicles") || path === "/community/new" || path.startsWith("/stickers") || path.startsWith("/admin") || path === "/ride" || path.startsWith("/rides") || path.startsWith("/settings");
+  const needsLogin =
+    path.startsWith("/dashboard") ||
+    path.startsWith("/vehicles") ||
+    path === "/community/new" ||
+    /^\/community\/[^/]+\/edit\/?$/.test(path) ||
+    path.startsWith("/stickers") ||
+    path.startsWith("/admin") ||
+    path === "/ride" ||
+    path.startsWith("/rides") ||
+    path.startsWith("/settings") ||
+    path.startsWith("/notifications");
   if (needsLogin && !user) {
     const login = request.nextUrl.clone();
     login.pathname = "/login";

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Fragment, type ReactNode } from "react";
-import { Bike, ChevronRight, Flag, Megaphone, Printer, QrCode, RefreshCw, Route, SearchCheck, Users, BadgeCheck, Siren } from "lucide-react";
+import { Bike, ChevronRight, CircleCheck, Flag, ImageOff, Megaphone, Printer, QrCode, RefreshCw, Route, SearchCheck, Users, UserCog, Siren } from "lucide-react";
 import { BarChart, type BarDatum } from "@/components/admin/BarChart";
 import { RATE_TEXT, RateBar, rateTone } from "@/components/admin/RateBar";
 import { StatCard } from "@/components/admin/StatCard";
 import { ButtonLink, Card, EmptyState, ErrorState } from "@/components/ui";
-import { requireAdmin } from "@/lib/admin";
+import { loadPendingCounts, requireAdmin, type PendingCounts } from "@/lib/admin";
 import { CleanupQueue } from "./CleanupQueue";
 import {
   formatCount,
@@ -30,7 +30,7 @@ const BATCH_LIMIT = 100;
 /** 관리자 홈: 서비스가 얼마나 쓰이는지 숫자와 주별 추이로 한눈에 */
 export default async function AdminHomePage() {
   const { supabase } = await requireAdmin("/admin");
-  const { data, error } = await supabase.rpc("admin_stats");
+  const [{ data, error }, pending] = await Promise.all([supabase.rpc("admin_stats"), loadPendingCounts(supabase)]);
 
   if (error) {
     console.error(error);
@@ -39,7 +39,8 @@ export default async function AdminHomePage() {
     return (
       <div className="mx-auto max-w-xl space-y-5">
         <PageHeader />
-        <QuickLinks />
+        <QuickLinks pending={pending} />
+        {pending && <PendingStrip p={pending} />}
         <ErrorState
           title="통계를 불러오지 못했어요"
           description={
@@ -66,12 +67,15 @@ export default async function AdminHomePage() {
   return (
     <div className="mx-auto max-w-xl space-y-6">
       <PageHeader generatedAt={s.generated_at} />
-      <QuickLinks />
+      <QuickLinks pending={pending} />
+      {pending && <PendingStrip p={{ ...pending, cleanup: cleanupCount ?? pending.cleanup }} />}
       <KpiGrid s={s} stickerRate={stickerRate} />
       <NowStrip s={s} />
       <WeeklyCharts weekly={s.weekly} />
       <BatchTable batches={s.batches} />
-      <CleanupQueue count={cleanupCount ?? 0} />
+      <div id="cleanup" className="scroll-mt-20">
+        <CleanupQueue count={cleanupCount ?? 0} />
+      </div>
     </div>
   );
 }
@@ -88,7 +92,18 @@ function PageHeader({ generatedAt }: { generatedAt?: string | null }) {
   );
 }
 
-function QuickLinks() {
+/** 메뉴 버튼 옆 처리할 개수 (빨간 동그라미) */
+function CountBadge({ n }: { n: number }) {
+  if (n <= 0) return null;
+  return (
+    <span className="rounded-full bg-rose-600 px-1.5 text-[12px] font-bold leading-5 text-white tabular-nums">
+      <span className="sr-only">처리할 것 </span>
+      {n > 99 ? "99+" : n}
+    </span>
+  );
+}
+
+function QuickLinks({ pending }: { pending: PendingCounts | null }) {
   return (
     <nav aria-label="관리 메뉴" className="grid grid-cols-2 gap-2">
       <ButtonLink href="/admin/stickers" variant="secondary" icon={<Printer aria-hidden className="h-4 w-4" />}>
@@ -96,14 +111,63 @@ function QuickLinks() {
       </ButtonLink>
       <ButtonLink href="/admin/reports" variant="secondary" icon={<Flag aria-hidden className="h-4 w-4" />}>
         신고 처리
+        <CountBadge n={pending ? pending.reports_visible + pending.reports_hidden : 0} />
       </ButtonLink>
-      <ButtonLink href="/admin/members" variant="secondary" icon={<BadgeCheck aria-hidden className="h-4 w-4" />}>
-        회원 본인인증
+      <ButtonLink href="/admin/members" variant="secondary" icon={<UserCog aria-hidden className="h-4 w-4" />}>
+        회원 관리
       </ButtonLink>
       <ButtonLink href="/admin/alerts" variant="secondary" icon={<Siren aria-hidden className="h-4 w-4" />}>
         경보 신고
+        <CountBadge n={pending ? pending.alerts_flagged + pending.alerts_hidden : 0} />
       </ButtonLink>
     </nav>
+  );
+}
+
+/** 지금 처리할 일: 숨겨진 경보(급함) · 신고 · 정리할 사진. 없으면 한 줄로 알려 줘요. */
+function PendingStrip({ p }: { p: PendingCounts }) {
+  const rows = [
+    { n: p.alerts_hidden, href: "/admin/alerts", urgent: true, text: "신고로 숨겨진 도난 경보", hint: "진짜 도난이면 골든타임이 지나기 전에 다시 보이게 해 주세요." },
+    { n: p.alerts_flagged, href: "/admin/alerts", urgent: false, text: "신고가 들어온 진행 중 경보", hint: "아직 보이는 중이에요." },
+    { n: p.reports_visible, href: "/admin/reports", urgent: false, text: "확인할 글·댓글 신고", hint: "아직 보이는 중이에요." },
+    { n: p.reports_hidden, href: "/admin/reports", urgent: false, text: "숨겨진 채 남은 글·댓글", hint: "다시 보이기나 삭제를 골라 주세요." },
+    { n: p.cleanup, href: "#cleanup", urgent: false, text: "정리할 사진 파일", hint: "맨 아래 '지운 사진 정리'에서 지워요." },
+  ].filter((r) => r.n > 0);
+
+  if (rows.length === 0) {
+    return (
+      <p className="flex items-center gap-2 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 ring-1 ring-emerald-100">
+        <CircleCheck aria-hidden className="h-4 w-4 flex-none" />
+        지금 처리할 신고·경보가 없어요.
+      </p>
+    );
+  }
+  return (
+    <section aria-labelledby="pending-title" className="space-y-2">
+      <h2 id="pending-title" className="font-bold">
+        처리할 일
+      </h2>
+      <Card className="p-0">
+        <ul className="divide-y divide-line">
+          {rows.map((r) => (
+            <li key={r.text}>
+              <Link href={r.href} className="flex min-h-14 items-center gap-3 px-4 py-3 hover:bg-slate-50">
+                <span className={cn("grid h-9 w-9 flex-none place-items-center rounded-xl", r.urgent ? "bg-rose-100 text-rose-700" : "bg-slate-100 text-ink-soft")}>
+                  {r.href === "#cleanup" ? <ImageOff aria-hidden className="h-4 w-4" /> : r.href === "/admin/alerts" ? <Siren aria-hidden className="h-4 w-4" /> : <Flag aria-hidden className="h-4 w-4" />}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className={cn("block text-[15px] font-semibold", r.urgent ? "text-rose-700" : "text-ink")}>
+                    {r.text} <b className="tabular-nums">{formatCount(r.n)}개</b>
+                  </span>
+                  <span className="block text-[12px] text-ink-muted">{r.hint}</span>
+                </span>
+                <ChevronRight aria-hidden className="h-4 w-4 flex-none text-ink-faint" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Card>
+    </section>
   );
 }
 
