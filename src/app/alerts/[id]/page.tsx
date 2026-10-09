@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BadgeCheck, CalendarClock, Gift, MapPin, Siren } from "lucide-react";
+import { BadgeCheck, CalendarClock, ChevronLeft, Gift, MapPin, Siren } from "lucide-react";
 import { ButtonLink, Card } from "@/components/ui";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { PinMap, type MapPin as PinMapPin } from "@/components/map/PinMap";
@@ -26,9 +27,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return { title, description: `${a.place_label ?? "근처"}에서 잃어버렸어요. 비슷한 걸 보면 알려 주세요.`, openGraph: { title } };
 }
 
-export default async function AlertPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ sent?: string }> }) {
+export default async function AlertPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  // resolve=1: 이동수단 화면 '찾았어요'·분실 글 '찾았어요'에서 왔어요 (회수 확인 창을 바로 열어요)
+  searchParams: Promise<{ sent?: string; resolve?: string }>;
+}) {
   const { id } = await params;
-  const { sent } = await searchParams;
+  const { sent, resolve } = await searchParams;
   if (!UUID.test(id)) notFound();
   const supabase = await createClient();
   const [{ data, error }, { data: auth }] = await Promise.all([supabase.rpc("get_alert", { p_alert: id }), supabase.auth.getUser()]);
@@ -73,6 +81,9 @@ export default async function AlertPage({ params, searchParams }: { params: Prom
     }
   }
 
+  // 내 경보이거나 내가 보낸 제보·사례금 기록이 있으면 '내 경보·제보'로 돌아가요
+  const mine = a.is_owner || sightings.length > 0 || rewards.length > 0;
+
   const pins: PinMapPin[] = [
     { lat: a.lat, lng: a.lng, mark: "분실", label: a.place_label ?? "잃어버린 곳", color: "rose" },
     ...sightings
@@ -82,6 +93,12 @@ export default async function AlertPage({ params, searchParams }: { params: Prom
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
+      {/* 공유 링크로 처음 온 사람도 다른 경보·내 경보로 갈 수 있게 */}
+      <Link href={mine ? "/alerts#mine" : "/alerts"} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+        <ChevronLeft aria-hidden className="h-4 w-4" />
+        {mine ? "내 경보·제보" : "근처 도난 경보"}
+      </Link>
+
       {sent && a.is_owner && (
         <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 p-4 text-emerald-800 ring-1 ring-emerald-200">
           <BadgeCheck aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
@@ -142,7 +159,7 @@ export default async function AlertPage({ params, searchParams }: { params: Prom
       <PinMap pins={pins} className="h-64" />
 
       {a.is_owner ? (
-        <OwnerPanel alert={a} sightings={sightings} rewards={rewards} trust={trust} photos={photos} />
+        <OwnerPanel alert={a} sightings={sightings} rewards={rewards} trust={trust} photos={photos} autoResolve={resolve === "1"} />
       ) : user ? (
         <ReporterPanel alert={a} mySightings={sightings} myRewards={rewards} photos={photos} />
       ) : open ? (

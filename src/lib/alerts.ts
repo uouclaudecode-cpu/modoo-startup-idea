@@ -48,6 +48,36 @@ export type NearbyAlert = {
   created_at: string;
 };
 
+/** 내 경보·제보 (my_alert_activity): 내가 보낸 경보 + 내가 제보했거나 사례금 기록이 있는 경보 */
+export type MyAlert = {
+  id: string;
+  role: "owner" | "reporter";
+  status: AlertCard["status"];
+  lost_at: string;
+  place_label: string | null;
+  bounty_amount: number | null;
+  type: VehicleType;
+  brand: string | null;
+  model: string | null;
+  color: string | null;
+  image_path: string | null;
+  /** 주인에게만: 내 이동수단 이름 */
+  vehicle_name: string | null;
+  /** 주인: 들어온 제보 수 / 제보자: 내가 보낸 제보 수 */
+  sighting_count: number;
+  /** 주인에게만: 아직 확인 안 한 제보 수 */
+  new_sightings: number;
+  /** 주인: 보내야 할 사례금 / 제보자: 받았는지 확인할 사례금 */
+  reward_todo: number;
+  created_at: string;
+  resolved_at: string | null;
+};
+
+/** 구매 전 조회 기록 (owner_vehicle_lookups): 시간·방법만 */
+export type VehicleLookup = { method: "qr" | "code" | "serial"; stolen: boolean; created_at: string };
+
+export const LOOKUP_METHOD: Record<VehicleLookup["method"], string> = { qr: "QR로", code: "조회 번호로", serial: "차대번호로" };
+
 export type Sighting = {
   id: string;
   alert_id: string;
