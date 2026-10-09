@@ -67,7 +67,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               {user ? "내 이동수단 보기" : "등록하기"}
             </ButtonLink>
           </StepCard>
-          <StepCard n={2} icon={Tag} title="QR 준비해서 붙이기" text="QR을 출력하거나 스티커를 받아서, 안장 밑처럼 주인만 아는 곳에 붙여요.">
+          <StepCard n={2} icon={Tag} title="QR 준비 후 연결" text="QR을 출력하거나 스티커를 받아서 내 이동수단에 연결하고, 안장 밑처럼 주인만 아는 곳에 붙여요.">
             <ul className="mb-3 space-y-1.5 rounded-xl bg-slate-50 p-3 text-[13px] leading-relaxed text-ink-soft">
               <li>
                 <b className="text-ink">출력한 QR</b> · 처음부터 내 이동수단 QR이라 바로 붙이면 끝이에요.

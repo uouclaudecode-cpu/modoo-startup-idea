@@ -42,7 +42,7 @@ export function WelcomeGuide({ nickname, hasVehicle, hasSticker, hasPush, fresh,
               <span className="min-w-0 flex-1">
                 <span className={cn("flex items-center gap-1.5 font-semibold", hasSticker && "line-through")}>
                   <Tag aria-hidden className="h-4 w-4 text-brand-600" />
-                  QR 붙이기
+                  QR 준비 후 연결
                 </span>
                 <span className="block text-[13px] leading-snug text-ink-muted">출력한 QR은 바로 붙이면 되고, 받은 스티커는 한 번 찍어서 연결한 뒤 붙여요. 주인만 아는 곳에 숨겨 주세요.</span>
               </span>
