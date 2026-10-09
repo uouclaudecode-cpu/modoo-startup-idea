@@ -43,8 +43,8 @@ export function AlertSettings(p: Props) {
   const [saving, setSaving] = useState(false);
 
   const hasSavedArea = saved.lat != null && saved.lng != null;
-  // 켜 두었지만 아직 저장 전 (고른 동네가 없어서)
-  const pending = on && !saved.on;
+  // 켜 두었지만 아직 저장 전 (고른 동네가 없어서). 저장된 동네로 바로 켜는 중에는 안내를 띄우지 않아요
+  const pending = on && !saved.on && !toggling;
   const dirty = on && saved.on && (area?.lat !== saved.lat || area?.lng !== saved.lng || label.trim() !== saved.label || radius !== saved.radius || quiet !== saved.quiet);
 
   /** 저장된 값으로 되돌리기 (끌 때 저장하지 않은 변경은 버려요) */

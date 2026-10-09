@@ -8,7 +8,7 @@ import { cn } from "@/lib/cn";
 import { friendlyError } from "@/lib/format";
 import { getPushState, subscribePush, VAPID_PUBLIC_KEY } from "@/lib/push";
 
-/** '나중에'를 누르면 이 기기에서 이만큼 다시 보이지 않아요 */
+/** '닫기'를 누르면 이 기기에서 이만큼 다시 보이지 않아요 */
 const SNOOZE_MS = 14 * 86400e3;
 const snoozeKey = (userId: string) => `b-lock:push-prompt-snoozed:${userId}`;
 
@@ -26,7 +26,7 @@ function snoozed(userId: string) {
 /**
  * MY: 내 계정에 알림 받는 기기가 하나도 없을 때 보이는 작은 안내.
  * 발견 제보·익명 대화는 휴대폰 알림으로만 오기 때문에, 꺼져 있으면 제보가 와도 모를 수 있어요.
- * - '나중에'를 누르면 이 기기에서 2주 동안 숨겨요 (수색 중일 때는 숨기지 않아요)
+ * - '닫기'를 누르면 이 기기에서 2주 동안 숨겨요 (수색 중일 때는 숨기지 않아요)
  */
 export function PushPrompt({ userId, urgent }: { userId: string; urgent: boolean }) {
   const router = useRouter();
