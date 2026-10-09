@@ -430,6 +430,68 @@ drop trigger if exists theft_alerts_hidden_notify on public.theft_alerts;
 create trigger theft_alerts_hidden_notify after update of status on public.theft_alerts
   for each row execute function public.theft_alerts_hidden_notify();
 
+-- 관리자가 직접 숨긴 것은 '처리한 것'으로 남겨요. (처리할 개수에서 빠지게)
+--  · 글·댓글: 숨길 때도 moderation_cleared_at 을 찍어요. 이미 숨겨진 것이라 자동 숨김 판단에는 영향이 없고,
+--    다시 보이게 할 때는 원래대로 다시 찍혀요. (012의 admin_set_hidden 에서 숨기기 쪽만 바꿈)
+create or replace function public.admin_set_hidden(p_type text, p_id uuid, p_hidden boolean)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $
+begin
+  if not public.is_admin() then
+    raise exception '관리자만 할 수 있어요.';
+  end if;
+  if p_type = 'post' then
+    update public.lost_posts
+       set hidden_at = case when p_hidden then coalesce(hidden_at, now()) end,
+           moderation_cleared_at = now()
+     where id = p_id;
+  elsif p_type = 'comment' then
+    update public.post_comments
+       set hidden_at = case when p_hidden then coalesce(hidden_at, now()) end,
+           moderation_cleared_at = now()
+     where id = p_id;
+  else
+    raise exception '대상 종류가 올바르지 않아요.';
+  end if;
+  if not found then
+    raise exception '없는 글이나 댓글이에요.';
+  end if;
+end;
+$;
+
+--  · 도난 경보: 숨겨질 때 관리자가 숨겼으면 reviewed_at 을 찍고, 신고로 자동으로 숨겨지면 비워요.
+--    (admin_set_alert_status·flag_alert 를 고치지 않고 트리거 하나로 처리. is_admin 만 불러요)
+alter table public.theft_alerts add column if not exists reviewed_at timestamptz;
+
+create or replace function public.theft_alerts_review_mark()
+returns trigger
+language plpgsql as $
+begin
+  if new.status = 'hidden' and old.status is distinct from 'hidden' then
+    new.reviewed_at := case when public.is_admin() then now() end;
+  end if;
+  return new;
+end;
+$;
+drop trigger if exists theft_alerts_review_mark on public.theft_alerts;
+create trigger theft_alerts_review_mark before update of status on public.theft_alerts
+  for each row execute function public.theft_alerts_review_mark();
+
+-- 이미 숨겨진 것 중 신고한 사람이 3명보다 적은 것은 자동 숨김일 수 없으니 관리자가 숨긴 것으로 봐요. (다시 실행해도 같은 결과)
+update public.theft_alerts set reviewed_at = now()
+ where status = 'hidden' and flag_count < 3 and reviewed_at is null;
+update public.lost_posts p set moderation_cleared_at = now()
+ where p.hidden_at is not null and p.moderation_cleared_at is null
+   and (select count(distinct r.reporter_id) from public.content_reports r
+         where r.target_type = 'post' and r.target_id = p.id) < 3;
+update public.post_comments c set moderation_cleared_at = now()
+ where c.hidden_at is not null and c.moderation_cleared_at is null
+   and (select count(distinct r.reporter_id) from public.content_reports r
+         where r.target_type = 'comment' and r.target_id = c.id) < 3;
+
 -- 관리자 홈: 지금 처리할 개수
 create or replace function public.admin_pending_counts()
 returns json
@@ -458,10 +520,11 @@ begin
   select json_build_object(
            -- 보이는 중인데 신고가 있고, 관리자가 '다시 보이기'한 뒤 새 신고가 온 것까지
            'reports_visible', (select count(*) from t where not t.gone and t.hidden_at is null and (t.cleared_at is null or t.last_at > t.cleared_at)),
-           -- 숨겨진 채 남은 것 (자동 숨김 포함)
-           'reports_hidden', (select count(*) from t where not t.gone and t.hidden_at is not null),
+           -- 신고로 자동으로 숨겨진 뒤 아직 관리자가 고르지 않은 것 (관리자가 숨긴 뒤 새 신고가 온 것 포함)
+           'reports_hidden', (select count(*) from t where not t.gone and t.hidden_at is not null and (t.cleared_at is null or t.last_at > t.cleared_at)),
            'alerts_flagged', (select count(*) from public.theft_alerts a where a.flag_count > 0 and a.status = 'open'),
-           'alerts_hidden', (select count(*) from public.theft_alerts a where a.status = 'hidden'),
+           -- 신고로 자동으로 숨겨진 경보만 (관리자가 숨긴 것은 빼요)
+           'alerts_hidden', (select count(*) from public.theft_alerts a where a.status = 'hidden' and a.reviewed_at is null),
            'cleanup', (select count(*) from public.storage_cleanup_queue),
            'suspended', (select count(*) from public.profiles p
                           where p.suspended_at is not null and (p.suspended_until is null or p.suspended_until > now()))
@@ -641,6 +704,9 @@ revoke execute on function public.theft_alerts_hidden_notify() from public, anon
 revoke execute on function public.vehicles_image_path_check() from public, anon, authenticated;
 revoke execute on function public.vehicles_image_cleanup() from public, anon, authenticated;
 revoke execute on function public.purge_inbox_and_lookups() from public, anon, authenticated;
+revoke execute on function public.theft_alerts_review_mark() from public, anon, authenticated;
+revoke execute on function public.admin_set_hidden(text, uuid, boolean) from public, anon;
+grant execute on function public.admin_set_hidden(text, uuid, boolean) to authenticated;
 revoke execute on function public.admin_pending_counts() from public, anon;
 grant execute on function public.admin_pending_counts() to authenticated;
 revoke execute on function public.admin_set_suspension(uuid, int, text) from public, anon;

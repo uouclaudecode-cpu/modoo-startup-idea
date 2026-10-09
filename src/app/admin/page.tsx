@@ -130,7 +130,7 @@ function PendingStrip({ p }: { p: PendingCounts }) {
     { n: p.alerts_hidden, href: "/admin/alerts", urgent: true, text: "신고로 숨겨진 도난 경보", hint: "진짜 도난이면 골든타임이 지나기 전에 다시 보이게 해 주세요." },
     { n: p.alerts_flagged, href: "/admin/alerts", urgent: false, text: "신고가 들어온 진행 중 경보", hint: "아직 보이는 중이에요." },
     { n: p.reports_visible, href: "/admin/reports", urgent: false, text: "확인할 글·댓글 신고", hint: "아직 보이는 중이에요." },
-    { n: p.reports_hidden, href: "/admin/reports", urgent: false, text: "숨겨진 채 남은 글·댓글", hint: "다시 보이기나 삭제를 골라 주세요." },
+    { n: p.reports_hidden, href: "/admin/reports", urgent: false, text: "신고로 숨겨진 글·댓글", hint: "확인하고 다시 보이기나 삭제를 골라 주세요." },
     { n: p.cleanup, href: "#cleanup", urgent: false, text: "정리할 사진 파일", hint: "맨 아래 '지운 사진 정리'에서 지워요." },
   ].filter((r) => r.n > 0);
 
