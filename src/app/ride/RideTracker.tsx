@@ -498,9 +498,9 @@ function Stat({ label, value }: { label: string; value: string }) {
 function GpsBadge({ gps, accuracy }: { gps: GpsState; accuracy: number | null }) {
   if (gps === "off") return null;
   const meta: Record<Exclude<GpsState, "off">, { text: string; cls: string }> = {
-    searching: { text: "GPS 찾는 중", cls: "bg-white text-ink-soft" },
-    good: { text: `GPS 좋음 ±${accuracy ?? "?"}m`, cls: "bg-emerald-600 text-white" },
-    weak: { text: accuracy ? `GPS 약함 ±${accuracy}m` : "GPS 약함", cls: "bg-amber-500 text-white" },
+    searching: { text: "위치 찾는 중", cls: "bg-white text-ink-soft" },
+    good: { text: `위치 정확함 ±${accuracy ?? "?"}m`, cls: "bg-emerald-600 text-white" },
+    weak: { text: accuracy ? `위치 약함 ±${accuracy}m` : "위치 약함", cls: "bg-amber-500 text-white" },
     denied: { text: "위치 권한 꺼짐", cls: "bg-rose-600 text-white" },
     unsupported: { text: "위치 기능 없음", cls: "bg-rose-600 text-white" },
   };
