@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bike, ChartColumn, ChevronRight, Flag, History, Play, Plus, Printer, Siren } from "lucide-react";
+import { Bike, ChartColumn, ChevronRight, Flag, History, Plus, Printer, Siren } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { MaintenanceOverview } from "@/components/maintenance/MaintenanceOverview";
 import { PushPrompt } from "@/components/onboarding/PushPrompt";
 import { WelcomeGuide, welcomeGuideVisible } from "@/components/onboarding/WelcomeGuide";
 import { InboxCard, type InboxItem } from "@/components/vehicle/InboxCard";
+import { StickerActions } from "@/components/vehicle/StickerActions";
 import { partStatus, partsNeedingCare, type VehiclePart } from "@/lib/parts";
 import { ButtonLink, Card, EmptyState, ErrorState } from "@/components/ui";
 import { VehicleCard } from "@/components/vehicle/VehicleCard";
@@ -199,12 +200,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
       <UnfinishedRideCard userId={user.id} />
 
-      {list.length > 0 && (
-        <ButtonLink href="/ride" full size="lg" icon={<Play aria-hidden className="h-5 w-5" />}>
-          라이딩 시작
-        </ButtonLink>
-      )}
-
       <MaintenanceOverview vehicles={list} parts={(allParts ?? []) as VehiclePart[]} now={now} />
       {careByVehicle.filter(({ items }) => items.some((i) => partStatus(i.ratio) === "replace")).map(({ v, items }) => (
         <MaintenanceAlert key={v.id} vehicleId={v.id} vehicleName={v.name} items={items} now={now} />
@@ -237,6 +232,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         />
       ) : (
         <>
+          <StickerActions withLink title="QR 스티커" />
           <div className="grid gap-4 sm:grid-cols-2">
             {list.map((v) => (
               <VehicleCard key={v.id} vehicle={v} foundReports={counts.get(v.id) ?? 0} />

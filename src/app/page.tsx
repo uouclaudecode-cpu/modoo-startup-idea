@@ -5,6 +5,7 @@ import { ButtonLink, Card, StatusBadge } from "@/components/ui";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
 import { POST_LIST_COLUMNS } from "@/lib/community";
 import { createClient, getUser } from "@/lib/supabase/server";
+import { StickerActions } from "@/components/vehicle/StickerActions";
 
 const STEPS = [
   { icon: Tag, title: "스티커 받기", text: "학교·가게에 놓인 B-LOCK QR 스티커를 받아요. 근처에 없으면 앱에서 원하는 크기로 출력해도 돼요." },
@@ -66,6 +67,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           </ButtonLink>
         </div>
       </section>
+
+      {/* QR이 있어야 시작돼요: 출력 · 받는 곳을 크게 */}
+      <StickerActions />
 
       {/* 누구나 쓰는 도구: 근처 도난 경보 · 도난 조회 · 도난 다발 지도 */}
       <section aria-label="누구나 쓰는 도구" className="space-y-3">

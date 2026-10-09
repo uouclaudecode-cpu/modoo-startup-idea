@@ -48,10 +48,10 @@ export function WelcomeGuide({ nickname, hasVehicle, hasSticker, hasPush, fresh,
               </span>
             </div>
             {hasVehicle && !hasSticker && (
-              <div className="mt-2 grid grid-cols-3 gap-1.5 pl-12">
-                <MiniLink href={printHref} icon={Printer} label="출력하기" primary />
-                <MiniLink href="/get-sticker" icon={MapPin} label="받는 곳" />
-                <MiniLink href="/scan" icon={ScanLine} label="스티커 연결" />
+              <div className="mt-2.5 grid gap-1.5 sm:grid-cols-3">
+                <MiniLink href={printHref} icon={Printer} label="크기 골라 출력하기" primary />
+                <MiniLink href="/get-sticker" icon={MapPin} label="스티커 받는 곳" />
+                <MiniLink href="/scan" icon={ScanLine} label="받은 스티커 연결" />
               </div>
             )}
           </div>
@@ -98,11 +98,11 @@ function MiniLink({ href, icon: Icon, label, primary }: { href: string; icon: ty
     <Link
       href={href}
       className={cn(
-        "inline-flex h-9 items-center justify-center gap-1 rounded-lg px-1 text-[13px] font-semibold ring-1 ring-inset",
+        "inline-flex h-11 items-center justify-center gap-1.5 rounded-xl px-3 text-[15px] font-semibold ring-1 ring-inset",
         primary ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink ring-line hover:bg-slate-50",
       )}
     >
-      <Icon aria-hidden className="h-3.5 w-3.5" />
+      <Icon aria-hidden className="h-4 w-4" />
       {label}
     </Link>
   );
