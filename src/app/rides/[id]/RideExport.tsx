@@ -40,7 +40,7 @@ export function RideExport({ rideId }: { rideId: string }) {
     <div className="space-y-2">
       <div className="grid grid-cols-2 gap-2">
         <Button variant="secondary" loading={busy} loadingText="만드는 중..." icon={<Share2 aria-hidden className="h-4 w-4" />} onClick={shareCard}>
-          공유 카드
+          공유 카드 만들기
         </Button>
         <a
           href={`/rides/${rideId}/gpx?trim=1`}
@@ -64,7 +64,7 @@ export function RideExport({ rideId }: { rideId: string }) {
           </a>
           는 빼고 만들어요.{" "}
           <a href={`/rides/${rideId}/gpx`} className="underline">
-            빼지 않은 전체 경로 파일
+            가리지 않은 전체 경로 파일 받기
           </a>
         </p>
       </div>

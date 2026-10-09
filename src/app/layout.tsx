@@ -43,7 +43,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ToastProvider>
           <Header />
           <main className="mx-auto w-full max-w-3xl px-4 pb-16 pt-6 print:max-w-none print:p-0">{children}</main>
-          <footer className="mx-auto max-w-3xl space-y-2 px-4 pb-10 text-center text-xs text-ink-faint print:hidden">
+          <footer className="mx-auto max-w-3xl space-y-2 px-4 pb-10 text-center text-xs text-ink-muted print:hidden">
             <nav aria-label="약관 및 문의" className="flex flex-wrap justify-center gap-x-3 gap-y-1">
               <Link href="/terms" className="hover:text-ink-soft hover:underline">
                 이용약관

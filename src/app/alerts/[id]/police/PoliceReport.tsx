@@ -63,7 +63,7 @@ export function PoliceReport({ alert, vehicle, stickerCodes, qrValue, photos, ma
 
   async function copy() {
     const ok = await copyText(smsText);
-    if (ok) toast.success("복사했어요. 문자 앱에서 받는 사람 112에 붙여넣어 보내세요.");
+    if (ok) toast.success("복사했어요. 문자 앱에서 받는 사람 112에 붙여 넣어 보내세요.");
     else toast.error("복사하지 못했어요. 아래 글을 길게 눌러 복사해 주세요.");
   }
 
@@ -83,7 +83,7 @@ export function PoliceReport({ alert, vehicle, stickerCodes, qrValue, photos, ma
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       <div className="space-y-4 print:hidden">
-        <Link href={`/alerts/${alert.id}`} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+        <Link href={`/alerts/${alert.id}`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
           <ChevronLeft aria-hidden className="h-4 w-4" />
           도난 경보
         </Link>

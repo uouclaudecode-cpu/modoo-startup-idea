@@ -14,9 +14,9 @@ export function NewSticker({ code }: { code: string }) {
       <div className="rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 p-6 text-white shadow-lift">
         <Tag aria-hidden className="h-9 w-9" />
         <h1 className="mt-3 text-2xl font-extrabold leading-snug">새 {site.name} 스티커예요!</h1>
-        <p className="mt-2 text-[15px] leading-relaxed text-brand-50">아직 아무 이동수단에도 등록되지 않았어요. 내 자전거에 등록하고 붙여 주세요.</p>
+        <p className="mt-2 text-[15px] leading-relaxed text-brand-50">아직 아무 이동수단에도 연결되지 않은 스티커예요. 내 이동수단에 연결하고 붙여 주세요.</p>
         <ButtonLink href={`/stickers/${encodeURIComponent(code)}`} variant="light" size="lg" full className="mt-5" icon={<Bike aria-hidden className="h-5 w-5" />}>
-          내 자전거에 등록하기
+          내 이동수단에 연결하기
         </ButtonLink>
       </div>
       <Card className="space-y-3">

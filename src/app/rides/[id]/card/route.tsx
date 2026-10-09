@@ -28,6 +28,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     supabase.from("profiles").select("share_trim_m").eq("id", user.id).maybeSingle(),
   ]);
   const trimM = (prof as { share_trim_m?: number } | null)?.share_trim_m ?? 300;
-  if (zErr) console.error(zErr);
+  if (zErr) {
+    console.error(zErr);
+    return new Response("가림 장소를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.", { status: 500 });
+  }
   return renderRideCard({ ...ride, path: fromPathJson(ride.path), vehicleName: vehicle?.name ?? null, zones: zones ?? [], trimM });
 }

@@ -40,7 +40,8 @@ export function InboxCard({ items }: { items: InboxItem[] }) {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-1.5 text-[13px] text-ink-muted">
-                  <span className="truncate font-semibold text-ink">{i.vehicleName}</span>· {timeAgo(i.at)}
+                  <span className="truncate font-semibold text-ink">{i.vehicleName}</span>
+                  <span className="flex-none whitespace-nowrap">· {timeAgo(i.at)}</span>
                   {i.needsReply && <span className="flex-none font-bold text-rose-600">· {i.mode === "callback" ? "전화 요청" : "새 메시지"}</span>}
                 </span>
                 <span className="block truncate text-[14px]">{i.preview}</span>

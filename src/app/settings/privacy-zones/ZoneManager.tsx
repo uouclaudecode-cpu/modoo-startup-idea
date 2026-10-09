@@ -24,6 +24,7 @@ export function ZoneManager({ zones, suggestions, shareTrim }: { zones: PrivacyZ
   const toast = useToast();
   const [open, setOpen] = useState(false);
   const [label, setLabel] = useState("집");
+  const [customLabel, setCustomLabel] = useState("");
   const [radius, setRadius] = useState(300);
   const [place, setPlace] = useState<PickedLocation | null>(null);
   const [error, setError] = useState("");
@@ -44,11 +45,15 @@ export function ZoneManager({ zones, suggestions, shareTrim }: { zones: PrivacyZ
   }
 
   async function saveTrim(m: number) {
+    const prev = trim;
     setTrim(m);
     setBusy("trim");
     const { error: err } = await createClient().rpc("set_share_trim", { p_m: m });
     setBusy(null);
-    if (err) return toast.error(friendlyError(err, "저장하지 못했어요."));
+    if (err) {
+      setTrim(prev);
+      return toast.error(friendlyError(err, "저장하지 못했어요."));
+    }
     toast.success(m === 0 ? "출발·도착 근처도 그대로 보여요." : `출발·도착 근처 ${rLabel(m)}를 가려요.`);
   }
 
@@ -66,6 +71,7 @@ export function ZoneManager({ zones, suggestions, shareTrim }: { zones: PrivacyZ
   }
 
   async function remove(z: PrivacyZone) {
+    if (!confirm(`'${z.label}' 가림 장소를 지울까요? 지우면 공유할 때 이 근처도 보여요.`)) return;
     setBusy(z.id);
     const { error: err } = await createClient().from("privacy_zones").delete().eq("id", z.id);
     setBusy(null);
@@ -109,7 +115,7 @@ export function ZoneManager({ zones, suggestions, shareTrim }: { zones: PrivacyZ
                   </div>
                   <Button
                     variant="secondary"
-                    className="h-9 flex-none px-3 text-sm"
+                    className="h-10 flex-none px-3 text-sm"
                     onClick={() => {
                       setEditId(editId === z.id ? null : z.id);
                       setEditRadius(z.radius_m);
@@ -117,7 +123,7 @@ export function ZoneManager({ zones, suggestions, shareTrim }: { zones: PrivacyZ
                   >
                     반경 바꾸기
                   </Button>
-                  <Button variant="ghost" className="h-9 flex-none px-2" loading={busy === z.id && editId !== z.id} aria-label={`${z.label} 지우기`} onClick={() => remove(z)}>
+                  <Button variant="ghost" className="h-10 w-10 flex-none px-0" loading={busy === z.id && editId !== z.id} aria-label={`${z.label} 지우기`} onClick={() => remove(z)}>
                     <Trash2 aria-hidden className="h-4 w-4" />
                   </Button>
                 </div>
@@ -141,7 +147,7 @@ export function ZoneManager({ zones, suggestions, shareTrim }: { zones: PrivacyZ
                 <p className="mb-1.5 text-sm font-semibold">이름</p>
                 <div className="flex flex-wrap gap-2">
                   {LABELS.map((l) => (
-                    <button key={l} type="button" className={chip(label === l)} aria-pressed={label === l} onClick={() => setLabel(l)}>
+                    <button key={l} type="button" className={chip(!customLabel && label === l)} aria-pressed={!customLabel && label === l} onClick={() => { setCustomLabel(""); setLabel(l); }}>
                       {l}
                     </button>
                   ))}
@@ -149,10 +155,13 @@ export function ZoneManager({ zones, suggestions, shareTrim }: { zones: PrivacyZ
                 <input
                   aria-label="이름 직접 입력"
                   placeholder="직접 입력 (예: 헬스장)"
-                  value={LABELS.includes(label) ? "" : label}
+                  value={customLabel}
                   maxLength={30}
-                  onChange={(e) => setLabel(e.target.value || "집")}
-                  className="mt-2 h-11 w-full rounded-xl px-3 text-[15px] ring-1 ring-inset ring-line focus:ring-2 focus:ring-brand-500"
+                  onChange={(e) => {
+                    setCustomLabel(e.target.value);
+                    setLabel(e.target.value.trim() || "집");
+                  }}
+                  className="mt-2 h-11 w-full rounded-xl px-3 text-base ring-1 ring-inset ring-line focus:ring-2 focus:ring-brand-500"
                 />
               </div>
               <div>
@@ -199,7 +208,7 @@ export function ZoneManager({ zones, suggestions, shareTrim }: { zones: PrivacyZ
                     {s.count}번 출발·도착 · 지도에서 보기
                   </a>
                 </div>
-                <Button className="h-9 flex-none px-3 text-sm" loading={busy === `s${i}`} onClick={() => add(s, `자주 가는 곳 ${i + 1}`, 300, `s${i}`)}>
+                <Button className="h-10 flex-none px-3 text-sm" loading={busy === `s${i}`} onClick={() => add(s, `자주 가는 곳 ${i + 1}`, 300, `s${i}`)}>
                   가리기
                 </Button>
               </li>

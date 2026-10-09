@@ -19,7 +19,7 @@ export function ShareButton({ title }: { title: string }) {
       }
     }
     const ok = await copyText(url);
-    toast[ok ? "success" : "error"](ok ? "글 주소를 복사했어요. 단톡방에 붙여넣어 알려 주세요!" : "복사하지 못했어요.");
+    toast[ok ? "success" : "error"](ok ? "글 주소를 복사했어요. 단톡방에 붙여 넣어 알려 주세요!" : "복사하지 못했어요.");
   }
 
   return (

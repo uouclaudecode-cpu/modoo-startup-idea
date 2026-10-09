@@ -72,7 +72,7 @@ export default async function VehicleDetailPage({
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+      <Link href="/dashboard" className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />내 이동수단
       </Link>
 
@@ -133,7 +133,7 @@ export default async function VehicleDetailPage({
         </ButtonLink>
       )}
 
-      <StatusActions vehicleId={vehicle.id} status={vehicle.status} foundReports={count ?? 0} totalReports={total ?? 0} />
+      <StatusActions vehicleId={vehicle.id} status={vehicle.status} foundReports={count ?? 0} totalReports={total ?? 0} openAlertId={openAlert?.id ?? null} />
 
       {openPost ? (
         <ButtonLink href={`/community/${openPost.id}`} variant="secondary" full size="lg" icon={<MessagesSquare aria-hidden className="h-5 w-5" />}>

@@ -31,7 +31,7 @@ export function ForgotPasswordForm({ expired = false }: { expired?: boolean }) {
       if (/rate limit|security purposes/i.test(err.message)) return setError("요청이 너무 많아요. 몇 분 뒤에 다시 시도해 주세요.");
       // 메일 서버 쪽 문제(발송 실패·허용되지 않은 주소)는 다시 눌러도 안 되니 문의로 안내해요.
       if (/sending|not authorized|smtp/i.test(err.message) || err.status === 500)
-        return setError("지금 메일을 보내지 못했어요. 잠시 뒤 다시 시도하거나, 화면 맨 아래 '문의하기'로 알려 주시면 도와드릴게요.");
+        return setError("지금 메일을 보내지 못했어요. 잠시 뒤 다시 시도하거나, 화면 맨 아래 '문의하기'로 알려 주시면 도와 드릴게요.");
       return setError(friendlyError(err, "메일을 보내지 못했어요. 잠시 후 다시 시도해 주세요."));
     }
     setSent(value);
@@ -57,7 +57,7 @@ export function ForgotPasswordForm({ expired = false }: { expired?: boolean }) {
   return (
     <AuthCard
       title="비밀번호 찾기"
-      subtitle="가입한 이메일을 적으면 비밀번호를 다시 정하는 링크를 보내드려요."
+      subtitle="가입한 이메일을 적으면 비밀번호를 다시 정하는 링크를 보내 드려요."
       footer={
         <Link href="/login" className="font-semibold text-brand-700 underline-offset-2 hover:underline">
           로그인으로 돌아가기

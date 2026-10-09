@@ -38,7 +38,7 @@ export function ClaimStickerForm({ code, vehicles }: { code: string; vehicles: C
       setError(friendlyError(err, "등록하지 못했어요. 잠시 후 다시 시도해 주세요."));
       return;
     }
-    toast.success("스티커를 등록했어요! 주인만 아는 곳에 붙여 주세요.");
+    toast.success("스티커를 연결했어요! 주인만 아는 곳에 붙여 주세요.");
     router.replace(`/vehicles/${vehicle.id}?sticker=1`);
     router.refresh();
   }
@@ -74,7 +74,7 @@ export function ClaimStickerForm({ code, vehicles }: { code: string; vehicles: C
           </label>
         ))}
         <ButtonLink href={newHref} variant="ghost" full icon={<Plus aria-hidden className="h-4 w-4" />}>
-          새 이동수단 등록하면서 붙이기
+          새 이동수단 등록하고 연결
         </ButtonLink>
       </Card>
 
@@ -95,7 +95,7 @@ export function ClaimStickerForm({ code, vehicles }: { code: string; vehicles: C
         </p>
       )}
       <Button full size="lg" loading={loading} loadingText="등록 중..." icon={<Tag aria-hidden className="h-5 w-5" />} onClick={claim}>
-        이 스티커 등록하기
+        이 이동수단에 연결하기
       </Button>
     </div>
   );

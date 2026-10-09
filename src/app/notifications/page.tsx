@@ -49,7 +49,7 @@ export default async function NotificationsPage() {
       <div className="flex items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">알림함</h1>
-          <p className="mt-1 text-sm leading-relaxed text-ink-muted">댓글·제보·경보·사례금·양도 소식을 모아 둬요. 최근 90일, 200개까지 남아요.</p>
+          <p className="mt-1 text-sm leading-relaxed text-ink-muted">댓글·제보·경보·사례금·소유권 넘기기 소식을 모아 둬요. 최근 90일, 200개까지 남아요.</p>
         </div>
         <Link
           href="/settings"
@@ -66,7 +66,7 @@ export default async function NotificationsPage() {
         <EmptyState
           icon={<Bell aria-hidden className="h-7 w-7" />}
           title="아직 알림이 없어요"
-          description="내 글의 댓글, 발견·목격 제보, 근처 도난 경보, 사례금·양도 소식이 오면 여기에 모여요. 휴대폰 알림을 못 받아도 여기서 다시 볼 수 있어요."
+          description="내 글의 댓글, 발견·목격 제보, 근처 도난 경보, 사례금·소유권 넘기기 소식이 오면 여기에 모여요. 휴대폰 알림을 못 받아도 여기서 다시 볼 수 있어요."
         />
       ) : (
         <Card className="overflow-hidden p-0">

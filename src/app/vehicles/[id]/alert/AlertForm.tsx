@@ -148,7 +148,7 @@ export function AlertForm({
                 setBountyText(digits ? Number(digits).toLocaleString("ko-KR") : "");
                 setBounty(digits ? Number(digits) : 0);
               }}
-              className={`h-11 w-36 rounded-xl px-3 text-right text-[15px] ring-1 ring-inset focus:ring-2 focus:ring-brand-500 ${bountyText ? "ring-brand-500" : "ring-line"}`}
+              className={`h-11 w-36 rounded-xl px-3 text-right text-base ring-1 ring-inset focus:ring-2 focus:ring-brand-500 ${bountyText ? "ring-brand-500" : "ring-line"}`}
             />
             <span className="text-ink-muted">원</span>
           </label>
@@ -161,7 +161,7 @@ export function AlertForm({
       </Card>
 
       <p className="rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
-        경보는 72시간 동안 진행돼요. 이동수단 상태가 &lsquo;수색 중&rsquo;으로 바뀌고, 안심거래 링크와 양도는 멈춰요. 경보는 30일에 2번까지 보낼 수 있어요.
+        경보는 72시간 동안 진행돼요. 이동수단 상태가 &lsquo;수색 중&rsquo;으로 바뀌고, 인증 링크와 소유권 넘기기는 멈춰요. 경보는 30일에 2번까지 보낼 수 있어요.
       </p>
       {error && (
         <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2.5 text-sm text-rose-700">

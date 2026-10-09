@@ -115,7 +115,7 @@ export default async function PostPage({ params }: Params) {
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <Link href="/community" className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+      <Link href="/community" className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />
         커뮤니티
       </Link>
@@ -194,7 +194,7 @@ export default async function PostPage({ params }: Params) {
       {pins.length > 0 && (
         <section aria-label="지도" className="space-y-1.5">
           <PinMap pins={pins} className="h-60" />
-          <p className="text-[12px] text-ink-muted">빨간 핀은 잃어버린 곳, 파란·주황 핀은 댓글로 알려준 본 곳이에요. 핀을 누르면 설명이 보여요.</p>
+          <p className="text-[12px] text-ink-muted">빨간 핀은 잃어버린 곳, 파란·주황 핀은 댓글로 알려 준 본 곳이에요. 핀을 누르면 설명이 보여요.</p>
         </section>
       )}
 
@@ -209,7 +209,7 @@ export default async function PostPage({ params }: Params) {
           ) : (
             <p>
               <b>이 {vehicle.noun}에는 B-LOCK QR 스티커가 숨겨져 있어요.</b> 비슷한 {vehicle.obj} 봤다면 <b>비밀 댓글</b>로 &ldquo;이건가요?&rdquo;라고
-              물어보세요. 주인이 스티커 위치를 알려주면, 그 스티커를 찍어서 위치와 사진을 주인에게 바로 보낼 수 있어요.
+              물어보세요. 주인이 스티커 위치를 알려 주면, 그 스티커를 찍어서 위치와 사진을 주인에게 바로 보낼 수 있어요.
             </p>
           )}
         </div>

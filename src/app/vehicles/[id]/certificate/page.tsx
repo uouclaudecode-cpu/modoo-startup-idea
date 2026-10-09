@@ -61,7 +61,7 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       <div className="flex items-center justify-between print:hidden">
-        <Link href={`/vehicles/${vehicle.id}/evidence`} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+        <Link href={`/vehicles/${vehicle.id}/evidence`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
           <ChevronLeft aria-hidden className="h-4 w-4" />
           소유 증명
         </Link>
@@ -103,7 +103,7 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
           <ol className="space-y-1 text-[14px]">
             {(history ?? []).map((h, i) => (
               <li key={i}>
-                {formatDate(h.started_at)} {h.method === "register" ? "등록" : h.method === "transfer" ? "양도받음" : "관리자 조정"}
+                {formatDate(h.started_at)} {h.method === "register" ? "등록" : h.method === "transfer" ? "넘겨받음" : "관리자 조정"}
                 {h.ended_at ? ` → ${formatDate(h.ended_at)} 이전` : " → 현재"}
               </li>
             ))}
@@ -112,7 +112,7 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
 
         {items.length > 0 && (
           <section>
-            <h2 className="mb-2 text-[15px] font-bold">증거 사진 (올린 시각은 서버 기록)</h2>
+            <h2 className="mb-2 text-[15px] font-bold">증거 사진 (올린 시각은 B-LOCK이 자동으로 기록)</h2>
             <div className="grid grid-cols-3 gap-2">
               {items.map((e) => (
                 <figure key={e.id} className="space-y-1">
@@ -131,7 +131,7 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
             등록자: {profile?.nickname || "회원"} ({auth.user?.email ?? ""})
           </p>
           <p>
-            이 문서는 B-LOCK에 등록된 정보와 서버에 기록된 시각을 정리한 것으로, 법적 소유권을 확정하는 공문서는 아니에요. 진위는 QR 또는 {verifyUrl} 에서 확인할 수
+            이 문서는 B-LOCK에 등록된 정보와 B-LOCK에 자동으로 남은 시각을 정리한 것으로, 법적 소유권을 확정하는 공문서는 아니에요. 진위는 QR 또는 {verifyUrl}에서 확인할 수
             있어요.
           </p>
         </footer>

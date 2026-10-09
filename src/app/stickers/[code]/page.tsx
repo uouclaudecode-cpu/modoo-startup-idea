@@ -4,7 +4,7 @@ import { ButtonLink, ErrorState } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { ClaimStickerForm, type ClaimVehicle } from "./ClaimStickerForm";
 
-export const metadata: Metadata = { title: "스티커 등록", robots: { index: false } };
+export const metadata: Metadata = { title: "받은 스티커 연결", robots: { index: false } };
 
 /** 새 스티커를 내 이동수단에 등록 */
 export default async function ClaimStickerPage({ params }: { params: Promise<{ code: string }> }) {
@@ -48,7 +48,7 @@ export default async function ClaimStickerPage({ params }: { params: Promise<{ c
   return (
     <div className="mx-auto max-w-xl space-y-4">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight">스티커 등록</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight">받은 스티커 연결</h1>
         <p className="mt-1 text-sm leading-relaxed text-ink-muted">
           이 스티커를 붙일 이동수단을 골라 주세요. 등록한 뒤 스티커를 찍으면 그 이동수단의 신분증이 열려요.
         </p>

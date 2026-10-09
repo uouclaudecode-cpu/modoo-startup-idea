@@ -42,7 +42,7 @@ export default async function MaintenancePage({ params }: { params: Promise<{ id
 
   return (
     <div className="mx-auto max-w-xl space-y-5">
-      <Link href={`/vehicles/${vehicle.id}`} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+      <Link href={`/vehicles/${vehicle.id}`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />
         {vehicle.name}
       </Link>

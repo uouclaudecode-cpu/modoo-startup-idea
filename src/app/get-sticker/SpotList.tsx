@@ -27,7 +27,7 @@ export function SpotList({ spots, printHref }: { spots: Spot[]; printHref: strin
         B-LOCK 스티커와 똑같이 쓸 수 있어요. 크기를 1.5cm부터 A4 한 장 가득까지 골라서 집 프린터나 편의점에서 뽑으면 돼요. 라벨지에 뽑으면 바로 붙일 수 있고, 일반 종이는 투명 테이프로 덮어 주세요.
       </p>
       <ButtonLink href={printHref} full icon={<Printer aria-hidden className="h-4 w-4" />}>
-        크기 골라 출력하기
+        QR 출력하기
       </ButtonLink>
     </Card>
   );
@@ -40,7 +40,7 @@ export function SpotList({ spots, printHref }: { spots: Spot[]; printHref: strin
         <div className="flex items-center justify-between gap-2">
           <p className="font-bold">스티커 받는 곳 {spots.length > 0 && <span className="text-ink-muted">{spots.length}곳</span>}</p>
           {spots.length > 0 && (
-            <Button variant="secondary" className="h-9 px-3 text-sm" loading={loc.locating} loadingText="찾는 중..." icon={<LocateFixed aria-hidden className="h-4 w-4" />} onClick={loc.locate}>
+            <Button variant="secondary" className="h-10 px-3 text-sm" loading={loc.locating} loadingText="찾는 중..." icon={<LocateFixed aria-hidden className="h-4 w-4" />} onClick={loc.locate}>
               가까운 순
             </Button>
           )}
@@ -66,7 +66,7 @@ export function SpotList({ spots, printHref }: { spots: Spot[]; printHref: strin
                   href={`https://map.kakao.com/link/to/${encodeURIComponent(s.name)},${s.lat},${s.lng}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-9 flex-none items-center gap-1 rounded-xl bg-white px-3 text-sm font-semibold ring-1 ring-inset ring-line hover:bg-slate-50"
+                  className="inline-flex h-10 flex-none items-center gap-1 rounded-xl bg-white px-3 text-sm font-semibold ring-1 ring-inset ring-line hover:bg-slate-50"
                 >
                   <Navigation aria-hidden className="h-4 w-4" />
                   길찾기

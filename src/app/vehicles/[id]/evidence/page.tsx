@@ -21,14 +21,14 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
   const v = vehicle as typeof vehicle & { purchased_on?: string | null; purchase_place?: string | null };
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <Link href={`/vehicles/${vehicle.id}`} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+      <Link href={`/vehicles/${vehicle.id}`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />
         {vehicle.name}
       </Link>
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">소유 증명</h1>
         <p className="mt-1 text-[15px] leading-relaxed text-ink-muted">
-          잃어버린 뒤 찾았을 때 &ldquo;내 것&rdquo;이라는 걸 증명하는 자료예요. 사진은 나만 볼 수 있고, 올린 시각은 서버 시간으로 남아 바꿀 수 없어요.
+          잃어버린 뒤 찾았을 때 &ldquo;내 것&rdquo;이라는 걸 증명하는 자료예요. 사진은 나만 볼 수 있고, 올린 시각은 B-LOCK에 자동으로 남아 바꿀 수 없어요.
         </p>
       </div>
       <EvidenceBoard

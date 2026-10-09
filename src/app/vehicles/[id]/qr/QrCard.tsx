@@ -68,7 +68,7 @@ export function QrCard({
     ctx.drawImage(qr, (W - 900) / 2, 190);
     ctx.fillStyle = "#0f172a";
     ctx.font = "bold 46px 'Pretendard Variable', 'Malgun Gothic', sans-serif";
-    ctx.fillText("발견하셨다면 QR을 스캔해 주세요", W / 2, 1170);
+    ctx.fillText("발견하셨다면 QR을 찍어 주세요", W / 2, 1170);
     ctx.fillStyle = "#64748b";
     ctx.font = "34px 'Pretendard Variable', 'Malgun Gothic', sans-serif";
     ctx.fillText(`등록된 이동수단의 디지털 신분증 · 조회 번호 ${lookupCode(lookup || token)}`, W / 2, 1230);
@@ -118,7 +118,7 @@ export function QrCard({
 
   async function copyLookup() {
     const ok = await copyText(lookupCode(lookup || token));
-    if (ok) toast.success("조회 번호를 복사했어요. 중고거래 채팅에 붙여넣어 주세요.");
+    if (ok) toast.success("조회 번호를 복사했어요. 중고거래 채팅에 붙여 넣어 주세요.");
     else toast.error("복사하지 못했어요. 번호를 길게 눌러 복사해 주세요.");
   }
 
@@ -146,11 +146,11 @@ export function QrCard({
       <p className="text-[13px] leading-relaxed text-ink-muted">
         QR에는 무작위 코드만 들어 있어요. 이름·연락처 같은 개인정보는 담기지 않아요.
       </p>
-      <div className="grid gap-2">
-        <Button size="lg" full loading={busy === "save"} loadingText="저장 중..." icon={<Download aria-hidden className="h-5 w-5" />} onClick={onSave}>
-          QR 이미지 저장
+      <div className="grid grid-cols-2 gap-2">
+        <Button variant="secondary" full loading={busy === "save"} loadingText="저장 중..." icon={<Download aria-hidden className="h-4 w-4" />} onClick={onSave}>
+          이미지 저장
         </Button>
-        <Button size="lg" full variant="secondary" loading={busy === "share"} loadingText="준비 중..." icon={<Share2 aria-hidden className="h-5 w-5" />} onClick={onShare}>
+        <Button variant="secondary" full loading={busy === "share"} loadingText="준비 중..." icon={<Share2 aria-hidden className="h-4 w-4" />} onClick={onShare}>
           공유
         </Button>
       </div>

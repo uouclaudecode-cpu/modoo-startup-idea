@@ -13,7 +13,7 @@ import { PART_META, PART_STATUS_META, partStatus, wearRatio, type PartKind } fro
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "안심거래 인증",
-  description: "B-LOCK 등록 소유자·도난 이력 확인 화면",
+  description: "B-LOCK 등록 주인·도난 이력 확인 화면",
   robots: { index: false, follow: false },
 };
 
@@ -57,8 +57,8 @@ export default async function VerifyPage({ params }: { params: Promise<{ token: 
       <div className="flex items-center gap-3 rounded-2xl bg-emerald-600 p-4 text-white shadow-lift">
         <ShieldCheck aria-hidden className="h-8 w-8 flex-none" />
         <div>
-          <p className="text-lg font-extrabold">B-LOCK 등록 소유자 확인</p>
-          <p className="text-[13px] text-emerald-50">판매자가 이 이동수단의 현재 등록 소유자예요.</p>
+          <p className="text-lg font-extrabold">B-LOCK 등록 주인 확인</p>
+          <p className="text-[13px] text-emerald-50">판매자가 이 이동수단의 지금 주인이에요.</p>
         </div>
       </div>
 

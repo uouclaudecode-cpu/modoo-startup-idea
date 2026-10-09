@@ -213,7 +213,7 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
                 key={v.id}
                 type="button"
                 onClick={() => t.reassign(v.id)}
-                className="rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-ink-soft ring-1 ring-inset ring-line hover:bg-slate-50"
+                className="rounded-full bg-white inline-flex h-11 items-center px-4 text-sm font-semibold text-ink-soft ring-1 ring-inset ring-line hover:bg-slate-50"
               >
                 {typeEmoji(v.type)} {v.name}
               </button>
@@ -233,7 +233,7 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
               aria-checked={vehicleId === v.id}
               onClick={() => setVehicleId(v.id)}
               className={cn(
-                "flex flex-none items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-inset transition-colors",
+                "flex flex-none items-center gap-2 h-11 rounded-full px-4 text-sm font-semibold ring-1 ring-inset transition-colors",
                 vehicleId === v.id ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink-soft ring-line hover:bg-slate-50",
               )}
             >
@@ -249,7 +249,7 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
       )}
 
       <div className="relative">
-        <RideMap path={t.points} current={t.current} follow className="h-[44vh] min-h-[260px]" />
+        <RideMap path={t.points} current={t.current} follow className={t.status === "idle" ? "h-[44vh] min-h-[260px]" : "h-[34vh] min-h-[210px]"} />
         <GpsBadge gps={t.gps} accuracy={t.accuracy} />
       </div>
 
@@ -322,11 +322,6 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
             <h2 id="recent-rides" className="text-lg font-bold tracking-tight">
               최근 라이딩
             </h2>
-            {recent.length > 0 && (
-              <Link href="/rides" className="text-sm font-semibold text-brand-700 hover:underline">
-                전체 기록·통계
-              </Link>
-            )}
           </div>
           {recent.length === 0 ? (
             <p className="rounded-2xl bg-slate-50 p-4 text-[14px] leading-relaxed text-ink-muted">
@@ -349,7 +344,7 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
                           {formatDateTime(r.started_at)} · {r.vehicle_name ?? "삭제한 이동수단"}
                         </p>
                       </div>
-                      <span className="flex-none text-[12px] font-semibold text-brand-700">공유하기</span>
+                      <span className="flex-none text-[12px] font-semibold text-ink-muted">자세히</span>
                       <ChevronRight aria-hidden className="h-5 w-5 flex-none text-ink-faint" />
                     </Card>
                   </Link>

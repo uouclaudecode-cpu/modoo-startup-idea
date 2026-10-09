@@ -96,7 +96,7 @@ export default async function RideDetailPage({ params, searchParams }: { params:
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <Link href="/rides" className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+      <Link href="/rides" className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />
         라이딩 기록
       </Link>
@@ -121,7 +121,7 @@ export default async function RideDetailPage({ params, searchParams }: { params:
         <p className="mt-1 text-4xl font-extrabold tabular-nums tracking-tight">{formatDistance(ride.distance_m)}</p>
         <dl className="mt-4 grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
           {stats.map(([k, v]) => (
-            <div key={k} className="rounded-xl bg-slate-50 px-2 py-2.5">
+            <div key={k} className="rounded-xl bg-slate-50 px-2 py-2.5 last:odd:col-span-2 sm:last:odd:col-span-1">
               <dt className="text-[12px] text-ink-muted">{k}</dt>
               <dd className="mt-0.5 font-bold tabular-nums">{v}</dd>
             </div>

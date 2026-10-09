@@ -28,7 +28,7 @@ type Cert =
 const REASON = {
   not_found: "B-LOCK에서 발급한 증명서가 아니에요. 위조됐을 수 있어요.",
   deleted: "발급 뒤 이동수단이 삭제됐어요.",
-  owner_changed: "발급 뒤 소유자가 바뀌어 이 증명서는 더 이상 유효하지 않아요.",
+  owner_changed: "발급 뒤 주인이 바뀌어 이 증명서는 더 이상 쓸 수 없어요.",
 };
 const STATUS: Record<string, string> = { active: "정상", searching: "분실·도난 수색 중", recovered: "회수 완료" };
 
@@ -82,7 +82,7 @@ export default async function CertificateVerifyPage({ params }: { params: Promis
           <span className="text-ink-muted">이동수단</span> · {typeLabel(c.vehicle.type)} {[c.vehicle.color, c.vehicle.brand, c.vehicle.model].filter(Boolean).join(" ")}
         </p>
         <p>
-          <span className="text-ink-muted">등록 소유자</span> · {c.owner}
+          <span className="text-ink-muted">등록 주인</span> · {c.owner}
         </p>
         <p>
           <span className="text-ink-muted">B-LOCK 등록</span> · {formatDateTime(c.registered_at)}
@@ -103,7 +103,7 @@ export default async function CertificateVerifyPage({ params }: { params: Promis
         </p>
       </Card>
       <p className="rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
-        이 화면은 증명서가 B-LOCK에서 발급됐고 지금도 같은 사람이 등록 소유자라는 것만 보여 줘요. 사진·연락처 같은 개인정보는 공개하지 않아요.
+        이 화면은 증명서가 B-LOCK에서 발급됐고 지금도 같은 사람이 등록 주인이라는 것만 보여 줘요. 사진·연락처 같은 개인정보는 공개하지 않아요.
       </p>
     </div>
   );

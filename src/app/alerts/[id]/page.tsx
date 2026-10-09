@@ -94,7 +94,7 @@ export default async function AlertPage({
   return (
     <div className="mx-auto max-w-xl space-y-4">
       {/* 공유 링크로 처음 온 사람도 다른 경보·내 경보로 갈 수 있게 */}
-      <Link href={mine ? "/alerts#mine" : "/alerts"} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+      <Link href={mine ? "/alerts#mine" : "/alerts"} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />
         {mine ? "내 경보·제보" : "근처 도난 경보"}
       </Link>

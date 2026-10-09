@@ -198,7 +198,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         title="내 이동수단"
         action={
           list.length > 0 && (
-            <Link href="/vehicles/new" className="inline-flex h-9 items-center gap-1 rounded-xl bg-brand-50 px-3 text-sm font-semibold text-brand-700 hover:bg-brand-100">
+            <Link href="/vehicles/new" className="inline-flex h-10 items-center gap-1 rounded-xl bg-brand-50 px-3.5 text-sm font-semibold text-brand-700 hover:bg-brand-100">
               <Plus aria-hidden className="h-4 w-4" />
               추가
             </Link>
@@ -211,9 +211,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             title="아직 등록한 이동수단이 없어요"
             description="자전거나 킥보드를 등록하면 디지털 신분증(QR)이 자동으로 만들어져요."
             action={
-              <ButtonLink href="/vehicles/new" full size="lg" icon={<Plus aria-hidden className="h-5 w-5" />}>
-                이동수단 등록
-              </ButtonLink>
+              guideOpen ? undefined : (
+                <ButtonLink href="/vehicles/new" full size="lg" icon={<Plus aria-hidden className="h-5 w-5" />}>
+                  이동수단 등록
+                </ButtonLink>
+              )
             }
           />
         ) : (

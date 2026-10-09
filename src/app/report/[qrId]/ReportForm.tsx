@@ -15,7 +15,7 @@ type ContactMode = "chat" | "callback" | "none";
 
 const MODES: { value: ContactMode; label: string; desc: string; Icon: typeof MessageCircle }[] = [
   { value: "chat", label: "익명 대화", desc: "번호 없이 앱에서 주인과 대화해요", Icon: MessageCircle },
-  { value: "callback", label: "콜백 요청", desc: "내 번호를 남기면 주인이 전화해요", Icon: PhoneCall },
+  { value: "callback", label: "전화 요청", desc: "내 번호를 남기면 주인이 전화해요", Icon: PhoneCall },
   { value: "none", label: "연락 안 받기", desc: "알리기만 하고 끝내요", Icon: BellOff },
 ];
 
@@ -120,7 +120,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
     const errs: typeof errors = {};
     if (mode === "contact" && !description.trim()) errs.description = "전할 말을 적어 주세요.";
     if (mode === "found" && !coords && !locationText.trim()) errs.location = "현재 위치를 가져오거나, 여기에 장소를 적어 주세요.";
-    if (contactMode === "callback" && contact.trim().length < 4) errs.contact = "콜백 받을 전화번호를 적어 주세요.";
+    if (contactMode === "callback" && contact.trim().length < 4) errs.contact = "전화 받을 번호를 적어 주세요.";
     setErrors(errs);
     if (Object.keys(errs).length) return;
     setLoading(true);
@@ -234,7 +234,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
         </div>
         {contactMode === "callback" && (
           <Input
-            label="콜백 받을 전화번호"
+            label="전화 받을 번호"
             type="tel"
             inputMode="tel"
             placeholder="010-0000-0000"

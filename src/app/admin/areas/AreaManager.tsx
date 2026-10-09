@@ -27,6 +27,8 @@ export type AreaStat = {
   finder_reports: number;
   finder_reports_30d: number;
   sticker_spots: number;
+  /** 되찾은 이동수단 (경보·분실 글 중복 없이, 030) */
+  recovered?: number;
 };
 
 const RADII = [300, 500, 1000, 1500, 3000, 5000];
@@ -87,7 +89,7 @@ export function AreaManager({ areas, today }: { areas: AreaStat[]; today: string
             <p className="text-[13px] text-brand-100">반경 {rLabel(a.radius_m)}</p>
             <div className="mt-4 grid grid-cols-3 gap-2 text-center">
               <Big label="활동 이동수단" value={a.active_vehicles} unit="대" />
-              <Big label="되찾음" value={a.alerts_resolved + a.lost_resolved} unit="건" />
+              <Big label="되찾음" value={a.recovered ?? a.alerts_resolved + a.lost_resolved} unit="대" />
               <Big label="발견 제보" value={a.finder_reports} unit="건" />
             </div>
           </div>

@@ -179,7 +179,7 @@ export function TransferStart({
       return toast.error(friendlyError(err, "취소하지 못했어요."));
     }
     saveLink(vehicleId, null);
-    toast.success(mode === "link" ? "링크를 취소했어요. 보낸 링크로는 이제 받을 수 없어요." : "양도를 취소했어요.");
+    toast.success(mode === "link" ? "링크를 취소했어요. 보낸 링크로는 이제 받을 수 없어요." : "소유권 넘기기를 취소했어요.");
     setStage("form");
     setQr("");
     setToken("");
@@ -214,7 +214,7 @@ export function TransferStart({
     return (
       <Card className="flex flex-col items-center gap-3 py-10 text-center">
         <CircleCheck aria-hidden className="h-12 w-12 text-emerald-600" />
-        <p className="text-xl font-extrabold">양도가 끝났어요</p>
+        <p className="text-xl font-extrabold">소유권을 넘겼어요</p>
         <p className="text-[15px] leading-relaxed text-ink-muted">
           {vehicleName}은(는) 이제 구매자의 이동수단이에요. 정비 기록과 스티커는 함께 넘어갔고, 발견 제보·구매 정보·사진은 지웠어요. 라이딩 기록은 내 기록에 남아 있어요.
         </p>
@@ -246,7 +246,7 @@ export function TransferStart({
             <p className="font-bold">구매자에게 이 QR을 보여 주세요</p>
             {qr && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={qr} alt="소유권 양도 QR" className="mx-auto w-full max-w-[280px] rounded-2xl ring-1 ring-line" />
+              <img src={qr} alt="소유권 넘기기 QR" className="mx-auto w-full max-w-[280px] rounded-2xl ring-1 ring-line" />
             )}
             <p className="flex items-center justify-center gap-1.5 text-lg font-bold tabular-nums text-brand-700">
               <Clock aria-hidden className="h-5 w-5" />
@@ -289,11 +289,11 @@ export function TransferStart({
           </li>
           <li className="flex gap-2">
             <ArrowRightLeft aria-hidden className="mt-0.5 h-4 w-4 flex-none text-brand-600" />
-            {mode === "qr" ? "받기를 누르면 바로 넘어가고, 이 화면이 ‘양도 완료’로 바뀌어요." : "받기를 누르면 넘어가고, 나에게 알림이 와요. 이 화면을 닫아도 괜찮아요."}
+            {mode === "qr" ? "받기를 누르면 바로 넘어가고, 이 화면이 ‘소유권을 넘겼어요’로 바뀌어요." : "받기를 누르면 넘어가고, 나에게 알림이 와요. 이 화면을 닫아도 괜찮아요."}
           </li>
         </ol>
         <Button variant="ghost" full loading={cancelling} loadingText="취소 중..." onClick={cancel}>
-          {mode === "link" ? "링크 취소" : "양도 취소"}
+          {mode === "link" ? "링크 취소" : "넘기기 취소"}
         </Button>
       </Card>
     );
@@ -381,7 +381,7 @@ export function TransferStart({
           error={error}
         />
         <Button type="submit" full size="lg" loading={loading} loadingText="확인 중..." icon={<Lock aria-hidden className="h-5 w-5" />}>
-          {mode === "qr" ? "양도 QR 만들기" : "양도 링크 만들기"}
+          {mode === "qr" ? "넘기기 QR 만들기" : "넘기기 링크 만들기"}
         </Button>
       </form>
     </Card>

@@ -191,7 +191,7 @@ export function RideMap({ path, current = null, follow = false, fit = false, cla
           onClick={toggleBike}
           aria-pressed={bikeOn}
           className={cn(
-            "absolute bottom-3 left-3 inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold shadow-lift ring-1",
+            "absolute bottom-10 left-3 inline-flex h-10 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold shadow-lift ring-1",
             bikeOn ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink ring-line",
           )}
         >
@@ -203,7 +203,7 @@ export function RideMap({ path, current = null, follow = false, fit = false, cla
         <button
           type="button"
           onClick={recenter}
-          className="absolute bottom-3 right-3 inline-flex h-10 items-center gap-1.5 rounded-full bg-white px-3.5 text-sm font-semibold text-brand-700 shadow-lift ring-1 ring-line"
+          className="absolute bottom-10 right-3 inline-flex h-10 items-center gap-1.5 rounded-full bg-white px-3.5 text-sm font-semibold text-brand-700 shadow-lift ring-1 ring-line"
         >
           <LocateFixed aria-hidden className="h-4 w-4" />내 위치로
         </button>
@@ -232,10 +232,10 @@ function PathSketch({ path, current, reason }: { path: LatLng[]; current: LatLng
   }
   const message =
     reason === "no-key"
-      ? "지도 키를 설정하면 네이버 지도 위에 보여요."
+      ? "지금은 지도를 불러올 수 없어서 경로 모양만 보여 드려요."
       : reason === "auth"
-        ? "네이버 지도 인증에 실패했어요. 웹 서비스 URL 등록을 확인해 주세요."
-        : "지도를 불러오지 못했어요. 경로 모양만 보여드려요.";
+        ? "지금은 지도를 불러올 수 없어서 경로 모양만 보여 드려요."
+        : "지도를 불러오지 못했어요. 경로 모양만 보여 드려요.";
   return (
     <div className="absolute inset-0 flex flex-col">
       <svg viewBox={`0 0 ${W} ${H}`} className="min-h-0 w-full flex-1" role="img" aria-label="이동 경로 모양">

@@ -190,7 +190,7 @@ export function ListingCheck() {
           판매자에게 확인 요청하기
         </h2>
         <p className="text-[14px] leading-relaxed text-ink-muted">
-          진짜 주인이라면 B-LOCK &lsquo;안심거래 링크&rsquo;를 보낼 수 있어요. 아래 메시지를 복사해 판매자 채팅에 보내 보세요. 이유 없이 거절하거나 말을 돌리면 조심하세요.
+          진짜 주인이라면 B-LOCK &lsquo;안심거래 인증 링크&rsquo;를 보낼 수 있어요. 아래 메시지를 복사해 판매자 채팅에 보내 보세요. 이유 없이 거절하거나 말을 돌리면 조심하세요.
         </p>
         <pre className="whitespace-pre-wrap rounded-xl bg-slate-50 p-3 font-sans text-[13px] leading-relaxed text-ink-soft">{SELLER_MSG}</pre>
         <Button variant="secondary" full icon={<Copy aria-hidden className="h-4 w-4" />} onClick={copyMsg}>

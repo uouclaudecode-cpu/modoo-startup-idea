@@ -78,18 +78,22 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
       {stickers.length > 0 && (
         <ul className="space-y-2">
           {stickers.map((s) => (
-            <li key={s.code8} className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
-              <Tag aria-hidden className="h-4 w-4 flex-none text-brand-600" />
-              <p className="min-w-0 flex-1 text-[14px]">
-                스티커 · 조회 번호 <b className="tracking-wide text-ink">{lookupCode(s.code8)}</b>
-                {s.claimedAt && <span className="block text-[12px] text-ink-muted">{formatDate(s.claimedAt)} 연결</span>}
-              </p>
-              <Button variant="ghost" className="h-9 flex-none px-2.5 text-sm" aria-label="조회 번호 복사" icon={<Copy aria-hidden className="h-4 w-4" />} onClick={() => copyCode(s.code8)}>
-                복사
-              </Button>
-              <Button variant="ghost" className="h-9 flex-none px-3 text-sm text-rose-600" onClick={() => ask(s)}>
-                연결 끊기
-              </Button>
+            <li key={s.code8} className="space-y-2 rounded-xl bg-slate-50 p-3">
+              <div className="flex items-start gap-3">
+                <Tag aria-hidden className="mt-0.5 h-4 w-4 flex-none text-brand-600" />
+                <p className="min-w-0 flex-1 text-[14px]">
+                  스티커 · 조회 번호 <b className="whitespace-nowrap tracking-wide text-ink">{lookupCode(s.code8)}</b>
+                  {s.claimedAt && <span className="block text-[12px] text-ink-muted">{formatDate(s.claimedAt)} 연결</span>}
+                </p>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="secondary" className="h-10 px-3 text-sm" icon={<Copy aria-hidden className="h-4 w-4" />} onClick={() => copyCode(s.code8)}>
+                  번호 복사
+                </Button>
+                <Button variant="ghost" className="h-10 px-3 text-sm text-rose-600" onClick={() => ask(s)}>
+                  연결 끊기
+                </Button>
+              </div>
             </li>
           ))}
         </ul>

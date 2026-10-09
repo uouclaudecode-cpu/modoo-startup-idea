@@ -49,7 +49,7 @@ export function WelcomeGuide({ nickname, hasVehicle, hasSticker, hasPush, fresh,
             </div>
             {hasVehicle && !hasSticker && (
               <div className="mt-2.5 grid gap-1.5 sm:grid-cols-3">
-                <MiniLink href={printHref} icon={Printer} label="크기 골라 출력하기" primary />
+                <MiniLink href={printHref} icon={Printer} label="QR 출력하기" primary />
                 <MiniLink href="/get-sticker" icon={MapPin} label="스티커 받는 곳" />
                 <MiniLink href="/scan" icon={ScanLine} label="받은 스티커 연결" />
               </div>

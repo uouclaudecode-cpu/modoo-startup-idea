@@ -89,7 +89,7 @@ export function CommentForm({ postId, isAuthor }: { postId: string; isAuthor: bo
       <form onSubmit={onSubmit} noValidate className="space-y-4">
         <Textarea
           label={isAuthor ? "댓글" : "봤다면 알려 주세요"}
-          placeholder={isAuthor ? "예) 알려주셔서 감사해요! 지금 가볼게요." : "예) 오늘 오후 2시쯤 학생회관 뒤 거치대에서 비슷한 자전거를 봤어요."}
+          placeholder={isAuthor ? "예) 알려 주셔서 고마워요! 지금 가볼게요." : "예) 오늘 오후 2시쯤 학생회관 뒤 거치대에서 비슷한 자전거를 봤어요."}
           value={body}
           onChange={(e) => setBody(e.target.value)}
           error={errors.body}

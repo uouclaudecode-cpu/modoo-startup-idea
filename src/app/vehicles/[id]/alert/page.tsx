@@ -16,7 +16,7 @@ export default async function NewAlertPage({ params }: { params: Promise<{ id: s
   const { data: parking } = await supabase.from("parking_spots").select("lat, lng, note, parked_at").eq("vehicle_id", vehicle.id).maybeSingle();
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <Link href={`/vehicles/${vehicle.id}`} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+      <Link href={`/vehicles/${vehicle.id}`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />
         {vehicle.name}
       </Link>

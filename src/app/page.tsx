@@ -30,7 +30,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const { bye } = await searchParams;
   const [posts, user] = await Promise.all([recentPosts(), getUser()]);
   return (
-    <div className="space-y-12">
+    <div className="space-y-8 sm:space-y-12">
       {bye === "1" && !user && (
         <p role="status" className="rounded-2xl bg-slate-100 p-4 text-[15px] leading-relaxed text-ink-soft">
           탈퇴가 끝났어요. 계정과 기록을 모두 지웠어요. 그동안 {site.name}를 이용해 주셔서 고마워요.
@@ -63,9 +63,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </div>
         <ol className="space-y-3">
           <StepCard n={1} icon={Bike} title="내 이동수단 등록" text="자전거·킥보드 사진과 특징을 넣으면 QR 신분증이 만들어져요.">
-            <ButtonLink href={user ? "/dashboard" : "/vehicles/new"} full icon={<Plus aria-hidden className="h-4 w-4" />}>
-              {user ? "내 이동수단 보기" : "등록하기"}
-            </ButtonLink>
+            {!user && (
+              <ButtonLink href="/vehicles/new" full icon={<Plus aria-hidden className="h-4 w-4" />}>
+                등록하기
+              </ButtonLink>
+            )}
           </StepCard>
           <StepCard n={2} icon={Tag} title="QR 준비 후 연결" text="QR을 출력하거나 스티커를 받아서 내 이동수단에 연결하고, 안장 밑처럼 주인만 아는 곳에 붙여요.">
             <ul className="mb-3 space-y-1.5 rounded-xl bg-slate-50 p-3 text-[13px] leading-relaxed text-ink-soft">
@@ -92,7 +94,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             n={3}
             icon={Siren}
             title="잃어버리면 알리기"
-            text="'찾는 중'으로 바꾸고 도난 경보를 보내면 근처 사용자에게 알림이 가요. 누가 QR을 찍으면 위치·사진이 나에게만 와요."
+            text="'수색 중'으로 바꾸고 도난 경보를 보내면 근처 사용자에게 알림이 가요. 누가 QR을 찍으면 위치·사진이 나에게만 와요."
           />
         </ol>
       </section>

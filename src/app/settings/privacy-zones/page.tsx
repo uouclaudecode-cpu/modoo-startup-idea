@@ -24,7 +24,7 @@ export default async function PrivacyZonesPage() {
 
   return (
     <div className="mx-auto max-w-md space-y-4">
-      <Link href="/settings" className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+      <Link href="/settings" className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />
         설정
       </Link>
@@ -37,7 +37,7 @@ export default async function PrivacyZonesPage() {
       <ZoneManager zones={(zones ?? []) as PrivacyZone[]} suggestions={(sugg ?? []) as ZoneSuggestion[]} shareTrim={(prof as { share_trim_m?: number } | null)?.share_trim_m ?? 300} />
       <p className="flex items-start gap-2 rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
         <ShieldCheck aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
-        가림 장소는 나만 볼 수 있어요. 라이딩 기록도 원래 나만 보이고, 남에게 보이는 건 내가 직접 공유한 사진·파일뿐이에요. 출발·도착 근처는 위에서 정한 거리만큼 항상 빠져요.
+        가림 장소는 나만 볼 수 있어요. 라이딩 기록도 원래 나만 보이고, 남에게 보이는 건 내가 직접 공유한 사진·파일뿐이에요. 출발·도착 근처는 위에서 정한 거리만큼 빠져요(‘안 가림’이면 그대로 보여요).
       </p>
     </div>
   );

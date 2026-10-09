@@ -162,9 +162,16 @@ export function StatusActions({
           지난 제보·연락 {totalReports}건 보기
         </ButtonLink>
       )}
-      <Button variant="ghost" full icon={<Trash2 aria-hidden className="h-4 w-4" />} onClick={() => setPending("delete")}>
-        이동수단 삭제
-      </Button>
+      <div className="pt-2 text-center">
+        <button
+          type="button"
+          onClick={() => setPending("delete")}
+          className="inline-flex h-10 items-center gap-1 rounded-lg px-3 text-[13px] font-semibold text-rose-600 hover:bg-rose-50"
+        >
+          <Trash2 aria-hidden className="h-3.5 w-3.5" />
+          이동수단 삭제
+        </button>
+      </div>
 
       {/* 분실·도난 신고: 도난이면 근처 경보, 분실이면 수색 중으로만 (입구 하나) */}
       <Modal

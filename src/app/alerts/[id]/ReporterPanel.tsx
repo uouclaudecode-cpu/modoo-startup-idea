@@ -43,7 +43,7 @@ export function ReporterPanel({ alert, mySightings, myRewards, photos }: { alert
       if (!photo) return setError("본 자전거·킥보드 사진을 한 장 찍어 주세요.");
       if (!loc.coords) return setError("'지금 위치 넣기'를 눌러 주세요.");
     } else if (!/^https?:\/\/\S+$/i.test(url.trim())) {
-      return setError("매물 주소(https://…)를 붙여넣어 주세요.");
+      return setError("매물 주소(https://…)를 붙여 넣어 주세요.");
     }
     setSending(true);
     try {

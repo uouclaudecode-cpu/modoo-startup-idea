@@ -41,12 +41,12 @@ export default async function ReportPage({
   const v = (data as PublicVehicle[] | null)?.[0];
   if (!v) return <ErrorState title="등록되지 않은 QR이에요" description={UNKNOWN_QR} action={<BadQrActions />} />;
   if (!v.available) {
-    return <ErrorState title="지금은 쓸 수 없는 QR이에요" description="소유자가 이 이동수단의 등록을 해제했어요." action={<BadQrActions />} />;
+    return <ErrorState title="지금은 쓸 수 없는 QR이에요" description="주인이 이 이동수단을 삭제했어요." action={<BadQrActions />} />;
   }
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <Link href={`/scan/${encodeURIComponent(token)}`} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+      <Link href={`/scan/${encodeURIComponent(token)}`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />
         {typeLabel(v.type)} 정보로 돌아가기
       </Link>

@@ -2,6 +2,33 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 /** 판매 글을 읽어 올 수 있는 중고거래 사이트 (그 밖의 주소는 열지 않아요) */
+/** 같은 곳(IP)에서 1분에 10번까지 (서버 한 대 기준, 가벼운 보호) */
+const hits = new Map<string, number[]>();
+function tooMany(ip: string) {
+  const now = Date.now();
+  const list = (hits.get(ip) ?? []).filter((t) => now - t < 60_000);
+  list.push(now);
+  hits.set(ip, list);
+  if (hits.size > 5000) hits.clear();
+  return list.length > 10;
+}
+
+/** 응답 앞부분만 읽기 (큰 페이지를 통째로 받지 않게) */
+async function readCapped(r: Response, max: number) {
+  if (!r.body) return "";
+  const reader = r.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  while (size < max) {
+    const { done, value } = await reader.read();
+    if (done || !value) break;
+    chunks.push(value);
+    size += value.length;
+  }
+  reader.cancel().catch(() => {});
+  return new TextDecoder().decode(Buffer.concat(chunks).subarray(0, max));
+}
+
 const HOSTS = ["daangn.com", "bunjang.co.kr", "joongna.com", "web.joongna.com"];
 const allowed = (h: string) => HOSTS.some((x) => h === x || h.endsWith(`.${x}`));
 
@@ -16,9 +43,9 @@ const decode = (s: string) =>
     .replace(/&amp;/g, "&");
 
 function meta(html: string, prop: string) {
-  const re = new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]*content=["']([^"']*)["']|<meta[^>]+content=["']([^"']*)["'][^>]*(?:property|name)=["']${prop}["']`, "i");
+  const re = new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]*content=(["'])(.*?)\\1|<meta[^>]+content=(["'])(.*?)\\3[^>]*(?:property|name)=["']${prop}["']`, "i");
   const m = html.match(re);
-  return m ? decode(m[1] ?? m[2] ?? "").trim() : "";
+  return m ? decode(m[2] ?? m[4] ?? "").trim() : "";
 }
 
 /** 판매 글 주소에서 제목·설명·사진만 읽어요 (최대 3번 이동, 5초, 앞부분 800KB) */
@@ -37,7 +64,7 @@ async function readListing(raw: string) {
       continue;
     }
     if (!r.ok) return null;
-    const html = (await r.text()).slice(0, 800_000);
+    const html = await readCapped(r, 800_000);
     const title = meta(html, "og:title") || decode(html.match(/<title>([^<]*)<\/title>/i)?.[1] ?? "").trim();
     const description = meta(html, "og:description") || meta(html, "description");
     const image = meta(html, "og:image");
@@ -48,6 +75,8 @@ async function readListing(raw: string) {
 }
 
 export async function POST(req: Request) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (tooMany(ip)) return NextResponse.json({ error: "너무 자주 확인했어요. 1분 뒤에 다시 시도해 주세요." }, { status: 429 });
   const body = (await req.json().catch(() => null)) as { input?: unknown } | null;
   const input = typeof body?.input === "string" ? body.input.trim().slice(0, 4000) : "";
   if (input.length < 2) return NextResponse.json({ error: "판매 글 주소나 내용을 넣어 주세요." }, { status: 400 });
@@ -67,7 +96,7 @@ export async function POST(req: Request) {
   const extra = input.replace(/https?:\/\/[^\s]+/g, " ").trim();
   const text = [listing?.title, listing?.description, extra].filter(Boolean).join(" ");
   // QR 아래 조회 번호(8자리) 같아 보이는 것
-  const codes = Array.from(new Set((text.toUpperCase().match(/\b[A-HJ-NP-Z2-9]{4}[\s-]?[A-HJ-NP-Z2-9]{4}\b/g) ?? []).map((c) => c.replace(/[\s-]/g, "")))).filter((c) => /\d/.test(c)).slice(0, 3);
+  const codes = Array.from(new Set((text.toUpperCase().match(/\b[A-HJKMNP-Z2-9]{4}[\s-]?[A-HJKMNP-Z2-9]{4}\b/g) ?? []).map((c) => c.replace(/[\s-]/g, "")))).filter((c) => /\d/.test(c)).slice(0, 3);
 
   if (!text) return NextResponse.json({ fetched, listing, matches: [], codes });
   const supabase = await createClient();

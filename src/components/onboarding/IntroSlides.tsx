@@ -21,7 +21,7 @@ const SLIDES: Slide[] = [
   {
     icon: Tag,
     bg: "from-sky-500 to-brand-600",
-    title: "등록하고\nQR을 붙여요",
+    title: "등록하고\nQR을 준비해요",
     text: "사진과 특징을 등록하면 QR이 만들어져요. 원하는 크기로 출력하거나 스티커를 받아서, 안장 밑처럼 주인만 아는 곳에 숨겨 붙여요.",
     points: ["1.5cm부터 A4까지 크기 골라 출력", "받은 스티커는 찍어서 연결", "여러 곳에 붙일수록 좋아요"],
   },
@@ -29,7 +29,7 @@ const SLIDES: Slide[] = [
     icon: Siren,
     bg: "from-rose-500 to-rose-700",
     title: "잃어버리면\n근처에 알려요",
-    text: "'찾는 중'으로 바꾸고 도난 경보를 보내면 근처 사용자에게 알림이 가요. 누가 QR을 찍으면 위치·사진이 나에게만 와요.",
+    text: "'수색 중'으로 바꾸고 도난 경보를 보내면 근처 사용자에게 알림이 가요. 누가 QR을 찍으면 위치·사진이 나에게만 와요.",
     points: ["발견한 사람과 번호 없이 익명 대화", "사례금 약속도 걸 수 있어요", "112 신고서도 자동으로 정리"],
   },
   {
@@ -66,6 +66,7 @@ export function IntroSlides() {
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
+  const autoUntil = useRef(0);
 
   useEffect(() => {
     if (pathname !== "/") return;
@@ -111,6 +112,7 @@ export function IntroSlides() {
     if (!el) return;
     const n = Math.max(0, Math.min(SLIDES.length - 1, i));
     setIdx(n); // 넘어가는 동안 '다음'을 또 눌러도 바로 다음 장으로
+    autoUntil.current = Date.now() + 700;
     el.scrollTo({ left: n * el.clientWidth, behavior: "smooth" });
   }
 
@@ -133,6 +135,7 @@ export function IntroSlides() {
         className="no-scrollbar flex flex-1 snap-x snap-mandatory overflow-x-auto overscroll-contain"
         onScroll={(e) => {
           const el = e.currentTarget;
+          if (Date.now() < autoUntil.current) return;
           setIdx(Math.round(el.scrollLeft / Math.max(1, el.clientWidth)));
         }}
       >

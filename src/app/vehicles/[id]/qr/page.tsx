@@ -29,7 +29,7 @@ export default async function VehicleQrPage({
 
   return (
     <div className="mx-auto max-w-md space-y-4">
-      <Link href={`/vehicles/${vehicle.id}`} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+      <Link href={`/vehicles/${vehicle.id}`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />
         {vehicle.name}
       </Link>
@@ -37,7 +37,7 @@ export default async function VehicleQrPage({
         <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 p-4 text-emerald-800 ring-1 ring-emerald-200">
           <PartyPopper aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
           <p className="text-[15px] leading-relaxed">
-            <b>등록이 끝났어요!</b> 받은 B-LOCK 스티커가 있으면 연결하고, 없다면 아래 &lsquo;크기 골라 출력하기&rsquo;로 뽑아 붙여 주세요.
+            <b>등록이 끝났어요!</b> 받은 B-LOCK 스티커가 있으면 연결하고, 없다면 &lsquo;QR 출력하기&rsquo;로 뽑아 붙여 주세요.
           </p>
         </div>
       )}
@@ -50,6 +50,18 @@ export default async function VehicleQrPage({
           </span>
         </p>
       )}
+
+      <ButtonLink href={`/vehicles/${vehicle.id}/qr/print`} full size="lg" icon={<Printer aria-hidden className="h-5 w-5" />}>
+        QR 출력하기 (크기 고르기)
+      </ButtonLink>
+      <div className="grid grid-cols-2 gap-2">
+        <ButtonLink href="/scan" variant="secondary" icon={<ScanLine aria-hidden className="h-4 w-4" />}>
+          받은 스티커 연결
+        </ButtonLink>
+        <ButtonLink href="/get-sticker" variant="secondary" icon={<MapPin aria-hidden className="h-4 w-4" />}>
+          스티커 받는 곳
+        </ButtonLink>
+      </div>
 
       {(stickers ?? []).map((s) => (
         <QrCard
@@ -70,17 +82,6 @@ export default async function VehicleQrPage({
         caption="앱에서 만든 QR이에요. 저장해서 출력해 붙여도 돼요."
       />
 
-      <ButtonLink href={`/vehicles/${vehicle.id}/qr/print`} full size="lg" icon={<Printer aria-hidden className="h-5 w-5" />}>
-        크기 골라 출력하기
-      </ButtonLink>
-      <div className="grid grid-cols-2 gap-2">
-        <ButtonLink href="/scan" variant="secondary" icon={<ScanLine aria-hidden className="h-4 w-4" />}>
-          스티커 연결
-        </ButtonLink>
-        <ButtonLink href="/get-sticker" variant="secondary" icon={<MapPin aria-hidden className="h-4 w-4" />}>
-          스티커 받는 곳
-        </ButtonLink>
-      </div>
     </div>
   );
 }

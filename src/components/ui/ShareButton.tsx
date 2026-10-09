@@ -19,7 +19,7 @@ export function ShareButton({ title, text, path, label = "공유하기", classNa
       if ((e as Error).name === "AbortError") return;
     }
     const ok = await copyText(`${text}\n${url}`);
-    if (ok) toast.success("주소를 복사했어요. 카카오톡 단톡방에 붙여넣어 주세요.");
+    if (ok) toast.success("주소를 복사했어요. 카카오톡 단톡방에 붙여 넣어 주세요.");
     else toast.error("복사하지 못했어요.");
   }
   return (

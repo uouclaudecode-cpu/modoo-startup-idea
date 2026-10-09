@@ -277,7 +277,7 @@ function IntervalModal({ part, turnOn = false, onClose }: { part: VehiclePart | 
     const daysNum = days.trim() === "" ? null : Number(days);
     if (kmNum == null && daysNum == null) return setError("거리나 기간 중 하나는 정해 주세요.");
     if (kmNum != null && (!Number.isFinite(kmNum) || kmNum < 1 || kmNum > 100000)) return setError("거리는 1~100,000km 사이로 적어 주세요.");
-    if (daysNum != null && (!Number.isInteger(daysNum) || daysNum < 1 || daysNum > 3650)) return setError("기간은 1~3650일 사이 정수로 적어 주세요.");
+    if (daysNum != null && (!Number.isInteger(daysNum) || daysNum < 1 || daysNum > 3650)) return setError("기간은 1~3,650일 사이로, 소수점 없이 적어 주세요.");
     const baseKmNum = baseKm.trim() === "" ? null : Number(baseKm.replace(/[,\s]/g, ""));
     if (baseKmNum != null && (!Number.isFinite(baseKmNum) || baseKmNum < 0 || baseKmNum > 100000)) return setError("그동안 탄 거리는 0~100,000km로 적어 주세요.");
     if (baseKmNum != null && !baseDate) return setError("마지막으로 교체한 날도 골라 주세요.");

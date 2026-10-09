@@ -115,7 +115,7 @@ export function PrintStudio({ vehicleId, vehicleName, sources }: { vehicleId: st
     );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 print:space-y-0">
       <div className="space-y-4 print:hidden">
         {sources.length > 1 && (
           <Card className="space-y-2">
@@ -178,10 +178,15 @@ export function PrintStudio({ vehicleId, vehicleName, sources }: { vehicleId: st
                 placeholder="예) 3.2"
                 value={custom}
                 onChange={(e) => pickCustom(e.target.value)}
-                className="h-10 w-24 rounded-xl px-3 text-[15px] ring-1 ring-inset ring-line focus:ring-2 focus:ring-brand-500"
+                className="h-10 w-24 rounded-xl px-3 text-base ring-1 ring-inset ring-line focus:ring-2 focus:ring-brand-500"
               />
               <span className="text-ink-muted">cm ({MIN_CM}~{MAX_CM})</span>
             </label>
+            {custom && !(Number(custom.replace(",", ".")) >= MIN_CM && Number(custom.replace(",", ".")) <= MAX_CM) && (
+              <p className="w-full text-[13px] text-rose-600">
+                {MIN_CM}~{MAX_CM}cm 사이로 적어 주세요. 지금은 {cm}cm로 보여요.
+              </p>
+            )}
           </div>
         </Card>
 
@@ -227,7 +232,7 @@ export function PrintStudio({ vehicleId, vehicleName, sources }: { vehicleId: st
                   inputMode="numeric"
                   value={count}
                   onChange={(e) => setCount(e.target.value.replace(/\D/g, "").slice(0, 3))}
-                  className="h-10 w-20 rounded-xl px-3 text-[15px] ring-1 ring-inset ring-line focus:ring-2 focus:ring-brand-500"
+                  className="h-10 w-20 rounded-xl px-3 text-base ring-1 ring-inset ring-line focus:ring-2 focus:ring-brand-500"
                   aria-label="개수"
                 />
               )}
@@ -260,7 +265,7 @@ export function PrintStudio({ vehicleId, vehicleName, sources }: { vehicleId: st
       </div>
 
       {/* 미리 보기 겸 인쇄 영역 (화면에서는 줄여 보여 주고, 인쇄할 때는 실제 크기) */}
-      <div ref={previewRef} className="w-full print:w-auto">
+      <div ref={previewRef} className="w-full print:!mt-0 print:w-auto">
         {pages.map((n, pi) => (
           <div
             key={pi}

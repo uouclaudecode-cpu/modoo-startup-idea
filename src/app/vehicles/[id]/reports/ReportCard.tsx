@@ -107,7 +107,7 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: ReportRow; 
         </li>
         <li className="flex items-center gap-2 text-ink-soft">
           <Phone aria-hidden className="h-4 w-4 flex-none" />
-          {r.contact_mode === "chat" ? "익명 대화 가능" : r.contact_mode === "callback" ? "콜백 요청 (전화를 원해요)" : r.contact ? "연락 가능" : "연락 안 받기"}
+          {r.contact_mode === "chat" ? "익명 대화 가능" : r.contact_mode === "callback" ? "전화 요청 (전화를 원해요)" : r.contact ? "연락 가능" : "연락 안 받기"}
         </li>
       </ul>
 
@@ -130,7 +130,7 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: ReportRow; 
           {r.contact && (
             <div className="flex items-center gap-3 rounded-xl bg-brand-50 p-3 text-[15px]">
               <p className="min-w-0 flex-1">
-                <span className="text-[13px] font-semibold text-brand-700">{r.contact_mode === "callback" ? "콜백 요청 번호" : "발견자 연락처"}</span>
+                <span className="text-[13px] font-semibold text-brand-700">{r.contact_mode === "callback" ? "전화 요청 번호" : "발견자 연락처"}</span>
                 <br />
                 <span className="break-all">{r.contact}</span>
               </p>

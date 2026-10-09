@@ -106,7 +106,7 @@ export function OwnerPanel({
     }
     setResolveOpen(false);
     toast.success(
-      `다행이에요! 경보를 끝냈어요.${picked.length ? " 도움 준 분들께 알림을 보냈어요." : ""}${sticker && missing ? " 이동수단 화면에서 떼어진 스티커 연결을 끊고 새 스티커를 붙여 주세요." : ""}`,
+      `다행이에요! 경보를 끝냈어요.${picked.length ? " 도움 준 분들께 알림을 보냈어요." : ""}${sticker && missing ? " 이동수단 화면에서 도둑이 떼어 간 스티커는 연결을 끊고 새 스티커를 붙여 주세요." : ""}`,
     );
     router.refresh();
   }

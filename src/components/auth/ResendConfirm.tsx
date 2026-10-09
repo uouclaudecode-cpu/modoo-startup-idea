@@ -68,7 +68,7 @@ export function ResendConfirm({ email, next, justSent = false }: Props) {
       }
       // 메일 서버 쪽 문제는 다시 눌러도 안 되니 문의로 안내해요.
       if (/sending|smtp/i.test(error.message) || error.status === 500) {
-        return setMessage({ ok: false, text: "지금 메일을 보내지 못했어요. 잠시 뒤 다시 시도하거나, 화면 맨 아래 '문의하기'로 알려 주시면 도와드릴게요." });
+        return setMessage({ ok: false, text: "지금 메일을 보내지 못했어요. 잠시 뒤 다시 시도하거나, 화면 맨 아래 '문의하기'로 알려 주시면 도와 드릴게요." });
       }
       return setMessage({ ok: false, text: friendlyError(error, "메일을 보내지 못했어요. 잠시 후 다시 시도해 주세요.") });
     }

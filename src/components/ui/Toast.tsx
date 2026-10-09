@@ -45,7 +45,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex flex-col items-center gap-2 px-4 pb-[calc(6.25rem+env(safe-area-inset-bottom))] sm:pb-4"
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex flex-col items-center gap-2 px-4 pb-[calc(10.5rem+env(safe-area-inset-bottom))] sm:pb-4"
       >
         {items.map((t) => {
           const { icon: Icon, className } = STYLE[t.kind];

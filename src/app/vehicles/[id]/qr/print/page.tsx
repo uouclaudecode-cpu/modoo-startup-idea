@@ -22,9 +22,9 @@ export default async function QrPrintPage({ params }: { params: Promise<{ id: st
   ];
 
   return (
-    <div className="mx-auto max-w-xl space-y-4 print:max-w-none">
+    <div className="mx-auto max-w-xl space-y-4 print:max-w-none print:space-y-0">
       <div className="space-y-1 print:hidden">
-        <Link href={`/vehicles/${vehicle.id}/qr`} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+        <Link href={`/vehicles/${vehicle.id}/qr`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
           <ChevronLeft aria-hidden className="h-4 w-4" />
           {vehicle.name} QR
         </Link>

@@ -40,7 +40,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <Link href={`/community/${id}`} className="inline-flex items-center gap-1 text-sm font-semibold text-ink-muted hover:text-ink">
+      <Link href={`/community/${id}`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />
         글로 돌아가기
       </Link>

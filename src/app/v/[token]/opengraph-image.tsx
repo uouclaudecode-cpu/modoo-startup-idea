@@ -36,7 +36,7 @@ export default async function VerifyOgImage({ params }: { params: Promise<{ toke
         lines={
           d.valid
             ? [
-                `등록 소유자 확인 · 보유 ${durationLabel(d.owned_since)}`,
+                `등록 주인 확인 · 보유 ${durationLabel(d.owned_since)}`,
                 `차대번호 ${d.serial_last4 ? "등록" : "미등록"} · 양도 ${d.transfer_count}회 · 정비 기록 ${d.maintenance_count}건`,
               ]
             : []

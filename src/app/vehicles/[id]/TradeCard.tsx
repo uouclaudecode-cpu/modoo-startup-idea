@@ -91,7 +91,7 @@ export function TradeCard({ vehicleId, serialLast4, searching }: { vehicleId: st
 
   async function copy(l: Link) {
     const ok = await copyText(`[B-LOCK 안심거래 인증] ${verifyUrl(l.token)}\n확인 코드: ${l.check_code}`);
-    if (ok) toast.success("복사했어요. 중고거래 글에 붙여넣어 주세요.");
+    if (ok) toast.success("복사했어요. 중고거래 글에 붙여 넣어 주세요.");
     else toast.error("복사하지 못했어요. 주소를 길게 눌러 복사해 주세요.");
   }
 

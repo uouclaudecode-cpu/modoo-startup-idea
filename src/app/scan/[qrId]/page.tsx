@@ -46,7 +46,7 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
     return <ErrorState title="등록되지 않은 QR이에요" description={UNKNOWN_QR} action={<BadQrActions />} />;
   }
   if (!v.available) {
-    return <ErrorState title="지금은 쓸 수 없는 QR이에요" description="소유자가 이 이동수단의 등록을 해제했어요." action={<BadQrActions />} />;
+    return <ErrorState title="지금은 쓸 수 없는 QR이에요" description="주인이 이 이동수단을 삭제했어요." action={<BadQrActions />} />;
   }
 
   // 로그인한 주인이 자기 스티커·QR을 찍었는지 (주인 확인용). RLS 때문에 본인 것만 찾아져요.
@@ -134,8 +134,8 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
             <p className="mt-3 flex items-start gap-2 rounded-xl bg-white/15 p-3 text-[14px] leading-relaxed ring-1 ring-inset ring-white/25">
               <Gift aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
               <span>
-                찾아 주면 사례금 <b>{wonLabel(bounty)}</b>을 주기로 했어요 (소유자가 직접 지급). 사례금은 아래 &lsquo;도난 경보 보기&rsquo;에서 목격 제보(로그인
-                필요)를 남긴 사람 중에서 소유자가 골라요.
+                찾아 주면 주인이 사례금 <b>{wonLabel(bounty)}</b>을 직접 주기로 했어요. 사례금은 아래 &lsquo;도난 경보 보기&rsquo;에서 목격 제보(로그인
+                필요)를 남긴 사람 중에서 주인이 골라요.
               </span>
             </p>
           ) : null}
@@ -170,7 +170,7 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
         <div className="flex justify-center">
           <StatusBadge status={v.status} />
         </div>
-        {v.status === "recovered" && <p className="text-sm text-ink-muted">최근 소유자가 회수를 마친 이동수단이에요.</p>}
+        {v.status === "recovered" && <p className="text-sm text-ink-muted">최근 주인이 되찾은 이동수단이에요.</p>}
       </Card>
       {privacy}
       <div className="grid gap-2">

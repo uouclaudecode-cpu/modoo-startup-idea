@@ -31,7 +31,7 @@ export function MeterPicker({
 
   function apply() {
     const n = Math.round(Number(custom));
-    if (!custom || !Number.isFinite(n) || n < min || n > max) return setErr(`${label(min)}~${mLabel(max)} 사이로 적어 주세요.`);
+    if (!custom || !Number.isFinite(n) || n < min || n > max) return setErr(`${mLabel(min)}~${mLabel(max)} 사이로 적어 주세요.`);
     setErr("");
     onChange(n);
   }
@@ -66,13 +66,14 @@ export function MeterPicker({
           placeholder="직접 입력"
           value={custom}
           onChange={(e) => setCustom(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          onBlur={() => custom && apply()}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
               apply();
             }
           }}
-          className={cn("h-10 w-28 rounded-xl px-3 text-[15px] ring-1 ring-inset focus:ring-2 focus:ring-brand-500", isCustom ? "ring-brand-500" : "ring-line")}
+          className={cn("h-10 w-28 rounded-xl px-3 text-base ring-1 ring-inset focus:ring-2 focus:ring-brand-500", isCustom ? "ring-brand-500" : "ring-line")}
         />
         <span className="text-[14px] text-ink-muted">m</span>
         <button

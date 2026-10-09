@@ -12,10 +12,10 @@ export const metadata: Metadata = { title: "소유권 받기", robots: { index: 
 const TOKEN = /^[A-Za-z0-9_-]{16,40}$/;
 
 const MESSAGES: Record<string, string> = {
-  not_found: "양도 QR을 찾을 수 없어요. 판매자 화면의 QR을 다시 찍어 주세요.",
+  not_found: "소유권 받기 QR을 찾을 수 없어요. 판매자 화면의 QR을 다시 찍어 주세요.",
   self: "내가 만든 양도 QR이에요. 구매자의 휴대폰으로 찍어야 해요.",
-  cancelled: "판매자가 양도를 취소했어요.",
-  expired: "양도 QR·링크의 시간이 지났어요. 판매자에게 다시 만들어 달라고 해 주세요.",
+  cancelled: "판매자가 소유권 넘기기를 취소했어요.",
+  expired: "QR·링크를 쓸 수 있는 시간이 지났어요. 판매자에게 다시 만들어 달라고 해 주세요.",
 };
 
 export default async function ReceivePage({ params }: { params: Promise<{ token: string }> }) {
@@ -40,7 +40,7 @@ export default async function ReceivePage({ params }: { params: Promise<{ token:
     return (
       <Card className="mx-auto flex max-w-md flex-col items-center gap-3 py-10 text-center">
         <CircleCheck aria-hidden className="h-12 w-12 text-emerald-600" />
-        <p className="text-xl font-extrabold">{peek.mine ? "이미 받은 이동수단이에요" : "이미 처리된 양도예요"}</p>
+        <p className="text-xl font-extrabold">{peek.mine ? "이미 받은 이동수단이에요" : "이미 넘겨받기가 끝났어요"}</p>
         <ButtonLink href="/dashboard" full>
           MY로 가기
         </ButtonLink>

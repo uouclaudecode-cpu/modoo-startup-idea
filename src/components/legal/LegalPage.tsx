@@ -61,6 +61,6 @@ export function ContactLine() {
       {site.contactEmail}
     </a>
   ) : (
-    <span>문의 메일 주소 준비 중 (앱 안 문의하기 화면을 이용해 주세요)</span>
+    <span>문의 메일 주소 준비 중 (그동안 커뮤니티를 이용해 주세요)</span>
   );
 }
