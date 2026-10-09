@@ -13,7 +13,7 @@ import { transferUrl } from "@/lib/trade";
 type Stage = "form" | "waiting" | "done" | "expired";
 /** 구매자가 실물을 확인하는 방법: 숨은 스티커 / 차대번호 / 눈으로만 */
 type Check = "sticker" | "serial" | "none";
-/** qr: 직접 만나서 (10분) / link: 택배·원격 거래 (3일) */
+/** qr: 직접 만나서 (대면, 10분) / link: 링크로 보내기 (비대면, 7일) */
 type Mode = "qr" | "link";
 
 // 넘기면 무엇이 어떻게 되는지 (accept_transfer 와 같게 유지)
@@ -307,8 +307,8 @@ export function TransferStart({
           <div className="grid grid-cols-2 gap-2">
             {(
               [
-                ["qr", "직접 만나서", "QR로 바로 · 10분", Handshake],
-                ["link", "링크로 보내기", "택배·원격 거래 · 3일", Link2],
+                ["qr", "직접 만나서", "대면 거래 · QR 10분", Handshake],
+                ["link", "링크로 보내기", "비대면 거래 · 7일 유효", Link2],
               ] as const
             ).map(([value, title, desc, Icon]) => (
               <button
@@ -337,7 +337,7 @@ export function TransferStart({
             ) : (
               <>
                 <li>돈을 받은 뒤에 링크를 보내 주세요. 링크를 받은 사람은 물건을 받은 뒤 숨은 스티커(또는 차대번호)를 확인해야 받을 수 있어요.</li>
-                <li>링크는 3일 동안 쓸 수 있고, 그 전에는 언제든 취소할 수 있어요.</li>
+                <li>링크는 7일 동안 쓸 수 있고, 그 전에는 언제든 취소할 수 있어요.</li>
               </>
             )}
             <li>구매자가 받는 순간 나는 이 이동수단을 더 이상 볼 수 없어요.</li>
