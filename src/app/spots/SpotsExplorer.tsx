@@ -69,7 +69,18 @@ export function SpotsExplorer({ loggedIn, initialKind }: { loggedIn: boolean; in
       console.error(s.error);
       setLoadError("장소를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
       setSpots([]);
-    } else setSpots((s.data ?? []) as BikeSpot[]);
+    } else {
+      // 공공데이터에 같은 장소가 관리번호만 다르게 두 번 들어 있는 경우가 있어 하나로 합쳐요
+      const seen = new Set<string>();
+      setSpots(
+        ((s.data ?? []) as BikeSpot[]).filter((x) => {
+          const k = `${x.name}|${x.lat.toFixed(4)}|${x.lng.toFixed(4)}`;
+          if (seen.has(k)) return false;
+          seen.add(k);
+          return true;
+        }),
+      );
+    }
     if (h.error) console.error(h.error);
     setHazards(((h.data ?? []) as BikeHazard[]).filter(Boolean));
   }, []);
