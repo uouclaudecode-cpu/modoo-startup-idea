@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, Bike, Check, ChevronRight, MapPin, Printer, ScanLine, Tag } from "lucide-react";
+import { Bell, Bike, Check, ChevronRight, MapPin, Printer, ScanLine, Tag, Plus } from "lucide-react";
 import { Card } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
@@ -35,6 +35,18 @@ export function WelcomeGuide({ nickname, hasVehicle, hasSticker, hasPush, fresh,
       </div>
       <ol className="space-y-1.5">
         <Step n={1} done={hasVehicle} active={current === 0} icon={Bike} title="이동수단 등록" text="사진과 특징을 넣으면 QR 신분증이 만들어져요." href="/vehicles/new" />
+        {/* 아직 등록 전이면 가장 먼저 할 일을 큰 버튼으로 */}
+        {!hasVehicle && (
+          <li className="px-1 pb-1">
+            <Link
+              href="/vehicles/new"
+              className="flex h-12 items-center justify-center gap-2 rounded-xl bg-brand-600 text-[15px] font-bold text-white shadow-card hover:bg-brand-700 active:bg-brand-800"
+            >
+              <Plus aria-hidden className="h-5 w-5" />
+              이동수단 등록하기
+            </Link>
+          </li>
+        )}
         <li>
           <div className={cn("rounded-xl p-2.5", current === 1 && "bg-white ring-1 ring-brand-200", hasSticker && "opacity-60")}>
             <div className="flex items-center gap-3">

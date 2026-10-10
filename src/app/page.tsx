@@ -50,6 +50,14 @@ async function recentPosts(): Promise<{ posts: PostListItem[]; avatars: Record<s
   return { posts, avatars: await loadPostAvatars(supabase, posts.map((p) => p.id)) };
 }
 
+/** 이동수단이 아직 없는 회원: 등록 없이도 바로 쓸 수 있는 것 */
+const QUICK_NO_VEHICLE = [
+  { href: "/navigate", label: "길 안내", icon: Navigation, color: "text-brand-600", bg: "bg-brand-50" },
+  { href: "/spots", label: "보관소·공기주입기", icon: Wind, color: "text-sky-600", bg: "bg-sky-50" },
+  { href: "/check", label: "도난 조회", icon: Search, color: "text-emerald-600", bg: "bg-emerald-50" },
+  { href: "/stats", label: "도난 다발 지도", icon: MapPinned, color: "text-rose-600", bg: "bg-rose-50" },
+];
+
 /** 로그인한 사람의 바로가기 (자주 쓰는 순서) */
 const QUICK = [
   { href: "/ride", label: "라이딩 시작", icon: Route, color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -155,7 +163,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
           {/* 자주 쓰는 바로가기 */}
           <div className="grid grid-cols-4 gap-2 pt-1">
-            {QUICK.map((q) => (
+            {(me.list.length > 0 ? QUICK : QUICK_NO_VEHICLE).map((q) => (
               <Link
                 key={q.href}
                 href={q.href}
@@ -299,7 +307,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         )}
       </section>
 
-      {/* ⑥ 도난 예방 도구 (QR 찍기는 아래 메뉴 가운데 버튼이라 여기서는 빼요) */}
+      {/* ⑥ 도난 예방 도구 (QR 찍기는 아래 메뉴 가운데 버튼이라 여기서는 빼요). 이동수단이 없는 회원은 위 바로가기에 있어서 빼요 */}
+      {(!me || me.list.length > 0) && (
       <section aria-labelledby="tools-title" className="space-y-3">
         <h2 id="tools-title" className="px-1 text-xl font-bold tracking-tight">
           도난 예방 도구
@@ -309,6 +318,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <ToolCard href="/stats" icon={MapPinned} color="text-rose-600" title="도난 다발 지도" text="어디서 많이 도둑맞을까?" />
         </div>
       </section>
+      )}
 
       {/* ⑦ 안심 문구 (처음 온 사람에게) */}
       {!me && (
