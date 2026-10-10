@@ -7,7 +7,7 @@
 // offline.html을 고치면 아래 CACHE 이름을 올려 주세요 → 이 파일이 바뀌어 설치된 앱이 새로 받아요.
 const CACHE = "b-lock-v3";
 const OFFLINE_URL = "/offline.html";
-const ICON = "/icons/icon-192-v2.png"; // src/app/icons/[file]/route.tsx 의 ICON_V와 맞춰요
+const ICON = "/icons/icon-192-v3.png"; // src/app/icons/[file]/route.tsx 의 ICON_V와 맞춰요
 // 인터넷이 될 때 가끔(6시간에 한 번) 오프라인 화면을 새로 받아 둬요.
 // 서비스 워커는 쉬면 금방 꺼져서 변수 값이 사라지므로, 저장된 사본의 Date(받은 시각)로 판단해요.
 const REFRESH_MS = 6 * 60 * 60 * 1000;
