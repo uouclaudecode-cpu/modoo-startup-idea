@@ -34,7 +34,7 @@ export default async function ClaimStickerPage({ params }: { params: Promise<{ c
         title="이미 등록된 스티커예요"
         description="다른 이동수단에 등록된 스티커는 다시 등록할 수 없어요. 새 스티커를 받아 주세요."
         action={
-          <ButtonLink href="/dashboard" full>
+          <ButtonLink href="/" full>
             내 이동수단
           </ButtonLink>
         }

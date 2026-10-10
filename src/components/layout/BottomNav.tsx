@@ -13,8 +13,8 @@ const under = (p: string, paths: string[]) => paths.some((x) => p === x || p.sta
 
 // 탭마다 그 탭에서 이어지는 화면도 함께 켜져요 (어느 메뉴에 있는지 놓치지 않게)
 const TABS = [
-  // 홈 → 도난 다발 지도·통계
-  { href: "/", label: "홈", icon: Home, match: (p: string) => p === "/" || under(p, ["/stats"]) },
+  // 홈 → 내 이동수단(카드에서 들어가는 화면)·도난 다발 지도·통계
+  { href: "/", label: "홈", icon: Home, match: (p: string) => p === "/" || under(p, ["/stats", "/vehicles"]) },
   // 커뮤니티 → 근처 도난 경보
   { href: "/community", label: "커뮤니티", icon: MessagesSquare, match: (p: string) => under(p, ["/community", "/alerts"]) },
   // 가운데: 가장 자주 쓰는 QR 스캔을 크게. 스캔·조회 번호로 들어오는 화면(제보, 익명 대화, 도난 조회, 인증 링크)도 여기
@@ -30,12 +30,15 @@ const TABS = [
     href: "/dashboard",
     label: "MY",
     icon: UserRound,
-    match: (p: string) => under(p, ["/dashboard", "/vehicles", "/settings", "/stickers", "/admin"]),
+    match: (p: string) => under(p, ["/dashboard", "/settings", "/stickers", "/admin", "/notifications"]),
   },
 ];
 
-/** 휴대폰 화면 아래쪽 메뉴 (앱처럼 한 손으로 이동). 넓은 화면에서는 숨깁니다. */
-export function BottomNav() {
+/**
+ * 휴대폰 화면 아래쪽 메뉴 (앱처럼 한 손으로 이동). 넓은 화면에서는 숨깁니다.
+ * dot: 안 읽은 알림(새 제보·대화 등)이 있으면 홈 아이콘에 빨간 점 (홈에서 바로 확인할 수 있어요)
+ */
+export function BottomNav({ dot = false }: { dot?: boolean }) {
   const pathname = usePathname();
   return (
     <nav
@@ -76,8 +79,11 @@ export function BottomNav() {
                   active ? "text-brand-700" : "text-ink-muted",
                 )}
               >
-                <span className={cn("grid h-8 w-12 place-items-center rounded-full transition-colors", active && "bg-brand-50")}>
+                <span className={cn("relative grid h-8 w-12 place-items-center rounded-full transition-colors", active && "bg-brand-50")}>
                   <t.icon aria-hidden className="h-5 w-5" strokeWidth={active ? 2.4 : 2} />
+                  {dot && t.href === "/" && (
+                    <span className="absolute right-2.5 top-0.5 h-2.5 w-2.5 rounded-full bg-rose-600 ring-2 ring-white" aria-label="새 알림 있음" />
+                  )}
                 </span>
                 {t.label}
               </Link>

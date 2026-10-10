@@ -73,8 +73,8 @@ export default async function AlertsPage() {
 
       <p className="text-center text-[13px] text-ink-muted">
         내 이동수단을 잃어버렸나요?{" "}
-        <Link href="/dashboard" className="font-semibold text-brand-700 underline">
-          MY → 이동수단 → 분실·도난 신고
+        <Link href="/" className="font-semibold text-brand-700 underline">
+          홈 → 내 이동수단 카드 → 잃어버렸어요
         </Link>
       </p>
     </div>

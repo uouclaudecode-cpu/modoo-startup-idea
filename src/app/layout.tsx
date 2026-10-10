@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import { site } from "@/config/site";
 import { AppSplash } from "@/components/layout/AppSplash";
-import { BottomNav } from "@/components/layout/BottomNav";
+import { BottomNavWithDot } from "@/components/layout/BottomNavWithDot";
 import { ErrorReporter } from "@/components/layout/ErrorReporter";
 import { Header } from "@/components/layout/Header";
 import { InstallPrompt } from "@/components/layout/InstallPrompt";
@@ -73,7 +73,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           </footer>
           <IntroSlides />
           <InstallPrompt />
-          <BottomNav />
+          <BottomNavWithDot />
         </ToastProvider>
       </body>
     </html>

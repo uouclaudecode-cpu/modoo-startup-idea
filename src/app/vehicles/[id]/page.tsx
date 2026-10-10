@@ -72,8 +72,8 @@ export default async function VehicleDetailPage({
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <Link href="/dashboard" className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
-        <ChevronLeft aria-hidden className="h-4 w-4" />내 이동수단
+      <Link href="/" className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
+        <ChevronLeft aria-hidden className="h-4 w-4" />홈
       </Link>
 
       {/* 소유권 받기·스티커 연결 뒤 바로 이 화면으로 와요. 다음 할 일이 첫 화면에 보이도록 맨 위에 */}
@@ -133,7 +133,9 @@ export default async function VehicleDetailPage({
         </ButtonLink>
       )}
 
-      <StatusActions vehicleId={vehicle.id} status={vehicle.status} foundReports={count ?? 0} totalReports={total ?? 0} openAlertId={openAlert?.id ?? null} />
+      <div id="status" className="scroll-mt-20">
+        <StatusActions vehicleId={vehicle.id} status={vehicle.status} foundReports={count ?? 0} totalReports={total ?? 0} openAlertId={openAlert?.id ?? null} />
+      </div>
 
       {openPost ? (
         <ButtonLink href={`/community/${openPost.id}`} variant="secondary" full size="lg" icon={<MessagesSquare aria-hidden className="h-5 w-5" />}>

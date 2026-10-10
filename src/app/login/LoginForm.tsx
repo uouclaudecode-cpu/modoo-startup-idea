@@ -27,7 +27,7 @@ export function LoginForm() {
   const [loading, setLoading] = useState(false);
 
   const safeNext = toSafeNext(params.get("next"));
-  const goesHome = safeNext === "/dashboard" || safeNext === "/dashboard?welcome=1";
+  const goesHome = ["/", "/?welcome=1", "/dashboard", "/dashboard?welcome=1"].includes(safeNext);
 
   // 다시 보낸 확인 메일의 링크는 결과를 주소 끝(#)에 붙여 이곳으로 와요. 읽어서 알맞게 안내하고, 주소에서는 지워요.
   // 거기 붙은 로그인 값으로 로그인시키지는 않아요. (남이 보낸 링크를 눌러 남의 계정에 로그인되는 일을 막으려고)
@@ -79,7 +79,7 @@ export function LoginForm() {
       footer={
         <>
           아직 계정이 없나요?{" "}
-          <Link href={safeNext === "/dashboard" ? "/signup" : `/signup?next=${encodeURIComponent(safeNext)}`} className="font-semibold text-brand-700 underline-offset-2 hover:underline">
+          <Link href={safeNext === "/" ? "/signup" : `/signup?next=${encodeURIComponent(safeNext)}`} className="font-semibold text-brand-700 underline-offset-2 hover:underline">
             회원가입
           </Link>
         </>

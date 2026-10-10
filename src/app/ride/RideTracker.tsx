@@ -284,7 +284,7 @@ export function RideTracker({ vehicles, userId, recent = [], careTip = null }: {
           </span>
           <span className="min-w-0 flex-1 text-[14px] leading-snug">
             <b>
-              {careTip.vehicleName} {careTip.label} {careTip.urgent ? "교체할 때예요" : "점검해 주세요"}
+              {careTip.vehicleName} · {careTip.label} {careTip.urgent ? "지금 챙겨 주세요" : "곧 챙길 때예요"}
             </b>
             {careTip.more > 0 && <span className="block text-[12px] opacity-80">그 밖에 {careTip.more}건 더 있어요</span>}
           </span>

@@ -5,7 +5,7 @@ import { site } from "@/config/site";
 import { buttonClass } from "@/components/ui/Button";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { cn } from "@/lib/cn";
-import { createClient } from "@/lib/supabase/server";
+import { loadViewer } from "@/lib/viewer";
 
 /**
  * 모든 화면 위쪽에 고정되는 머리글. 로그인 여부에 따라 메뉴가 바뀝니다.
@@ -49,16 +49,4 @@ export async function Header() {
       </div>
     </header>
   );
-}
-
-/** 지금 로그인한 사람과 안 읽은 알림 수 (알림함이 아직 없으면 0) */
-async function loadViewer() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { user: null, unread: 0 };
-  const { count, error } = await supabase.from("notifications").select("id", { count: "exact", head: true }).is("read_at", null);
-  if (error) console.error(error);
-  return { user, unread: error ? 0 : (count ?? 0) };
 }

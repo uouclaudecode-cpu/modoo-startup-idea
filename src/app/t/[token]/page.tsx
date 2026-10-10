@@ -41,8 +41,8 @@ export default async function ReceivePage({ params }: { params: Promise<{ token:
       <Card className="mx-auto flex max-w-md flex-col items-center gap-3 py-10 text-center">
         <CircleCheck aria-hidden className="h-12 w-12 text-emerald-600" />
         <p className="text-xl font-extrabold">{peek.mine ? "이미 받은 이동수단이에요" : "이미 넘겨받기가 끝났어요"}</p>
-        <ButtonLink href="/dashboard" full>
-          MY로 가기
+        <ButtonLink href="/" full>
+          홈으로 (내 이동수단 보기)
         </ButtonLink>
       </Card>
     );

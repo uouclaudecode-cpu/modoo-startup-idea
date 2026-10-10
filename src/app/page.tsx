@@ -12,7 +12,6 @@ import {
   Route,
   ScanLine,
   Search,
-  ShieldCheck,
   Siren,
   Tag,
   Wind,
@@ -22,7 +21,13 @@ import { site } from "@/config/site";
 import { ButtonLink, Card } from "@/components/ui";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
 import { loadPostAvatars, POST_LIST_COLUMNS } from "@/lib/community";
+import { PushPrompt } from "@/components/onboarding/PushPrompt";
+import { WelcomeGuide, welcomeGuideVisible } from "@/components/onboarding/WelcomeGuide";
+import { HomeVehicleCard } from "@/components/vehicle/HomeVehicleCard";
+import { InboxCard } from "@/components/vehicle/InboxCard";
+import { loadMyHome } from "@/lib/myHome";
 import { createClient, getUser } from "@/lib/supabase/server";
+import { UnfinishedRideCard } from "./dashboard/UnfinishedRideCard";
 
 /**
  * 최근 '찾는 중' 글 3개.
@@ -45,18 +50,6 @@ async function recentPosts(): Promise<{ posts: PostListItem[]; avatars: Record<s
   return { posts, avatars: await loadPostAvatars(supabase, posts.map((p) => p.id)) };
 }
 
-/** 로그인한 사람의 이름과 이동수단 상태 (홈 맨 위 내 상태 카드) */
-async function myStatus(userId: string) {
-  const supabase = await createClient();
-  const [{ data: profile }, { data: vehicles, error }] = await Promise.all([
-    supabase.from("profiles").select("nickname").eq("id", userId).maybeSingle(),
-    supabase.from("vehicles").select("id, status").is("deleted_at", null),
-  ]);
-  if (error) console.error(error);
-  const list = (vehicles ?? []) as { id: string; status: string }[];
-  return { nickname: profile?.nickname || "회원", count: list.length, searching: list.filter((v) => v.status === "searching") };
-}
-
 /** 로그인한 사람의 바로가기 (자주 쓰는 순서) */
 const QUICK = [
   { href: "/ride", label: "라이딩 시작", icon: Route, color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -67,16 +60,22 @@ const QUICK = [
 
 /**
  * 홈
- * - 로그인: 내 상태 → 바로가기 → (이동수단이 없으면 3단계) → 근처 도난 경보 → 지금 찾고 있어요 → 도난 예방 도구
+ * - 로그인: 시작 안내(처음) → 진행 중인 경보·답장 기다림 → 내 이동수단 카드(잃어버렸어요·QR·제보·정비) → 바로가기 → 근처 도난 경보 → 지금 찾고 있어요 → 도난 예방 도구
  * - 처음 온 사람: 소개 → 3단계 → 라이딩도 한 앱에서 → 근처 도난 경보 → 지금 찾고 있어요 → 도난 예방 도구 → 안심 문구
  */
-export default async function HomePage({ searchParams }: { searchParams: Promise<{ bye?: string }> }) {
-  const { bye } = await searchParams;
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ bye?: string; welcome?: string }> }) {
+  const { bye, welcome } = await searchParams;
   const [recent, user] = await Promise.all([recentPosts(), getUser()]);
   const posts = recent?.posts ?? null;
-  const me = user ? await myStatus(user.id) : null;
-  // 3단계 안내는 처음 온 사람과, 아직 이동수단이 없는 회원에게만
-  const showSteps = !me || me.count === 0;
+  const me = user ? await loadMyHome(await createClient(), user) : null;
+  // 3단계 안내는 처음 온 사람에게만 (회원은 아래 '시작하기' 안내가 대신해요)
+  const showSteps = !me;
+  const fresh = welcome === "1";
+  // 알림 안내: 알림 받는 기기가 없을 때. 시작 안내가 보이는 동안은 거기 '알림 켜기'가 있어서 빼요 (수색 중이면 함께 보여요).
+  const guideOpen = me ? welcomeGuideVisible({ hasVehicle: me.list.length > 0, hasSticker: me.hasSticker, fresh }) : false;
+  const urgentPush = me ? me.list.some((v) => v.status === "searching") || me.myAlerts.length > 0 : false;
+  const showPushPrompt = me ? me.list.length > 0 && !me.hasPush && (urgentPush || !guideOpen) : false;
+  const waitingInbox = me ? me.inbox.filter((i) => i.needsReply) : [];
 
   return (
     <div className="space-y-8 sm:space-y-12">
@@ -87,34 +86,75 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       )}
 
       {me ? (
-        /* ① 로그인: 내 상태 + 자주 쓰는 바로가기 */
+        /* ① 로그인: 지금 확인할 것 → 내 이동수단 → 자주 쓰는 바로가기 */
         <section className="space-y-3">
           <h1 className="sr-only">{site.name} 홈</h1>
-          {me.searching.length > 0 ? (
+          {/* 처음이라면: 등록 → QR 붙이기 → 알림 켜기 (다 끝내면 사라져요) */}
+          <WelcomeGuide
+            nickname={me.nickname}
+            hasVehicle={me.list.length > 0}
+            hasSticker={me.hasSticker}
+            hasPush={me.hasPush}
+            fresh={fresh}
+            firstVehicleId={me.list[me.list.length - 1]?.id ?? null}
+          />
+          {/* 진행 중인 도난 경보 */}
+          {me.myAlerts.map((al) => (
             <Link
-              href={me.searching.length === 1 ? `/vehicles/${me.searching[0].id}/reports` : "/dashboard"}
-              className="flex items-center gap-3 rounded-3xl bg-rose-600 p-5 text-white shadow-lift transition-colors hover:bg-rose-700"
+              key={al.id}
+              href={`/alerts/${al.id}`}
+              className="flex min-h-14 w-full items-center gap-3 rounded-2xl bg-rose-600 px-4 py-3 text-white transition-colors hover:bg-rose-700 active:bg-rose-800"
             >
-              <Siren aria-hidden className="h-8 w-8 flex-none" />
+              <Siren aria-hidden className="h-5 w-5 flex-none" />
               <span className="min-w-0 flex-1">
-                <span className="block text-[13px] font-semibold text-rose-100">{me.nickname}님</span>
-                <span className="block text-lg font-extrabold leading-snug">이동수단 {me.searching.length}대를 찾고 있어요</span>
-                <span className="block text-[13px] text-rose-50/90">받은 제보·대화 보기</span>
+                <span className="flex min-w-0 font-semibold">
+                  <span className="truncate">{me.list.find((v) => v.id === al.vehicle_id)?.name ?? "이동수단"}</span>
+                  <span className="flex-none">&nbsp;도난 경보 진행 중</span>
+                </span>
+                <span className="block text-[13px] text-white/85">받은 목격 제보 보기</span>
               </span>
               <ChevronRight aria-hidden className="h-5 w-5 flex-none" />
             </Link>
-          ) : (
-            <Link href={me.count > 0 ? "/dashboard" : "/vehicles/new"} className="flex items-center gap-3 rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 p-5 text-white shadow-lift">
-              <ShieldCheck aria-hidden className="h-8 w-8 flex-none" />
-              <span className="min-w-0 flex-1">
-                <span className="block text-[13px] font-semibold text-brand-100">{me.nickname}님</span>
-                <span className="block text-lg font-extrabold leading-snug">{me.count > 0 ? `내 이동수단 ${me.count}대 · 모두 안전해요` : "이동수단을 등록해 주세요"}</span>
-                <span className="block text-[13px] text-brand-50/90">{me.count > 0 ? "MY에서 QR·제보·정비 관리" : "등록하면 QR 신분증이 바로 만들어져요"}</span>
-              </span>
-              <ChevronRight aria-hidden className="h-5 w-5 flex-none" />
-            </Link>
+          ))}
+          {/* 답장을 기다리는 제보·대화만 */}
+          <InboxCard items={waitingInbox} />
+          {showPushPrompt && <PushPrompt userId={user!.id} urgent={urgentPush} />}
+          <UnfinishedRideCard userId={user!.id} />
+
+          {/* 내 이동수단 */}
+          {me.list.length > 0 && (
+            <div className="space-y-2 pt-1">
+              <div className="flex min-h-9 items-center justify-between gap-2 px-1">
+                <h2 className="text-lg font-bold tracking-tight">내 이동수단</h2>
+                <Link href="/vehicles/new" className="inline-flex h-9 items-center gap-1 rounded-xl bg-brand-50 px-3 text-sm font-semibold text-brand-700 hover:bg-brand-100">
+                  <Plus aria-hidden className="h-4 w-4" />
+                  추가
+                </Link>
+              </div>
+              <div
+                className={
+                  me.list.length > 1
+                    ? "no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0"
+                    : ""
+                }
+              >
+                {me.list.map((v) => (
+                  <div key={v.id} className={me.list.length > 1 ? "w-[86%] flex-none snap-center sm:w-auto" : ""}>
+                    <HomeVehicleCard
+                      vehicle={v}
+                      foundReports={me.foundCounts.get(v.id) ?? 0}
+                      waiting={waitingInbox.filter((i) => i.vehicleId === v.id).length}
+                      care={me.care.get(v.id) ?? []}
+                    />
+                  </div>
+                ))}
+              </div>
+              {me.list.length > 1 && <p className="px-1 text-[12px] text-ink-faint sm:hidden">옆으로 넘기면 다른 이동수단도 볼 수 있어요.</p>}
+            </div>
           )}
-          <div className="grid grid-cols-4 gap-2">
+
+          {/* 자주 쓰는 바로가기 */}
+          <div className="grid grid-cols-4 gap-2 pt-1">
             {QUICK.map((q) => (
               <Link
                 key={q.href}

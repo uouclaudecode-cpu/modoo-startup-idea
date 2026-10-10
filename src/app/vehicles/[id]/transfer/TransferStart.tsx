@@ -218,8 +218,8 @@ export function TransferStart({
         <p className="text-[15px] leading-relaxed text-ink-muted">
           {vehicleName}은(는) 이제 구매자의 이동수단이에요. 정비 기록과 스티커는 함께 넘어갔고, 발견 제보·구매 정보·사진은 지웠어요. 라이딩 기록은 내 기록에 남아 있어요.
         </p>
-        <ButtonLink href="/dashboard" full size="lg" className="mt-2">
-          MY로 가기
+        <ButtonLink href="/" full size="lg" className="mt-2">
+          홈으로
         </ButtonLink>
       </Card>
     );

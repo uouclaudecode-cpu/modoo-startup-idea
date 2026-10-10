@@ -15,7 +15,7 @@ export type InboxItem = {
   needsReply: boolean;
 };
 
-/** MY 위쪽: 모든 이동수단의 최근 발견 제보·익명 대화를 한곳에 */
+/** 홈 위쪽: 모든 이동수단의 최근 발견 제보·익명 대화를 한곳에 */
 export function InboxCard({ items }: { items: InboxItem[] }) {
   if (items.length === 0) return null;
   const waiting = items.filter((i) => i.needsReply).length;

@@ -33,6 +33,6 @@ export async function GET(request: NextRequest) {
   // '확인 메일 다시 보내기'로 받은 링크는 code 없이 결과를 주소 끝(#)에 붙여 와요. 브라우저가 # 부분을 그대로 넘겨서
   // 로그인 화면이 읽고 '확인 완료' 또는 '링크 만료'로 안내해요.
   const login = new URL("/login?error=confirm", origin);
-  if (next !== "/dashboard") login.searchParams.set("next", next);
+  if (next !== "/") login.searchParams.set("next", next);
   return NextResponse.redirect(login);
 }

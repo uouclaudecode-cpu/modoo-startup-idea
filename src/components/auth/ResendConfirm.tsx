@@ -12,7 +12,7 @@ import { cn } from "@/lib/cn";
  * 그냥 MY로 가는 새 회원에게는 첫 안내(welcome)를 보여줘요.
  */
 export function confirmRedirectUrl(next: string) {
-  const dest = next === "/dashboard" ? "/dashboard?welcome=1" : next;
+  const dest = next === "/" ? "/?welcome=1" : next;
   return `${window.location.origin}/auth/callback?next=${encodeURIComponent(dest)}`;
 }
 

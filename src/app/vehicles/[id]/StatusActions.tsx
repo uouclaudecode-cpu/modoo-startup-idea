@@ -2,17 +2,18 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Inbox, RotateCcw, Search, ShieldCheck, Siren, Trash2 } from "lucide-react";
+import { Inbox, RotateCcw, ShieldCheck, Siren, Trash2 } from "lucide-react";
 import { Button, ButtonLink, Card, Modal, useToast } from "@/components/ui";
 import { friendlyError } from "@/lib/format";
 import type { VehicleStatus } from "@/lib/status";
 import { createClient } from "@/lib/supabase/client";
+import { LostReportButton } from "@/components/vehicle/LostReportButton";
 
 type Action = "search" | "recover" | "reset" | "delete";
 type Found = { id: string; status: string; expires_at: string | null };
 type Confirm = { title: string; body: string; button: string; variant: "danger" | "primary" };
 
-// '수색 중으로 바꾸기'(분실)는 아래 '분실·도난 신고' 고르기 창에서 바로 해요
+// '수색 중으로 바꾸기'(분실)는 공용 '분실·도난 신고' 버튼(LostReportButton)의 고르기 창에서 해요
 const CONFIRM: Record<Exclude<Action, "search">, Confirm> = {
   recover: {
     title: "회수 완료",
@@ -51,7 +52,6 @@ export function StatusActions({
   const router = useRouter();
   const toast = useToast();
   const [pending, setPending] = useState<Exclude<Action, "search"> | null>(null);
-  const [choice, setChoice] = useState(false);
   const [loading, setLoading] = useState(false);
   // 아직 안 끝낸 경보 찾기 (undefined = 확인 중). 기간이 지난(expired)·숨긴 경보도 '찾았어요'로 끝내야 제보자에게 알림·사례금 기록이 남아요
   const [looked, setLooked] = useState<Found | null | undefined>(undefined);
@@ -91,7 +91,6 @@ export function StatusActions({
     const { error } = await createClient().from("vehicles").update(patch).eq("id", vehicleId);
     setLoading(false);
     setPending(null);
-    setChoice(false);
     if (error) {
       console.error(error);
       toast.error(friendlyError(error, "상태를 바꾸지 못했어요. 다시 시도해 주세요."));
@@ -99,7 +98,7 @@ export function StatusActions({
     }
     if (action === "delete") {
       toast.success("삭제했어요.");
-      router.replace("/dashboard");
+      router.replace("/");
     } else {
       toast.success(action === "search" ? "수색 중으로 바꿨어요. 발견 제보를 기다려요." : action === "recover" ? "회수 완료! 다행이에요." : "정상으로 바꿨어요.");
     }
@@ -111,11 +110,7 @@ export function StatusActions({
   return (
     <Card className="space-y-3">
       {/* 회수 완료 뒤 또 잃어버려도 여기서 바로 신고해요 */}
-      {status !== "searching" && (
-        <Button variant="danger" full size="lg" icon={<Siren aria-hidden className="h-5 w-5" />} onClick={() => setChoice(true)}>
-          분실·도난 신고
-        </Button>
-      )}
+      {status !== "searching" && <LostReportButton vehicleId={vehicleId} />}
       {status === "searching" && (
         <>
           <ButtonLink href={`/vehicles/${vehicleId}/reports`} full size="lg" variant={foundReports ? "danger" : "primary"} icon={<Inbox aria-hidden className="h-5 w-5" />}>
@@ -172,41 +167,6 @@ export function StatusActions({
           이동수단 삭제
         </button>
       </div>
-
-      {/* 분실·도난 신고: 도난이면 근처 경보, 분실이면 수색 중으로만 (입구 하나) */}
-      <Modal
-        open={choice}
-        onClose={() => !loading && setChoice(false)}
-        title="분실·도난 신고"
-        footer={
-          <Button variant="ghost" onClick={() => setChoice(false)} disabled={loading}>
-            취소
-          </Button>
-        }
-      >
-        <div className="space-y-4">
-          <p className="text-[15px] text-ink-soft">어떤 상황인지 골라 주세요.</p>
-          <div className="space-y-1.5">
-            <ButtonLink href={`/vehicles/${vehicleId}/alert`} variant="danger" full size="lg" icon={<Siren aria-hidden className="h-5 w-5" />}>
-              도둑맞았어요
-            </ButtonLink>
-            <p className="text-[13px] leading-relaxed text-ink-muted">
-              근처에 도난 경보를 보내요. 알림을 켠 근처 사람들에게 사진·특징이 바로 가고, 목격·중고 매물 제보를 받아요.
-            </p>
-          </div>
-          <div className="space-y-1.5">
-            <Button variant="secondary" full size="lg" loading={loading} loadingText="바꾸는 중..." icon={<Search aria-hidden className="h-5 w-5" />} onClick={() => run("search")}>
-              잃어버렸어요 (분실)
-            </Button>
-            <p className="text-[13px] leading-relaxed text-ink-muted">
-              근처 알림 없이 상태만 &lsquo;수색 중&rsquo;으로 바꿔요. QR을 스캔한 사람에게 분실 안내와 사진·특징이 보이고, 발견 제보를 받을 수 있어요.
-            </p>
-          </div>
-          <p className="rounded-xl bg-slate-50 p-3 text-[13px] leading-relaxed text-ink-soft">
-            이름·연락처 같은 개인정보는 공개되지 않아요. 수색 기록(수색 횟수)은 지워지지 않고, 나중에 중고로 팔 때 안심거래 인증 화면의 &lsquo;도난·분실 이력&rsquo;에 남아요.
-          </p>
-        </div>
-      </Modal>
 
       <Modal
         open={Boolean(c)}

@@ -13,7 +13,7 @@ import { friendlyError } from "@/lib/format";
 type Form = { email: string; password: string; confirm: string; nickname: string };
 type Errors = Partial<Record<keyof Form | "agree" | "form", string>>;
 
-export function SignupForm({ next = "/dashboard" }: { next?: string }) {
+export function SignupForm({ next = "/" }: { next?: string }) {
   const router = useRouter();
   const toast = useToast();
   const [form, setForm] = useState<Form>({ email: "", password: "", confirm: "", nickname: "" });
@@ -22,7 +22,7 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState("");
   // 로그인 화면으로 갈 때도 가려던 곳(next)을 함께 넘겨요
-  const loginHref = next === "/dashboard" ? "/login" : `/login?next=${encodeURIComponent(next)}`;
+  const loginHref = next === "/" ? "/login" : `/login?next=${encodeURIComponent(next)}`;
 
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [k]: e.target.value });
 
@@ -65,7 +65,7 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
     if (data.session) {
       // 이메일 확인을 쓰지 않는 설정이면 바로 로그인됩니다.
       toast.success("가입했어요! 환영해요.");
-      router.replace(next === "/dashboard" ? "/dashboard?welcome=1" : next);
+      router.replace(next === "/" ? "/?welcome=1" : next);
       router.refresh();
     } else {
       setSentTo(form.email.trim());
@@ -78,7 +78,7 @@ export function SignupForm({ next = "/dashboard" }: { next?: string }) {
         <EmptyState
           icon={<MailCheck className="h-7 w-7" />}
           title="가입 확인 메일을 보냈어요"
-          description={`${sentTo} 메일함(스팸함 포함)에서 확인 링크를 누르면 가입이 끝나요.${next === "/dashboard" ? "" : " 확인을 마치면 보던 화면으로 이어서 갈 수 있어요."}`}
+          description={`${sentTo} 메일함(스팸함 포함)에서 확인 링크를 누르면 가입이 끝나요.${next === "/" ? "" : " 확인을 마치면 보던 화면으로 이어서 갈 수 있어요."}`}
           action={
             <div className="space-y-3">
               <ButtonLink href={loginHref} full>
