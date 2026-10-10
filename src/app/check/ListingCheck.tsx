@@ -32,7 +32,7 @@ const MATCHED: Record<Match["matched"][number], string> = { brand: "브랜드", 
 
 const SELLER_MSG = `안녕하세요! 구매 전에 확인하고 싶어서요.
 B-LOCK에 등록돼 있다면 '안심거래 인증 링크'를 보내 주실 수 있을까요?
-(B-LOCK 앱 → 내 이동수단 → 중고거래 → 인증 링크)
+(B-LOCK 앱 → MY → 이동수단 → 중고거래 → 인증 링크)
 거래할 때는 '소유권 넘기기'로 넘겨주시면 좋겠어요.
 https://b-lock-app.vercel.app/check`;
 

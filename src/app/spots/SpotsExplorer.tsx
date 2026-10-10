@@ -9,7 +9,7 @@ import { Badge, Button, Card, Input, Modal, Textarea, useToast } from "@/compone
 import { cn } from "@/lib/cn";
 import { friendlyError } from "@/lib/format";
 import { distance, type LatLng } from "@/lib/ride/geo";
-import { formatDist, pumpState, SPOT_KINDS, type BikeHazard, type BikeSpot, type SpotKind } from "@/lib/spots";
+import { formatDist, hazardYearsLabel, mergeHazards, pumpState, SPOT_KINDS, type BikeHazard, type BikeSpot, type MergedHazard, type SpotKind } from "@/lib/spots";
 import { createClient } from "@/lib/supabase/client";
 
 const RADIUS = 3000;
@@ -37,7 +37,7 @@ export function SpotsExplorer({ loggedIn, initialKind }: { loggedIn: boolean; in
   const [mapCenter, setMapCenter] = useState<LatLng | null>(null);
   const [centerKey, setCenterKey] = useState(0);
   const [spots, setSpots] = useState<BikeSpot[] | null>(null);
-  const [hazards, setHazards] = useState<BikeHazard[]>([]);
+  const [hazards, setHazards] = useState<MergedHazard[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [loadError, setLoadError] = useState("");
   const [adding, setAdding] = useState(false);
@@ -82,7 +82,8 @@ export function SpotsExplorer({ loggedIn, initialKind }: { loggedIn: boolean; in
       );
     }
     if (h.error) console.error(h.error);
-    setHazards(((h.data ?? []) as BikeHazard[]).filter(Boolean));
+    // 최근 3년 자료에서 같은 장소는 하나로 묶어요
+    setHazards(mergeHazards(((h.data ?? []) as BikeHazard[]).filter(Boolean)));
   }, []);
 
   useEffect(() => {
@@ -387,7 +388,7 @@ function SpotCard({
   );
 }
 
-function HazardCard({ h, onClose }: { h: BikeHazard; onClose: () => void }) {
+function HazardCard({ h, onClose }: { h: MergedHazard; onClose: () => void }) {
   return (
     <Card className="space-y-2 p-4 ring-orange-200">
       <div className="flex items-start justify-between gap-2">
@@ -403,11 +404,12 @@ function HazardCard({ h, onClose }: { h: BikeHazard; onClose: () => void }) {
         </button>
       </div>
       <p className="text-sm leading-relaxed text-ink-soft">
+        {h.years.length > 1 && `최근 3년 중 ${h.years.length}번(${hazardYearsLabel(h.years)}) 사고 다발 지역으로 뽑힌 곳이에요. `}
         {h.year}년 한 해 동안 자전거 사고 {h.accidents}건, 다친 사람 {h.casualties}명
         {h.deaths > 0 && `(사망 ${h.deaths}명)`}
         {h.serious > 0 && `, 크게 다친 사람 ${h.serious}명`}이 있었어요. 지날 때 속도를 줄이고 주변을 살펴 주세요.
       </p>
-      <p className="text-[12px] text-ink-faint">자료: 도로교통공단 자전거사고 다발지역</p>
+      <p className="text-[12px] text-ink-faint">자료: 도로교통공단 자전거사고 다발지역 ({hazardYearsLabel(h.years)})</p>
     </Card>
   );
 }

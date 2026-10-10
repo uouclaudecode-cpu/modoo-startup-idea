@@ -43,6 +43,9 @@ export function DashboardSkeleton() {
           <Skeleton className="h-6 w-40 max-w-full" />
           <Skeleton className="h-4 w-28" />
         </div>
+        {/* 편집 · ⚙️ 설정 */}
+        <Skeleton className="h-10 w-16 flex-none rounded-xl" />
+        <Skeleton className="-ml-2 h-10 w-10 flex-none rounded-xl" />
       </div>
       <Skeleton className="h-14 rounded-xl" />
       <div className="grid gap-4 sm:grid-cols-2">

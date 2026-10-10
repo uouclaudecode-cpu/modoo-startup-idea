@@ -1,13 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
-import { Bike, Pencil } from "lucide-react";
+import { Bike, Pencil, Settings } from "lucide-react";
 import { Card, Modal } from "@/components/ui";
 import { avatarUrl } from "@/lib/images";
 import { Avatar } from "./Avatar";
 import { ProfileForm } from "./ProfileForm";
 
-/** MY 맨 위 내 정보. 사진·이름이나 '편집'을 누르면 바로 프로필을 바꿀 수 있어요. */
+/** MY 맨 위 내 정보. 사진·이름이나 '편집'을 누르면 바로 프로필을 바꾸고, ⚙️로 알림·계정 설정에 가요. (설정은 앱에서 여기 한 곳) */
 export function ProfileCard({ userId, nickname, avatarPath, vehicleCount }: { userId: string; nickname: string; avatarPath: string | null; vehicleCount: number }) {
   const [open, setOpen] = useState(false);
   return (
@@ -30,6 +31,14 @@ export function ProfileCard({ userId, nickname, avatarPath, vehicleCount }: { us
           <Pencil aria-hidden className="h-4 w-4" />
           편집
         </button>
+        <Link
+          href="/settings"
+          aria-label="설정 (알림·계정)"
+          title="설정"
+          className="-ml-2 grid h-10 w-10 flex-none place-items-center rounded-xl bg-slate-100 text-ink-soft hover:bg-slate-200"
+        >
+          <Settings aria-hidden className="h-[18px] w-[18px]" />
+        </Link>
       </Card>
       <Modal open={open} onClose={() => setOpen(false)} title="프로필 편집">
         <ProfileForm userId={userId} nickname={nickname} avatarPath={avatarPath} onSaved={() => setOpen(false)} />

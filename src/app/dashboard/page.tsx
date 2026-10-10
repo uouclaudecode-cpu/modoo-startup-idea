@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bike, BookOpen, Bug, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Navigation, Plus, Printer, Route, Search, Settings, Siren, Wind } from "lucide-react";
+import { Bike, BookOpen, Bug, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Navigation, Plus, Printer, Route, Search, Siren, Wind } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { MaintenanceOverview } from "@/components/maintenance/MaintenanceOverview";
 import { PushPrompt } from "@/components/onboarding/PushPrompt";
@@ -251,19 +251,24 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         </Section>
       )}
 
-      {/* ⑧ 기록·도구·설정 메뉴 */}
-      <Section title="기록·도구·설정">
-        <Card className="divide-y divide-line/70 p-0">
-          <MenuRow href="/alerts#mine" icon={History} label="내 경보·제보 기록" />
-          <MenuRow href="/rides" icon={Route} label="라이딩 기록·통계" />
-          <MenuRow href="/navigate" icon={Navigation} label="자전거 길 안내" />
-          <MenuRow href="/spots" icon={Wind} label="공기주입기·자전거 보관소" />
-          <MenuRow href="/check" icon={Search} label="도난 조회 · 중고 매물 확인" />
-          <MenuRow href="/get-sticker" icon={MapPin} label="스티커 받는 곳" />
-          <MenuRow href="/settings" icon={Settings} label="프로필·알림·계정 설정" />
-          <MenuRow href="/?intro=1" icon={BookOpen} label="앱 소개 다시 보기" />
-          <MenuRow href="/contact" icon={MessageCircleQuestion} label="문의하기" />
-        </Card>
+      {/* ⑧ 메뉴: 성격별로 묶어요 (설정은 맨 위 내 정보 카드의 ⚙️ 한 곳에만) */}
+      <Section title="메뉴">
+        <div className="space-y-3">
+          <MenuGroup title="라이딩">
+            <MenuRow href="/rides" icon={Route} label="라이딩 기록·통계" />
+            <MenuRow href="/navigate" icon={Navigation} label="자전거 길 안내" />
+            <MenuRow href="/spots" icon={Wind} label="공기주입기·자전거 보관소" />
+          </MenuGroup>
+          <MenuGroup title="도난·안전">
+            <MenuRow href="/alerts#mine" icon={History} label="내 경보·제보 기록" />
+            <MenuRow href="/check" icon={Search} label="도난 조회 · 중고 매물 확인" />
+            <MenuRow href="/get-sticker" icon={MapPin} label="스티커 받는 곳" />
+          </MenuGroup>
+          <MenuGroup title="도움말">
+            <MenuRow href="/?intro=1" icon={BookOpen} label="앱 소개 다시 보기" />
+            <MenuRow href="/contact" icon={MessageCircleQuestion} label="문의하기" />
+          </MenuGroup>
+        </div>
         {profile?.is_admin && (
           <Card className="mt-3 divide-y divide-line/70 p-0">
             <p className="px-4 py-2.5 text-[12px] font-bold text-ink-muted">운영자</p>
@@ -293,7 +298,17 @@ function Section({ title, action, children }: { title: string; action?: React.Re
   );
 }
 
-/** 더보기 메뉴 한 줄 */
+/** 메뉴 묶음 (작은 제목 + 카드) */
+function MenuGroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Card className="divide-y divide-line/70 p-0">
+      <p className="px-4 py-2.5 text-[12px] font-bold text-ink-muted">{title}</p>
+      {children}
+    </Card>
+  );
+}
+
+/** 메뉴 한 줄 */
 function MenuRow({ href, icon: Icon, label }: { href: string; icon: typeof Bike; label: string }) {
   return (
     <Link href={href} className="flex min-h-14 items-center gap-3 px-4 py-3 hover:bg-slate-50">

@@ -93,7 +93,7 @@ export default function ContactPage() {
       q: "알림이 안 와요.",
       a: (
         <>
-          <L href="/settings">설정 → 휴대폰 알림</L>에서 켜 주세요. iPhone은 Safari에서 &lsquo;홈 화면에 추가&rsquo;한 앱에서만 알림을 받을 수 있어요. 휴대폰
+          <L href="/settings">MY → ⚙️ 설정 → 휴대폰 알림</L>에서 켜 주세요. iPhone은 Safari에서 &lsquo;홈 화면에 추가&rsquo;한 앱에서만 알림을 받을 수 있어요. 휴대폰
           알림을 못 받아도 위쪽 종 모양 <L href="/notifications">알림함</L>에서 지난 알림을 다시 볼 수 있어요.
         </>
       ),

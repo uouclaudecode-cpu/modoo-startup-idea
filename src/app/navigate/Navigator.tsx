@@ -36,9 +36,10 @@ import {
   type Progress,
 } from "@/lib/nav";
 import { distance, type LatLng } from "@/lib/ride/geo";
-import type { BikeHazard } from "@/lib/spots";
+import { mergeHazards, type BikeHazard } from "@/lib/spots";
 import { createClient } from "@/lib/supabase/client";
 import type { PlaceResult } from "../api/geo/search/route";
+import { useNavRide, type NavRideCtx } from "./useNavRide";
 
 type Dest = LatLng & { name: string };
 type RouteHazard = BikeHazard & { along: number };
@@ -72,7 +73,7 @@ function vibrate(pattern: number | number[]) {
   }
 }
 
-export function Navigator({ initialDest }: { initialDest: Dest | null }) {
+export function Navigator({ initialDest, ride }: { initialDest: Dest | null; ride: NavRideCtx }) {
   const [me, setMe] = useState<LatLng | null>(null);
   const [accuracy, setAccuracy] = useState<number | null>(null);
   const [locError, setLocError] = useState("");
@@ -102,6 +103,8 @@ export function Navigator({ initialDest }: { initialDest: Dest | null }) {
   const buzzedSteps = useRef(new Set<number>());
   const warnedHazards = useRef(new Set<string>());
   const wakeRef = useRef<WakeLockLike | null>(null);
+  // 라이딩 기록 (저장 창의 '계속 타기'를 누르면 안내 화면으로 돌아가요)
+  const rec = useNavRide(ride, { onKeepGoing: () => setNavigating(true) });
 
   const cum = useMemo(() => (route ? cumulative(route.path) : []), [route]);
   const stepAt = useMemo(() => (route ? stepPositions(route.path, cum, route.steps) : []), [route, cum]);
@@ -180,7 +183,8 @@ export function Navigator({ initialDest }: { initialDest: Dest | null }) {
         }
         const c = cumulative(route.path);
         const on: RouteHazard[] = [];
-        for (const h of (data ?? []) as BikeHazard[]) {
+        // 최근 3년 자료에서 같은 장소는 하나로 묶어요
+        for (const h of mergeHazards((data ?? []) as BikeHazard[])) {
           const pr = progressOn(route.path, c, h);
           if (pr.offRoute <= h.radius_m + 30) on.push({ ...h, along: pr.along });
         }
@@ -299,6 +303,7 @@ export function Navigator({ initialDest }: { initialDest: Dest | null }) {
     offCount.current = 0;
     buzzedSteps.current.clear();
     warnedHazards.current.clear();
+    rec.begin();
     setNavigating(true);
   }
 
@@ -306,6 +311,8 @@ export function Navigator({ initialDest }: { initialDest: Dest | null }) {
     setNavigating(false);
     setProgress(null);
     setFitKey((k) => k + 1);
+    // 기록 중이었으면 저장 창이 떠요
+    rec.end();
   }
 
   // --- 안내 중 화면 -------------------------------------------------------
@@ -377,6 +384,7 @@ export function Navigator({ initialDest }: { initialDest: Dest | null }) {
               {eta.toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit" })} 도착 예정
               {accuracy != null && accuracy > 35 && " · 위치가 약해요"}
             </p>
+            {rec.badge}
           </div>
           <Button variant={arrived ? "primary" : "secondary"} onClick={stop} className="h-12 px-5">
             {arrived ? "끝내기" : "안내 끝"}
@@ -496,6 +504,7 @@ export function Navigator({ initialDest }: { initialDest: Dest | null }) {
                 <AlertTriangle aria-hidden className="h-4 w-4" />
                 {nextHazards ? `가는 길에 자전거 사고가 잦은 곳이 ${nextHazards}곳 있어요. 가까워지면 알려 드려요.` : "가는 길에 알려진 자전거 사고 다발 지역은 없어요."}
               </p>
+              {rec.options}
               <Button full size="lg" onClick={start} disabled={!me} icon={<Navigation aria-hidden className="h-5 w-5" />}>
                 안내 시작
               </Button>
@@ -514,6 +523,7 @@ export function Navigator({ initialDest }: { initialDest: Dest | null }) {
           <ChevronLeft aria-hidden className="h-4 w-4 flex-none rotate-180 text-ink-faint" />
         </Link>
       )}
+      {rec.modal}
     </div>
   );
 }

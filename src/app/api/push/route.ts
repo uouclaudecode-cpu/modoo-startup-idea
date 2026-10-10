@@ -1,4 +1,4 @@
-import { timingSafeEqual } from "node:crypto";
+import { secretMatches } from "@/lib/secret";
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Urgency } from "web-push";
@@ -56,13 +56,6 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ sent: result.sent, failed: result.failed, skipped: result.skipped, removed });
 }
 
-/** 길이가 같을 때만 비교 (timingSafeEqual 은 길이가 다르면 오류) — 걸리는 시간으로 비밀값을 추측하지 못하게 */
-function secretMatches(given: string | null, expected: string) {
-  if (!given) return false;
-  const a = Buffer.from(given);
-  const b = Buffer.from(expected);
-  return a.length === b.length && timingSafeEqual(a, b);
-}
 
 const URGENCIES: Urgency[] = ["very-low", "low", "normal", "high"];
 

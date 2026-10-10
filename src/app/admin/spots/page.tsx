@@ -16,7 +16,7 @@ export default async function AdminSpotsPage() {
   if (error) console.error(error);
   const c = (data ?? null) as Counts | null;
   const { data: hz } = await supabase.rpc("admin_bike_hazard_counts");
-  const h = (hz ?? null) as { count: number; year: number | null } | null;
+  const h = (hz ?? null) as { count: number; year: number | null; first_year?: number | null } | null;
   const stats: [string, number | string][] = c
     ? [
         ["보관소 (공공데이터)", c.public],
@@ -24,7 +24,7 @@ export default async function AdminSpotsPage() {
         ["회원이 알려 준 공기주입기", c.user],
         ["최근 고장 표시", c.broken],
         ["숨긴 장소", c.hidden],
-        [`사고 잦은 곳${h?.year ? ` (${h.year}년)` : ""}`, h?.count ?? 0],
+        [`사고 잦은 곳${h?.year ? ` (${h.first_year && h.first_year !== h.year ? `${h.first_year}~` : ""}${h.year}년)` : ""}`, h?.count ?? 0],
       ]
     : [];
 
@@ -37,7 +37,7 @@ export default async function AdminSpotsPage() {
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">공기주입기·보관소 관리</h1>
         <p className="mt-1 text-sm leading-relaxed text-ink-muted">
-          행정안전부 자전거보관소정보와 도로교통공단 자전거사고 다발지역(공공데이터포털)을 불러와 지도에 보여 줘요. 공공데이터는 매일 바뀌니 한 달에 한 번쯤 다시 불러오면 좋아요. 같은 장소는 새 정보로 덮어써요.
+          행정안전부 자전거보관소정보와 도로교통공단 자전거사고 다발지역(공공데이터포털)을 불러와 지도에 보여 줘요. 매달 2일 새벽 3시에 자동으로 다시 불러와요(035 설정 필요). 버튼으로 바로 불러올 수도 있어요. 같은 장소는 새 정보로 덮어써요.
         </p>
       </div>
       {error ? (

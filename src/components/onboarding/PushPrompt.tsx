@@ -78,7 +78,7 @@ export function PushPrompt({ userId, urgent }: { userId: string; urgent: boolean
       // 저장소를 못 써도 이번에는 닫아요
     }
     setShown(null);
-    toast.info("설정 → 휴대폰 알림에서 언제든 켤 수 있어요.");
+    toast.info("MY → ⚙️ 설정 → 휴대폰 알림에서 언제든 켤 수 있어요.");
   }
 
   const title = urgent ? "수색 중인데 알림이 꺼져 있어요" : shown === "denied" ? "알림이 차단돼 있어요" : "알림이 꺼져 있어요";

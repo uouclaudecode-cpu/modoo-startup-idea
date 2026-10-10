@@ -131,3 +131,37 @@ export function toSpotRow(it: PublicParkingItem) {
     data_date: date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null,
   };
 }
+
+/** 여러 해 자료를 같은 장소끼리 묶은 사고 잦은 곳 (가장 최근 해의 숫자를 보여 줘요) */
+export type MergedHazard = BikeHazard & { years: number[] };
+
+/**
+ * 최근 3년 자료에서 같은 장소(원이 겹치는 곳)를 하나로 묶어요.
+ * 해마다 원의 가운데가 수십 m씩 달라질 수 있어서 거리로 비교해요. 입력은 최근 해부터 와요.
+ */
+export function mergeHazards(list: BikeHazard[]): MergedHazard[] {
+  const out: MergedHazard[] = [];
+  const sorted = [...list].sort((a, b) => b.year - a.year || b.accidents - a.accidents);
+  for (const h of sorted) {
+    const same = out.find((m) => distanceM(m, h) <= Math.max(m.radius_m, h.radius_m, 80));
+    if (same) {
+      if (!same.years.includes(h.year)) same.years.push(h.year);
+    } else {
+      out.push({ ...h, years: [h.year] });
+    }
+  }
+  for (const m of out) m.years.sort((a, b) => a - b);
+  return out;
+}
+
+/** 두 지점 거리 (m, 짧은 거리용 근사) */
+function distanceM(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  const k = Math.cos((a.lat * Math.PI) / 180);
+  const dx = (a.lng - b.lng) * 111320 * k, dy = (a.lat - b.lat) * 110540;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+/** "2023·2025년" 처럼 */
+export function hazardYearsLabel(years: number[]) {
+  return `${years.join("·")}년`;
+}

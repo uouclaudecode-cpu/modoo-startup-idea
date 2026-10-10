@@ -77,7 +77,7 @@ export function SpotImporter() {
   );
 }
 
-/** 도로교통공단 자전거사고 다발지역: 전국 252개 시·군·구를 30곳씩 불러와요. */
+/** 도로교통공단 자전거사고 다발지역: 최근 3년을 오래된 해부터, 해마다 전국 252개 시·군·구를 30곳씩 불러와요. */
 export function HazardImporter() {
   const router = useRouter();
   const toast = useToast();
@@ -85,29 +85,34 @@ export function HazardImporter() {
   // 보통 전년도 자료가 다음 해 여름쯤 올라와요
   const [year, setYear] = useState(thisYear - 1);
   const [running, setRunning] = useState(false);
-  const [progress, setProgress] = useState<{ done: number; total: number; imported: number } | null>(null);
+  const [progress, setProgress] = useState<{ step: number; done: number; total: number; imported: number; year: number } | null>(null);
   const [error, setError] = useState("");
+  const years = [year - 2, year - 1, year];
 
   async function run() {
     setRunning(true);
     setError("");
-    let from: number | null = 0;
     let imported = 0;
+    let latestCount = 0;
     try {
-      while (from !== null) {
-        const r: Response = await fetch("/api/admin/hazards-import", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ year, from }),
-        });
-        const j = (await r.json().catch(() => ({ error: "응답을 읽지 못했어요." }))) as { imported: number; done: number; total: number; next: number | null; error?: string };
-        if (!r.ok || j.error) throw new Error(j.error ?? "불러오지 못했어요.");
-        imported += j.imported;
-        setProgress({ done: j.done, total: j.total, imported });
-        from = j.next;
+      for (const [step, y] of years.entries()) {
+        let from: number | null = 0;
+        while (from !== null) {
+          const r: Response = await fetch("/api/admin/hazards-import", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ year: y, from, latest: y === year }),
+          });
+          const j = (await r.json().catch(() => ({ error: "응답을 읽지 못했어요." }))) as { imported: number; done: number; total: number; next: number | null; error?: string };
+          if (!r.ok || j.error) throw new Error(j.error ?? "불러오지 못했어요.");
+          imported += j.imported;
+          if (y === year) latestCount += j.imported;
+          setProgress({ step, done: j.done, total: j.total, imported, year: y });
+          from = j.next;
+        }
       }
-      if (imported === 0) setError(`${year}년 자료가 아직 없어요. 한 해 전으로 바꿔서 다시 불러와 주세요.`);
-      else toast.success(`사고 잦은 곳 ${imported.toLocaleString("ko-KR")}곳을 불러왔어요.`);
+      if (latestCount === 0) setError(`${year}년 자료가 아직 없어요. 한 해 전으로 바꿔서 다시 불러와 주세요. (예전 자료는 그대로 남아요)`);
+      else toast.success(`최근 3년 사고 잦은 곳 ${imported.toLocaleString("ko-KR")}곳을 불러왔어요.`);
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "불러오지 못했어요.");
@@ -116,17 +121,17 @@ export function HazardImporter() {
     }
   }
 
-  const pct = progress ? Math.round((progress.done / Math.max(progress.total, 1)) * 100) : 0;
+  const pct = progress ? Math.round(((progress.step + progress.done / Math.max(progress.total, 1)) / years.length) * 100) : 0;
   return (
     <Card className="space-y-3 p-4">
       <h2 className="font-bold">자전거 사고 잦은 곳 불러오기</h2>
       <p className="text-[13px] leading-relaxed text-ink-muted">
-        도로교통공단 자전거사고 다발지역 자료예요. 전국 시·군·구를 차례로 불러와서 1분쯤 걸려요. 새 연도 자료가 들어오면 예전 연도 자료는 지워져요.
+        도로교통공단 자전거사고 다발지역 자료예요. 최근 3년치를 불러와서 지도에 함께 보여 줘요(같은 장소는 하나로 묶어요). 3분쯤 걸리고, 3년보다 오래된 자료는 지워져요. 매달 2일 새벽에 자동으로도 다시 불러와요.
       </p>
       <label className="flex items-center gap-2 text-sm font-semibold text-ink-soft">
-        연도
+        가장 최근 해
         <select value={year} onChange={(e) => setYear(Number(e.target.value))} disabled={running} className="h-10 rounded-xl border border-line bg-white px-3 text-[16px]">
-          {[0, 1, 2, 3].map((d) => (
+          {[1, 2, 3].map((d) => (
             <option key={d} value={thisYear - d}>
               {thisYear - d}년
             </option>
@@ -139,13 +144,13 @@ export function HazardImporter() {
             <div className="h-full rounded-full bg-orange-500 transition-[width]" style={{ width: `${pct}%` }} />
           </div>
           <p className="text-[13px] tabular-nums text-ink-soft">
-            {pct}% · {progress.imported.toLocaleString("ko-KR")}곳 저장
+            {pct}% · {progress.year}년 불러오는 중 · {progress.imported.toLocaleString("ko-KR")}곳 저장
           </p>
         </div>
       )}
       {error && <p className="text-[13px] text-rose-600">{error}</p>}
       <Button onClick={run} loading={running} loadingText="불러오는 중..." icon={<Download aria-hidden className="h-4 w-4" />}>
-        {year}년 자료 불러오기
+        {years[0]}~{year}년 자료 불러오기
       </Button>
     </Card>
   );
