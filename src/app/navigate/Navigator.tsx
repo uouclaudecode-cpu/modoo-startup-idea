@@ -517,7 +517,7 @@ export function Navigator({ initialDest, ride }: { initialDest: Dest | null; rid
       )}
 
       {!dest && (
-        <Link href="/spots" className="flex min-h-14 items-center gap-3 rounded-2xl bg-white px-4 py-3 ring-1 ring-line hover:bg-slate-50">
+        <Link href="/spots?kind=pump" className="flex min-h-14 items-center gap-3 rounded-2xl bg-white px-4 py-3 ring-1 ring-line hover:bg-slate-50">
           <Wind aria-hidden className="h-5 w-5 flex-none text-emerald-600" />
           <span className="flex-1 text-[15px] font-semibold">가까운 공기주입기로 길 안내 받기</span>
           <ChevronLeft aria-hidden className="h-4 w-4 flex-none rotate-180 text-ink-faint" />

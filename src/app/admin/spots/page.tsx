@@ -5,7 +5,7 @@ import { Card } from "@/components/ui";
 import { requireAdmin } from "@/lib/admin";
 import { HazardImporter, SpotImporter } from "./SpotImporter";
 
-export const metadata: Metadata = { title: "공기주입기·보관소 관리", robots: { index: false } };
+export const metadata: Metadata = { title: "보관소·공기주입기 관리", robots: { index: false } };
 
 type Counts = { public: number; public_pump: number; user: number; hidden: number; broken: number; last_import: string | null };
 
@@ -35,7 +35,7 @@ export default async function AdminSpotsPage() {
         운영 통계
       </Link>
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight">공기주입기·보관소 관리</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight">보관소·공기주입기 관리</h1>
         <p className="mt-1 text-sm leading-relaxed text-ink-muted">
           행정안전부 자전거보관소정보와 도로교통공단 자전거사고 다발지역(공공데이터포털)을 불러와 지도에 보여 줘요. 매달 2일 새벽 3시에 자동으로 다시 불러와요(035 설정 필요). 버튼으로 바로 불러올 수도 있어요. 같은 장소는 새 정보로 덮어써요.
         </p>

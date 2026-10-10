@@ -281,7 +281,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <MenuRow href="/admin" icon={ChartColumn} label="운영 통계" />
             <MenuRow href="/admin/stickers" icon={Printer} label="스티커 관리 · 받는 곳" />
             <MenuRow href="/admin/areas" icon={MapPin} label="관심 구역 통계" />
-            <MenuRow href="/admin/spots" icon={Wind} label="공기주입기·보관소·사고 자료" />
+            <MenuRow href="/admin/spots" icon={Wind} label="보관소·공기주입기·사고 자료" />
             <MenuRow href="/admin/reports" icon={Flag} label="신고 처리" />
             <MenuRow href="/admin/usage" icon={Gauge} label="서비스 사용량" />
             <MenuRow href="/admin/errors" icon={Bug} label={`오류 알림${errorCount ? ` (${errorCount})` : ""}`} />

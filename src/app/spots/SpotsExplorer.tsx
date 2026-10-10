@@ -113,8 +113,8 @@ export function SpotsExplorer({ loggedIn, initialKind }: { loggedIn: boolean; in
         라이딩
       </Link>
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight">공기주입기·자전거 보관소</h1>
-        <p className="mt-1 text-sm text-ink-muted">내 주변 3km 안을 가까운 순으로 보여 줘요. 장소를 누르면 길 안내를 받을 수 있어요.</p>
+        <h1 className="text-2xl font-extrabold tracking-tight">보관소·공기주입기</h1>
+        <p className="mt-1 text-sm text-ink-muted">내 주변 3km 안의 보관소·공기주입기·수리대를 가까운 순으로 보여 줘요. 장소를 누르면 길 안내를 받을 수 있어요.</p>
       </div>
 
       <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">

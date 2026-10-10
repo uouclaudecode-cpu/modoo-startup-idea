@@ -49,7 +49,7 @@ type Props = {
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 /**
- * 공기주입기·보관소 지도와 자전거 길 안내에 함께 쓰는 네이버 지도.
+ * 보관소·공기주입기 지도와 자전거 길 안내에 함께 쓰는 네이버 지도.
  * 지도를 쓸 수 없으면 안내 문구만 보여 주고, 목록·길 안내 글자는 그대로 쓸 수 있어요.
  */
 export function BikeMap({ pins = [], circles = [], onPinClick, route, passedIndex = 0, destination, current, follow, onMapClick, onMoved, fitKey, center, centerKey, className }: Props) {

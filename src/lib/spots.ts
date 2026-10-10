@@ -49,8 +49,8 @@ export type BikeHazard = {
 };
 
 export const SPOT_KINDS: { value: SpotKind; label: string }[] = [
-  { value: "pump", label: "공기주입기" },
   { value: "parking", label: "보관소" },
+  { value: "pump", label: "공기주입기" },
   { value: "repair", label: "수리대" },
 ];
 
