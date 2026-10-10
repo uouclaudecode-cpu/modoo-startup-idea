@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bike, BookOpen, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Navigation, Plus, Printer, Route, Search, Settings, Siren, Wind } from "lucide-react";
+import { Bike, BookOpen, Bug, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Navigation, Plus, Printer, Route, Search, Settings, Siren, Wind } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { MaintenanceOverview } from "@/components/maintenance/MaintenanceOverview";
 import { PushPrompt } from "@/components/onboarding/PushPrompt";
@@ -150,6 +150,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const showPushPrompt = list.length > 0 && !hasPush && (urgentPush || !welcomeGuideVisible({ hasVehicle: true, hasSticker, fresh }));
 
   const guideOpen = welcomeGuideVisible({ hasVehicle: list.length > 0, hasSticker, fresh });
+  // 관리자: 아직 해결하지 않은 오류 수 (034가 없으면 0)
+  const errorCount = profile?.is_admin
+    ? ((await supabase.from("app_errors").select("id", { count: "exact", head: true }).is("resolved_at", null)).count ?? 0)
+    : 0;
   const replaceAlerts = careByVehicle.filter(({ items }) => items.some((i) => partStatus(i.ratio) === "replace"));
 
   return (
@@ -268,6 +272,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <MenuRow href="/admin/areas" icon={MapPin} label="관심 구역 통계" />
             <MenuRow href="/admin/spots" icon={Wind} label="공기주입기·보관소·사고 자료" />
             <MenuRow href="/admin/reports" icon={Flag} label="신고 처리" />
+            <MenuRow href="/admin/errors" icon={Bug} label={`오류 알림${errorCount ? ` (${errorCount})` : ""}`} />
           </Card>
         )}
       </Section>

@@ -5,6 +5,7 @@ import "./globals.css";
 import { site } from "@/config/site";
 import { AppSplash } from "@/components/layout/AppSplash";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { ErrorReporter } from "@/components/layout/ErrorReporter";
 import { Header } from "@/components/layout/Header";
 import { InstallPrompt } from "@/components/layout/InstallPrompt";
 import { NavProgress } from "@/components/layout/NavProgress";
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       {/* 휴대폰: 아래 메뉴 높이만큼 여백 */}
       <body className="min-h-dvh pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-0">
         <AppSplash />
+        <ErrorReporter />
         <Suspense fallback={null}>
           <NavProgress />
         </Suspense>
