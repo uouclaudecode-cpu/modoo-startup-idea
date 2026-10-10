@@ -138,41 +138,37 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-4">
       {mode === "found" && (
-        <Card className="space-y-3 bg-brand-50/60 ring-brand-100">
-          <p className="flex items-center gap-1.5 font-bold text-brand-800">
-            <Zap aria-hidden className="h-4 w-4" />
-            통화나 글쓰기가 곤란하면
-          </p>
-          <Button full size="lg" loading={quick} loadingText="위치 보내는 중..." icon={<MapPin aria-hidden className="h-5 w-5" />} onClick={quickSend} disabled={loading}>
-            위치만 바로 알리기
-          </Button>
-          <p className="text-[12px] leading-relaxed text-ink-muted">
-            누르면 지금 위치를 한 번만 주인에게 보내요. 이름·번호는 보내지 않고, 보낸 뒤 원하면 익명으로 대화할 수 있어요.
-          </p>
-        </Card>
-      )}
-
-      {mode === "found" && (
         <Card className="space-y-4">
           <div>
             <p className="text-sm font-semibold text-ink-soft">
               발견 위치<span className="ml-0.5 text-rose-600">*</span>
             </p>
             <p className="mt-0.5 text-[13px] text-ink-muted">
-              현재 위치를 가져오거나, 아래에 장소를 적어 주세요. 위치는 한 번만 보내고 실시간으로 추적하지 않아요.
+              지금 있는 곳 위치를 가져오거나, 아래에 장소를 적어 주세요. 위치는 한 번만 보내고 실시간으로 추적하지 않아요.
             </p>
           </div>
           {coords ? (
-            <div className="flex items-start gap-3 rounded-xl bg-emerald-50 p-3 text-emerald-800 ring-1 ring-emerald-200">
-              <MapPin aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
-              <div className="text-sm">
-                <p className="font-semibold">현재 위치를 가져왔어요</p>
-                <p className="mt-0.5 text-[13px]">오차 약 {coords.accuracy}m</p>
+            <>
+              <div className="flex items-start gap-3 rounded-xl bg-emerald-50 p-3 text-emerald-800 ring-1 ring-emerald-200">
+                <MapPin aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
+                <div className="text-sm">
+                  <p className="font-semibold">지금 위치를 가져왔어요</p>
+                  <p className="mt-0.5 text-[13px]">오차 약 {coords.accuracy}m</p>
+                </div>
               </div>
-            </div>
+              {/* 통화나 글쓰기가 곤란하면: 위치만 바로 (아래 사진·설명은 건너뛰어요) */}
+              <div className="space-y-1.5 rounded-xl bg-brand-50/60 p-3 ring-1 ring-brand-100">
+                <Button full size="lg" loading={quick} loadingText="보내는 중..." icon={<Zap aria-hidden className="h-5 w-5" />} onClick={quickSend} disabled={loading}>
+                  이대로 바로 보내기
+                </Button>
+                <p className="text-[12px] leading-relaxed text-ink-muted">
+                  통화나 글쓰기가 곤란하면 위치만 바로 보내요. 이름·번호는 보내지 않고, 보낸 뒤 원하면 익명으로 대화할 수 있어요. 사진·설명을 더하려면 아래를 채워 주세요.
+                </p>
+              </div>
+            </>
           ) : (
-            <Button variant="secondary" full loading={locating} loadingText="위치 확인 중..." icon={<Crosshair aria-hidden className="h-4 w-4" />} onClick={locate}>
-              현재 위치 가져오기
+            <Button full size="lg" loading={locating} loadingText="위치 확인 중..." icon={<Crosshair aria-hidden className="h-5 w-5" />} onClick={locate}>
+              📍 지금 위치 가져오기
             </Button>
           )}
           {locationError && <p className="text-sm text-orange-700">{locationError}</p>}
