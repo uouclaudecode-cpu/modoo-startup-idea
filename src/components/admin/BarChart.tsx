@@ -78,7 +78,7 @@ export function BarChart({
       </figcaption>
 
       {data.length === 0 ? (
-        <p className="mt-4 rounded-xl bg-slate-50 py-8 text-center text-sm text-ink-muted">아직 보여줄 기록이 없어요.</p>
+        <p className="mt-4 rounded-xl bg-slate-50 py-8 text-center text-sm text-ink-muted">아직 보여 줄 기록이 없어요.</p>
       ) : (
         <ol className="mt-3 flex gap-0.5 sm:gap-1.5">
           {data.map((d, i) => {

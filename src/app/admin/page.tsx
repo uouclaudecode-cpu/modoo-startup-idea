@@ -342,7 +342,7 @@ function WeeklyCharts({ weekly }: { weekly: WeeklyPoint[] }) {
       <BarChart title="분실 글" data={series("lost_posts")} unit="건" tone="amber" highlightLast />
       <BarChart
         title="회수 완료"
-        description="'찾았어요'로 바꾼 시각 기준으로 셉니다. 다시 '찾는 중'으로 돌리면 빠져요."
+        description="'찾았어요'로 바꾼 시각 기준으로 세요. 다시 '찾는 중'으로 돌리면 빠져요."
         data={series("resolved_posts")}
         unit="건"
         tone="emerald"

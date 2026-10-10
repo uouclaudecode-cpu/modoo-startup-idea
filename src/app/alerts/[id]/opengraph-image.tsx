@@ -13,7 +13,7 @@ export const contentType = "image/png";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** 도난 경보를 카카오톡에 공유할 때 보이는 카드: 사진 + '도난 신고 중' + 특징·장소·사례금 */
+/** 도난 경보를 카카오톡에 공유할 때 보이는 카드: 사진 + '수색 중' + 특징·장소·사례금 */
 export default async function AlertOgImage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   let a: AlertCard | null = null;
@@ -31,7 +31,7 @@ export default async function AlertOgImage({ params }: { params: Promise<{ id: s
       <OgCard
         photo={photo}
         header="B-LOCK 도난 경보"
-        badge={!a ? "경보 없음" : open ? "도난 신고 중" : a.status === "resolved" ? "찾았어요" : "경보 종료"}
+        badge={!a ? "경보 없음" : open ? "수색 중" : a.status === "resolved" ? "찾았어요" : "경보 종료"}
         badgeColor={open ? "#ffffff" : "#1d41cc"}
         badgeBg={open ? "#e11d48" : "#eef4ff"}
         title={a ? vehicleTitle(a.vehicle) : "없는 경보예요"}

@@ -473,7 +473,7 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
         <ul className="space-y-2 text-[15px] leading-relaxed">
           <li>🪖 헬멧을 썼어요</li>
           <li>🧍 혼자 타요 (2명 이상 탑승 금지)</li>
-          <li>🪪 원동기 이상 운전면허가 있어요</li>
+          <li>🪪 원동기장치자전거 면허 이상이 있어요</li>
           <li>🚫 보도(인도)가 아닌 자전거도로·차도 가장자리로 다녀요</li>
         </ul>
         <p className="mt-3 text-[13px] text-ink-muted">개인형 이동장치는 도로교통법에 따라 위 내용을 지켜야 해요. 어기면 범칙금이 있어요.</p>

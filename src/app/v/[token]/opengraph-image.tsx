@@ -29,7 +29,7 @@ export default async function VerifyOgImage({ params }: { params: Promise<{ toke
       <OgCard
         photo={photo}
         header="B-LOCK 안심거래 인증"
-        badge={!d.valid ? (d.reason === "flagged" ? "도난 신고 중 · 거래 주의" : "확인할 수 없는 링크") : clear ? "도난 이력 없음" : "회수된 이력 있음"}
+        badge={!d.valid ? (d.reason === "flagged" ? "수색 중 · 거래 주의" : "확인할 수 없는 링크") : clear ? "도난 이력 없음" : "회수된 이력 있음"}
         badgeColor={d.valid ? (clear ? "#047857" : "#c2410c") : "#be123c"}
         badgeBg={d.valid ? (clear ? "#ecfdf5" : "#fff7ed") : "#fff1f2"}
         title={d.valid ? [d.vehicle.color, d.vehicle.brand, d.vehicle.model].filter(Boolean).join(" ") || typeLabel(d.vehicle.type) : "인증 정보를 확인하세요"}
@@ -37,7 +37,7 @@ export default async function VerifyOgImage({ params }: { params: Promise<{ toke
           d.valid
             ? [
                 `등록 주인 확인 · 보유 ${durationLabel(d.owned_since)}`,
-                `차대번호 ${d.serial_last4 ? "등록" : "미등록"} · 양도 ${d.transfer_count}회 · 정비 기록 ${d.maintenance_count}건`,
+                `차대번호 ${d.serial_last4 ? "등록" : "미등록"} · 주인 바뀜 ${d.transfer_count}회 · 정비 기록 ${d.maintenance_count}건`,
               ]
             : []
         }

@@ -22,5 +22,8 @@ export function pressureTip(type: string, subtype: string | null | undefined) {
   if (type === "kickboard") return "전동킥보드는 보통 40~50psi예요. 타이어 옆면에 적힌 값을 따르세요.";
   const s = BIKE_SUBTYPES.find((x) => x.value === subtype);
   if (!s || !s.psi) return "타이어 옆면에 적힌 권장 공기압(psi)을 따르세요.";
-  return `${s.label}는 보통 ${s.psi}예요. 타이어 옆면에 적힌 값이 가장 정확해요.`;
+  // 받침이 있으면 '은', 없으면 '는' (예: 접이식은, 로드바이크는)
+  const last = s.label.charCodeAt(s.label.length - 1);
+  const eun = last >= 0xac00 && last <= 0xd7a3 && (last - 0xac00) % 28 !== 0 ? "은" : "는";
+  return `${s.label}${eun} 보통 ${s.psi}예요. 타이어 옆면에 적힌 값이 가장 정확해요.`;
 }

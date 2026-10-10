@@ -57,7 +57,7 @@ export function UnfinishedRideCard({ userId }: { userId: string }) {
         </div>
       </div>
       <ButtonLink href="/ride" full icon={<Play aria-hidden className="h-4 w-4" />}>
-        {canResume ? "이어하기" : "저장하러 가기"}
+        {canResume ? "이어서 타기" : "저장하러 가기"}
       </ButtonLink>
     </section>
   );

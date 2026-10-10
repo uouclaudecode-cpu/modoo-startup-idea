@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     subs,
     {
       title: "🔔 B-LOCK 알림이 잘 와요!",
-      body: "이제 발견 제보·댓글·정비 시기를 휴대폰으로 바로 알려드릴게요.",
+      body: "이제 발견 제보·댓글·정비 시기를 휴대폰으로 바로 알려 드릴게요.",
       url: "/dashboard",
       tag: "test",
     },

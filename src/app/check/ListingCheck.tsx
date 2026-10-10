@@ -87,7 +87,7 @@ export function ListingCheck() {
         </div>
         <Textarea
           label="판매 글 주소 또는 내용"
-          placeholder={"예) https://www.daangn.com/kr/buy-sell/...\n또는  삼천리 하운드 블랙 자전거 팝니다"}
+          placeholder={"예) https://www.daangn.com/kr/buy-sell/...\n또는 삼천리 하운드 블랙 자전거 팝니다"}
           rows={3}
           maxLength={4000}
           value={input}

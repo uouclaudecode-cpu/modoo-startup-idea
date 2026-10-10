@@ -35,7 +35,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     <div className="space-y-8 sm:space-y-12">
       {bye === "1" && !user && (
         <p role="status" className="rounded-2xl bg-slate-100 p-4 text-[15px] leading-relaxed text-ink-soft">
-          탈퇴가 끝났어요. 계정과 기록을 모두 지웠어요. 그동안 {site.name}를 이용해 주셔서 고마워요.
+          탈퇴가 끝났어요. 계정과 기록을 모두 지웠어요. 그동안 {site.name}을 이용해 주셔서 고마워요.
         </p>
       )}
       {/* 첫 화면: 무엇을 하는 서비스인지 바로 이해되도록 */}
@@ -117,7 +117,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         <div className="grid grid-cols-2 gap-3">
           <ToolCard href="/check" icon={Search} color="text-brand-600" title="도난 조회" text="중고로 사기 전 번호·판매 글로 확인" />
           <ToolCard href="/scan" icon={ScanLine} color="text-brand-600" title="QR 찍어 제보" text="길에서 본 자전거 QR을 찍어 알려 주기" />
-          <ToolCard href="/community" icon={MessagesSquare} color="text-emerald-600" title="분실 커뮤니티" text="잃어버린 글 보고 댓글로 알려 주기" />
+          <ToolCard href="/community" icon={MessagesSquare} color="text-emerald-600" title="분실 커뮤니티" text="분실 글 보고 댓글로 알려 주기" />
           <ToolCard href="/stats" icon={MapPinned} color="text-rose-600" title="도난 다발 지도" text="어디서 많이 도둑맞을까?" />
         </div>
       </section>

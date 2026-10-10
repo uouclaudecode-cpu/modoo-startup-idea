@@ -370,7 +370,7 @@ function SpotCard({
                 잘 돼요
               </Button>
               <Button variant="secondary" className="h-11 px-2 text-sm" loading={busy === "broken"} disabled={!!busy} onClick={() => rate("broken")}>
-                고장났어요
+                고장 났어요
               </Button>
               <Button variant="secondary" className="h-11 px-2 text-sm" loading={busy === "gone"} disabled={!!busy} onClick={() => rate("gone")}>
                 없어요

@@ -96,7 +96,7 @@ export default async function CertificateVerifyPage({ params }: { params: Promis
           <span className="text-ink-muted">차대번호</span> · {c.serial_last4 ? `끝 4자리 ${c.serial_last4}` : "미등록"}
         </p>
         <p>
-          <span className="text-ink-muted">현재 상태</span> · {STATUS[c.status] ?? c.status} · 양도 {c.transfer_count}회 · 스티커 {c.sticker_attached ? "있음" : "없음"}
+          <span className="text-ink-muted">현재 상태</span> · {STATUS[c.status] ?? c.status} · 주인 바뀜 {c.transfer_count}회 · 스티커 {c.sticker_attached ? "있음" : "없음"}
         </p>
         <p>
           <span className="text-ink-muted">보관된 증거</span> · {ev.length ? ev.map(([k, n]) => `${evidenceLabel(k)} ${n}`).join(", ") : "없음"}

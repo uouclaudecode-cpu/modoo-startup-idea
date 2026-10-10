@@ -150,7 +150,7 @@ export function TransferStart({
       });
       const json = (await res.json().catch(() => ({}))) as { error?: string; transferId?: string; token?: string; expiresAt?: string };
       if (!res.ok || !json.token || !json.transferId || !json.expiresAt) {
-        setError(json.error ?? "양도를 시작하지 못했어요. 잠시 후 다시 시도해 주세요.");
+        setError(json.error ?? "소유권 넘기기를 시작하지 못했어요. 잠시 후 다시 시도해 주세요.");
         return;
       }
       setQr(mode === "qr" ? await QRCode.toDataURL(transferUrl(json.token), { width: 640, margin: 1, errorCorrectionLevel: "M" }) : "");
@@ -164,7 +164,7 @@ export function TransferStart({
       setStage("waiting");
     } catch (err) {
       console.error(err);
-      setError(friendlyError(err, "양도를 시작하지 못했어요. 잠시 후 다시 시도해 주세요."));
+      setError(friendlyError(err, "소유권 넘기기를 시작하지 못했어요. 잠시 후 다시 시도해 주세요."));
     } finally {
       setLoading(false);
     }

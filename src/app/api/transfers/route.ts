@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
   const { data, error } = await supabase.rpc("start_transfer", { p_vehicle: vehicleId, p_mode: mode });
   if (error) {
     console.error(error);
-    const msg = /[가-힣]/.test(error.message) ? error.message : "양도를 시작하지 못했어요. 잠시 후 다시 시도해 주세요.";
+    const msg = /[가-힣]/.test(error.message) ? error.message : "소유권 넘기기를 시작하지 못했어요. 잠시 후 다시 시도해 주세요.";
     return NextResponse.json({ error: msg }, { status: 400 });
   }
   const d = data as { transfer_id: string; token: string; expires_at: string };

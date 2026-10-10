@@ -261,7 +261,7 @@ export function PrintStudio({ vehicleId, vehicleName, sources }: { vehicleId: st
         <Button size="lg" full icon={<Printer aria-hidden className="h-5 w-5" />} onClick={print} disabled={!svg}>
           {total}개 인쇄하기 ({pages.length}장)
         </Button>
-        <p className="text-center text-[13px] text-ink-muted">아래는 A4 미리 보기예요.</p>
+        <p className="text-center text-[13px] text-ink-muted">아래는 A4 미리보기예요.</p>
       </div>
 
       {/* 미리 보기 겸 인쇄 영역 (화면에서는 줄여 보여 주고, 인쇄할 때는 실제 크기) */}
