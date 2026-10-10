@@ -273,7 +273,8 @@ export function Navigator({ initialDest }: { initialDest: Dest | null }) {
       const r = await fetch(`/api/geo/search?q=${encodeURIComponent(q)}&lat=${at.lat.toFixed(4)}&lng=${at.lng.toFixed(4)}`);
       const j = (await r.json()) as { results?: PlaceResult[]; error?: string };
       if (!r.ok || j.error) throw new Error(j.error ?? "검색하지 못했어요.");
-      const list = (j.results ?? []).sort((a, b) => distance(at, a) - distance(at, b));
+      // 서버가 이미 정확도·거리 순으로 정렬해서 보내요
+      const list = j.results ?? [];
       setResults(list);
     } catch (err) {
       setResults(null);
@@ -424,7 +425,10 @@ export function Navigator({ initialDest }: { initialDest: Dest | null }) {
               <button key={i} type="button" onClick={() => choose({ lat: r.lat, lng: r.lng, name: r.name })} className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-slate-50">
                 <MapPin aria-hidden className="mt-0.5 h-5 w-5 flex-none text-ink-faint" />
                 <span className="min-w-0 flex-1">
-                  <span className="block font-semibold">{r.name}</span>
+                  <span className="block font-semibold">
+                    {r.name}
+                    {r.category && <span className="ml-1.5 text-[12px] font-normal text-ink-faint">{r.category}</span>}
+                  </span>
                   <span className="block truncate text-[13px] text-ink-muted">{r.address}</span>
                 </span>
                 {me && <span className="flex-none text-[13px] font-semibold text-ink-muted">{formatMeters(distance(me, r))}</span>}
