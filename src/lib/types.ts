@@ -70,4 +70,7 @@ export type Report = {
   image_path: string | null;
   contact: string | null;
   created_at: string;
+  /** QR '주인에게 알리기'에서 고른 사유 (037) · 같은 사유를 알려 준 사람 수 */
+  reason?: string | null;
+  notice_count?: number;
 };

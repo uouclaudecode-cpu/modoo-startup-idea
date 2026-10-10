@@ -4,11 +4,13 @@
 import { useEffect, useState } from "react";
 import { Ban, Camera, CheckCheck, ChevronDown, Clock, ExternalLink, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Badge, Button, Card, useToast } from "@/components/ui";
+import { cn } from "@/lib/cn";
 import { formatDateTime, friendlyError } from "@/lib/format";
 import type { Report } from "@/lib/types";
 import { MoneyWarning, TrustInfo } from "@/components/alerts/TrustInfo";
 import { createClient } from "@/lib/supabase/client";
 import { OwnerChat } from "./OwnerChat";
+import { noticeInfo } from "@/lib/notices";
 import { hasMoneyRequest, type Trust } from "@/lib/alerts";
 
 /** 주인이 남긴 처리 표시 (확인함·연락함 / 대화 차단). 목록에서 읽어 오지 않았으면 undefined */
@@ -22,6 +24,8 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: ReportRow; 
   const [blockedAt, setBlockedAt] = useState<string | null>(r.chat_blocked_at ?? null);
   const [marking, setMarking] = useState(false);
   const needsAction = r.contact_mode === "chat" || r.contact_mode === "callback";
+  // QR '주인에게 알리기'로 온 알림이면 사유 (037)
+  const notice = noticeInfo(r.reason);
   const handledLabel = r.contact_mode === "callback" ? "연락함" : "확인함";
 
   // MY의 '받은 제보·대화'에서 눌러 들어오면(#r-아이디) 그 제보를 펼쳐요
@@ -72,6 +76,11 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: ReportRow; 
           <Badge tone="warning" icon={<MapPin className="h-3.5 w-3.5" />}>
             발견 제보
           </Badge>
+        ) : notice ? (
+          <Badge tone={notice.urgent ? "danger" : "brand"}>
+            <span aria-hidden>{notice.emoji}</span> {notice.urgent ? "급한 알림" : "QR 알림"}
+            {(r.notice_count ?? 1) > 1 && ` · ${r.notice_count}명`}
+          </Badge>
         ) : (
           <Badge tone="brand" icon={<MessageCircle className="h-3.5 w-3.5" />}>
             연락 요청
@@ -93,6 +102,17 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: ReportRow; 
           </span>
         </span>
       </div>
+
+      {notice && (
+        <div className={cn("rounded-xl p-3", notice.urgent ? "bg-rose-50 text-rose-900" : "bg-brand-50/60")}>
+          <p className="text-[17px] font-bold leading-snug">
+            <span aria-hidden>{notice.emoji}</span> {notice.label}
+          </p>
+          {/* 사유 뒤에 붙인 한마디 */}
+          {r.description.includes(" · ") && <p className="mt-1 text-[15px] leading-relaxed">{r.description.slice(r.description.indexOf(" · ") + 3)}</p>}
+          {(r.notice_count ?? 1) > 1 && <p className="mt-1 text-[13px] text-ink-muted">{r.notice_count}명이 같은 내용을 알려 줬어요.</p>}
+        </div>
+      )}
 
       <ul className="space-y-1.5 text-[15px]">
         {r.kind === "found" && (

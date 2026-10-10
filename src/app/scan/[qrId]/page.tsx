@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { typeEmoji, typeLabel, type PublicVehicle } from "@/lib/types";
 import { BadQrActions } from "./BadQrActions";
 import { NewSticker } from "./NewSticker";
+import { NoticePanel } from "@/components/vehicle/NoticePanel";
 
 export const metadata: Metadata = { title: "QR 확인", robots: { index: false } };
 
@@ -75,6 +76,9 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
   );
 
   const reportHref = `/report/${encodeURIComponent(token)}`;
+  // 사유를 골라 주인에게 알리기 (주인 본인이 찍었을 때는 숨겨요)
+  const vehicleLabel = [v.color, v.brand, typeLabel(v.type)].filter(Boolean).join(" ");
+  const notice = !ownVehicleId && <NoticePanel token={token} vehicleLabel={vehicleLabel} />;
   const facts: [string, string | null][] = [
     ["종류", typeLabel(v.type)],
     ["색상", v.color],
@@ -153,6 +157,7 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
             </ButtonLink>
           )}
         </div>
+        {notice}
         {details}
         {privacy}
       </div>
@@ -172,15 +177,16 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
         </div>
         {v.status === "recovered" && <p className="text-sm text-ink-muted">최근 주인이 되찾은 이동수단이에요.</p>}
       </Card>
-      {privacy}
-      <div className="grid gap-2">
-        <ButtonLink href={`${reportHref}?kind=contact`} size="lg" full icon={<MessageCircle aria-hidden className="h-5 w-5" />}>
-          주인에게 연락하기
+      {notice}
+      <div className="grid grid-cols-2 gap-2">
+        <ButtonLink href={`${reportHref}?kind=contact`} full variant="secondary" icon={<MessageCircle aria-hidden className="h-4 w-4" />}>
+          메시지 쓰기
         </ButtonLink>
-        <ButtonLink href={`${reportHref}?kind=found`} size="lg" full variant="secondary" icon={<MapPinned aria-hidden className="h-5 w-5" />}>
-          발견 제보하기
+        <ButtonLink href={`${reportHref}?kind=found`} full variant="secondary" icon={<MapPinned aria-hidden className="h-4 w-4" />}>
+          발견 제보
         </ButtonLink>
       </div>
+      {privacy}
       {details}
     </div>
   );

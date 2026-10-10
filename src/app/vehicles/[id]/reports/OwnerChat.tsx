@@ -6,6 +6,7 @@ import { MoneyWarning } from "@/components/alerts/TrustInfo";
 import { Button, Modal, Textarea, useToast } from "@/components/ui";
 import { hasMoneyRequest, type Trust } from "@/lib/alerts";
 import { friendlyError, timeAgo } from "@/lib/format";
+import { OWNER_QUICK_REPLIES } from "@/lib/notices";
 import { createClient } from "@/lib/supabase/client";
 
 type Msg = { id: string; sender: "owner" | "finder"; body: string; created_at: string };
@@ -50,17 +51,18 @@ export function OwnerChat({ reportId, createdAt, trust, anonymous, blockedAt, on
     return () => clearInterval(id);
   }, [load, open]);
 
-  async function send(e: React.FormEvent) {
+  async function send(e: React.FormEvent, quick?: string) {
     e.preventDefault();
-    if (!body.trim()) return;
+    const text = (quick ?? body).trim();
+    if (!text) return;
     setSending(true);
-    const { error } = await createClient().rpc("owner_send", { p_report: reportId, p_body: body.trim() });
+    const { error } = await createClient().rpc("owner_send", { p_report: reportId, p_body: text });
     setSending(false);
     if (error) {
       console.error(error);
       return toast.error(friendlyError(error, "보내지 못했어요."));
     }
-    setBody("");
+    if (!quick) setBody("");
     load();
   }
 
@@ -117,6 +119,20 @@ export function OwnerChat({ reportId, createdAt, trust, anonymous, blockedAt, on
         </div>
       ) : open ? (
         <>
+          {/* 빠른 답장: 누르면 바로 보내요 */}
+          <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5">
+            {OWNER_QUICK_REPLIES.map((q) => (
+              <button
+                key={q}
+                type="button"
+                disabled={sending}
+                onClick={(e) => send(e, q)}
+                className="h-10 flex-none rounded-full bg-brand-50 px-3.5 text-[13px] font-semibold text-brand-700 hover:bg-brand-100 disabled:opacity-60"
+              >
+                {q}
+              </button>
+            ))}
+          </div>
           <form onSubmit={send} className="space-y-2">
             <Textarea label="답장" placeholder="예) 정말 고마워요! 지금 그쪽으로 갈게요." value={body} maxLength={500} rows={2} onChange={(e) => setBody(e.target.value)} />
             <Button type="submit" full loading={sending} loadingText="보내는 중..." icon={<Send aria-hidden className="h-4 w-4" />} disabled={!body.trim()}>
