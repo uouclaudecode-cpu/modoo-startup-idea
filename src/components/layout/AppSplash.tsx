@@ -6,8 +6,8 @@ import { LockLogo } from "@/lib/logo";
  *
  * 안드로이드는 앱을 켜자마자 휴대폰이 직접 그리는 시작 화면(흰 바탕 + 앱 아이콘만)을 먼저 보여 줘요.
  * 그 화면에서 이 화면으로 넘어갈 때 로고가 바뀌어 보이지 않도록, 로고를 휴대폰 시작 화면과 같은
- * 크기·위치(화면 정가운데, 아이콘 240dp 중 자물쇠 70% ≈ 168px)에 두고 아래 글만 스르르 나타나게 해요.
- * (아이콘 비율은 src/lib/appIcon.tsx 의 maskable 0.7과 맞춰요)
+ * 크기·위치(화면 정가운데, 아이콘 240dp 중 로고 68% ≈ 163px)에 두고 아래 글만 스르르 나타나게 해요.
+ * (아이콘 비율은 src/lib/appIcon.tsx 의 maskable 0.68과 맞춰요)
  *
  * 자바스크립트를 기다리지 않도록 서버에서 바로 그리고, 설치한 앱(standalone)일 때만 보여 줘요.
  * 한 번 켠 뒤(같은 실행 중)에는 새로고침해도 다시 나오지 않아요. 약 1.3초 뒤 스르르 사라져요.
@@ -27,7 +27,7 @@ export function AppSplash() {
       >
         {/* 화면 정가운데 (휴대폰 시작 화면의 아이콘 자리) */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <LockLogo size={168} />
+          <LockLogo size={163} />
         </div>
         <div
           id="app-splash-text"

@@ -6,7 +6,7 @@ import { LockLogo } from "./logo";
  * 아이콘 그림을 바꾸면 올려 주세요. 이 파일들은 1년 동안 저장(immutable)돼서, 주소가 바뀌어야 휴대폰이 새 그림을 받아요.
  * public/sw.js 의 ICON도 같이 바꿔 주세요.
  */
-export const ICON_V = "v3";
+export const ICON_V = "v4";
 
 /**
  * 앱 아이콘 그림 (흰 바탕 + 파란 자물쇠). 이미지 파일 없이 코드로 그려서 PNG로 내보냅니다.
@@ -14,7 +14,7 @@ export const ICON_V = "v3";
  */
 export function appIconResponse(size: number, { maskable = false, rounded = true } = {}) {
   // 자물쇠 높이: 일반 아이콘은 꽉 차게, maskable은 안드로이드가 원·둥근 사각형으로 잘라도 남는 안전 영역(가운데 80% 원) 안에
-  const glyph = Math.round(size * (maskable ? 0.7 : 0.84));
+  const glyph = Math.round(size * (maskable ? 0.68 : 0.84));
   return new ImageResponse(
     (
       <div

@@ -27,14 +27,14 @@ export function OgCard({
           // eslint-disable-next-line @next/next/no-img-element -- 이미지 생성기 안에서는 기본 img만 쓸 수 있어요
           <img src={photo} alt="" width={520} height={630} style={{ width: 520, height: 630, objectFit: "cover" }} />
         ) : (
-          <BrandLogo size={180} color="#94a3b8" hole="#e2e8f0" />
+          <BrandLogo size={180} color="#94a3b8" />
         )}
       </div>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "56px 56px 48px" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 28, color: "#2552e8" }}>
             <div style={{ display: "flex", width: 48, height: 48, borderRadius: 12, background: "#2552e8", alignItems: "center", justifyContent: "center" }}>
-              <BrandLogo size={32} color="#ffffff" hole="#2552e8" />
+              <BrandLogo size={32} color="#ffffff" />
             </div>
             {header}
           </div>
