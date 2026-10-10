@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bike, BookOpen, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Plus, Printer, Route, Search, Settings, Siren } from "lucide-react";
+import { Bike, BookOpen, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Navigation, Plus, Printer, Route, Search, Settings, Siren, Wind } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { MaintenanceOverview } from "@/components/maintenance/MaintenanceOverview";
 import { PushPrompt } from "@/components/onboarding/PushPrompt";
@@ -15,6 +15,7 @@ import { PostCard, type PostListItem } from "@/components/community/PostCard";
 import { POST_LIST_COLUMNS } from "@/lib/community";
 import { createClient } from "@/lib/supabase/server";
 import type { Vehicle } from "@/lib/types";
+import { ProfileCard } from "@/components/profile/ProfileCard";
 import { UnfinishedRideCard } from "./UnfinishedRideCard";
 
 export const metadata: Metadata = { title: "내 이동수단" };
@@ -40,7 +41,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   if (!user) redirect("/login?next=/dashboard");
 
   const [{ data: profile }, { data: vehicles, error }, { data: myPosts }, { data: allParts, error: partsErr }, { count: pushCount }] = await Promise.all([
-    supabase.from("profiles").select("nickname, is_admin").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("vehicles").select("*").is("deleted_at", null).order("created_at", { ascending: false }),
     supabase
       .from("lost_posts")
@@ -155,17 +156,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     <div className="space-y-8">
       {/* ① 내 정보 */}
       <div className="space-y-3">
-        <Card className="flex items-center gap-4 p-4">
-          <span aria-hidden className="grid h-14 w-14 flex-none place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-xl font-extrabold text-white">
-            {Array.from(String(nickname))[0]}
-          </span>
-          <div className="min-w-0 flex-1">
-            <h1 className="line-clamp-1 break-all text-xl font-extrabold tracking-tight">{nickname}님</h1>
-            <p className="mt-0.5 flex items-center gap-1.5 text-sm text-ink-muted">
-              <Bike aria-hidden className="h-4 w-4" />내 이동수단 {list.length}개
-            </p>
-          </div>
-        </Card>
+        <h1 className="sr-only">MY</h1>
+        <ProfileCard userId={user.id} nickname={nickname} avatarPath={(profile?.avatar_path as string | null | undefined) ?? null} vehicleCount={list.length} />
 
         {/* ② 지금 확인할 것: 진행 중인 경보 · 받은 제보 · 알림 · 끝내지 않은 라이딩 */}
         {(myAlerts ?? []).map((a) => (
@@ -260,9 +252,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         <Card className="divide-y divide-line/70 p-0">
           <MenuRow href="/alerts#mine" icon={History} label="내 경보·제보 기록" />
           <MenuRow href="/rides" icon={Route} label="라이딩 기록·통계" />
+          <MenuRow href="/navigate" icon={Navigation} label="자전거 길 안내" />
+          <MenuRow href="/spots" icon={Wind} label="공기주입기·자전거 보관소" />
           <MenuRow href="/check" icon={Search} label="도난 조회 · 중고 매물 확인" />
           <MenuRow href="/get-sticker" icon={MapPin} label="스티커 받는 곳" />
-          <MenuRow href="/settings" icon={Settings} label="알림·계정 설정" />
+          <MenuRow href="/settings" icon={Settings} label="프로필·알림·계정 설정" />
           <MenuRow href="/?intro=1" icon={BookOpen} label="앱 소개 다시 보기" />
           <MenuRow href="/contact" icon={MessageCircleQuestion} label="문의하기" />
         </Card>
@@ -272,6 +266,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <MenuRow href="/admin" icon={ChartColumn} label="운영 통계" />
             <MenuRow href="/admin/stickers" icon={Printer} label="스티커 관리 · 받는 곳" />
             <MenuRow href="/admin/areas" icon={MapPin} label="관심 구역 통계" />
+            <MenuRow href="/admin/spots" icon={Wind} label="공기주입기·보관소·사고 자료" />
             <MenuRow href="/admin/reports" icon={Flag} label="신고 처리" />
           </Card>
         )}

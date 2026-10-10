@@ -11,6 +11,7 @@ export type NMap = {
   panTo(p: NLatLng): void;
   setZoom(z: number): void;
   getZoom(): number;
+  getCenter(): NLatLng;
   fitBounds(b: NLatLngBounds, margin?: { top: number; right: number; bottom: number; left: number }): void;
   destroy(): void;
 };
@@ -28,6 +29,7 @@ export type NaverMaps = {
   LatLngBounds: new (sw: NLatLng, ne: NLatLng) => NLatLngBounds;
   Polyline: new (opts: Record<string, unknown>) => NPolyline;
   Marker: new (opts: Record<string, unknown>) => NMarker;
+  Circle: new (opts: Record<string, unknown>) => NLayer;
   InfoWindow: new (opts: Record<string, unknown>) => NInfoWindow;
   Point: new (x: number, y: number) => unknown;
   BicycleLayer?: new () => NLayer;

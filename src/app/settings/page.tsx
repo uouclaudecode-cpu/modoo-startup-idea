@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ProfileForm } from "@/components/profile/ProfileForm";
 import { LogoutButton } from "@/components/layout/LogoutButton";
 import { PushSettings } from "@/components/push/PushSettings";
 import { AlertSettings } from "@/components/settings/AlertSettings";
@@ -9,7 +10,6 @@ import { BlockedUsers } from "@/components/settings/BlockedUsers";
 import { Card } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { DeleteAccount } from "./DeleteAccount";
-import { NicknameForm } from "./NicknameForm";
 import { PasswordForm } from "./PasswordForm";
 import { SettingsSection } from "./SettingsSection";
 
@@ -35,8 +35,12 @@ export default async function SettingsPage() {
         <p className="mt-1 text-sm text-ink-muted">{user.email}</p>
       </div>
 
-      <SettingsSection title="프로필" description="닉네임은 인사말과 커뮤니티 글·댓글에 보여요.">
-        <NicknameForm initial={profile?.nickname ?? ""} />
+      <SettingsSection title="프로필" description="사진과 닉네임을 바꿀 수 있어요. 닉네임은 커뮤니티 글·댓글에도 보여요.">
+        <ProfileForm
+          userId={user.id}
+          nickname={profile?.nickname || user.email?.split("@")[0] || ""}
+          avatarPath={(profile?.avatar_path as string | null | undefined) ?? null}
+        />
       </SettingsSection>
 
       {/* 알림 카드는 자체 제목·설명을 가진 카드라 그대로 넣어요 */}

@@ -57,3 +57,25 @@ export async function uploadPhoto(supabase: SupabaseClient,bucket: string, userI
   }
   return path;
 }
+
+/** 프로필 사진: 가운데를 정사각형으로 잘라 512px JPEG로 줄여요. */
+export async function prepareAvatar(file: File): Promise<Blob> {
+  if (!file.type.startsWith("image/")) throw new Error("사진 파일만 올릴 수 있어요.");
+  if (file.size > 20 * 1024 * 1024) throw new Error("사진이 너무 커요. 20MB 이하 사진을 골라 주세요.");
+  const bitmap = await createImageBitmap(file).catch(() => null);
+  if (!bitmap) throw new Error("이 형식의 사진은 올릴 수 없어요. JPG·PNG 사진을 골라 주세요.");
+  const side = Math.min(bitmap.width, bitmap.height);
+  const out = Math.min(512, side);
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = out;
+  canvas.getContext("2d")!.drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, out, out);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+  if (!blob) throw new Error("사진을 처리하지 못했어요. 다른 사진을 골라 주세요.");
+  return blob;
+}
+
+/** 프로필 사진 주소 (vehicle-images 버킷의 내 폴더) */
+export function avatarUrl(path: string | null | undefined) {
+  return publicImageUrl("vehicle-images", path);
+}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BatteryMedium, ChevronRight, History, MapPin, Pause, Play, Satellite, ShieldCheck, Square, SunMedium, Trash2 } from "lucide-react";
+import { BatteryMedium, ChevronRight, History, MapPin, Navigation, Pause, Play, Satellite, ShieldCheck, Square, SunMedium, Trash2, Wind } from "lucide-react";
 import { Button, Card, Modal, useToast } from "@/components/ui";
 import { RideMap } from "@/components/ride/RideMap";
 import { cn } from "@/lib/cn";
@@ -246,6 +246,20 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
         <p className="text-sm text-ink-muted">
           기록 중인 이동수단: <span aria-hidden>{vehicle ? typeEmoji(vehicle.type) : ""}</span> <b className="text-ink">{vehicle?.name ?? "이동수단"}</b>
         </p>
+      )}
+
+      {/* 쉬는 중: 길 안내 · 공기주입기 바로가기 */}
+      {t.status === "idle" && (
+        <div className="grid grid-cols-2 gap-2">
+          <Link href="/navigate" className="flex h-12 items-center justify-center gap-1.5 rounded-xl bg-white text-[15px] font-semibold ring-1 ring-inset ring-line hover:bg-slate-50">
+            <Navigation aria-hidden className="h-[18px] w-[18px] text-brand-600" />
+            길 안내
+          </Link>
+          <Link href="/spots" className="flex h-12 items-center justify-center gap-1.5 rounded-xl bg-white text-[15px] font-semibold ring-1 ring-inset ring-line hover:bg-slate-50">
+            <Wind aria-hidden className="h-[18px] w-[18px] text-emerald-600" />
+            공기주입기
+          </Link>
+        </div>
       )}
 
       <div className="relative">
