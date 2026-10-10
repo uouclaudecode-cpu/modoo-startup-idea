@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="robots" content="noindex">
+<title>B-LOCK</title>
+<!-- 글꼴은 화면을 그리는 걸 막지 않게 나중에 불러요 (휴대폰 시작 화면이 오래 남지 않게) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+<!--
+  설치한 앱을 켤 때 가장 먼저 여는 가벼운 시작 화면 (manifest의 start_url).
+  휴대폰은 앱 화면이 처음 그려질 때까지 자기 시작 화면(아이콘만)을 띄워 두는데,
+  이 파일은 서비스 워커에 저장돼 있어서 바로 그려져요 → 휴대폰 시작 화면은 아주 잠깐만 보여요.
+  바로 홈(/?source=app)으로 넘어가고, 홈이 준비될 때까지는 홈의 AppSplash가 같은 모양으로 이어서 보여 줘요.
+  로고·글자 위치는 src/components/layout/AppSplash.tsx 와 똑같이 맞춰요. 로고는 src/lib/logo.tsx 와 같은 그림이에요.
+-->
+<style>
+  html, body { margin: 0; height: 100%; background: #fff; }
+  body { font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+  .logo { position: fixed; left: 50%; top: calc(50% + 7px); transform: translate(-50%, -50%); }
+  .text { position: fixed; left: 0; right: 0; bottom: 0; padding: 0 2rem max(2.75rem, calc(env(safe-area-inset-bottom) + 1.5rem)); text-align: center; }
+  .name { margin: 0; font-size: 24px; line-height: 32px; font-weight: 800; letter-spacing: -0.025em; color: #0f172a; }
+  .tag { margin: 6px 0 0; font-size: 15px; font-weight: 600; color: #334155; }
+  .sub { margin: 4px 0 0; font-size: 13px; color: #64748b; }
+</style>
+</head>
+<body>
+  <div class="logo" aria-hidden="true">
+    <svg width="135" height="187" viewBox="53 11.5 98 136" fill="none">
+      <path d="M74.8 56V45A27.1 27.1 0 0 1 129 45V56" stroke="#2742a8" stroke-width="11.2"/>
+      <path fill="#2742a8" fill-rule="evenodd" d="M54 138V68Q54 60 62 60H127A20 20 0 0 1 137 97.3V100.7A24 24 0 0 1 126 146H62Q54 146 54 138ZM87.75 76H113.25A9.75 9.75 0 0 1 113.25 95.5H87.75A9.75 9.75 0 0 1 87.75 76ZM88.75 109H114.75A10.75 10.75 0 0 1 114.75 130.5H88.75A10.75 10.75 0 0 1 88.75 109Z"/>
+    </svg>
+  </div>
+  <div class="text">
+    <p class="name">B-LOCK</p>
+    <p class="tag">자전거·개인 킥보드 디지털 신분증</p>
+    <p class="sub">잃어버려도 다시 찾는 안심 라이딩</p>
+  </div>
+  <script>
+    // 시작 화면을 띄운 시각: 홈의 AppSplash가 이어서 '최소 2.5초'를 여기서부터 세요
+    try { sessionStorage.setItem("blk-splash-at", String(Date.now())); sessionStorage.removeItem("blk-splash"); } catch (e) {}
+    location.replace("/?source=app");
+  </script>
+</body>
+</html>

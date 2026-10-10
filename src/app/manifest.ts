@@ -10,7 +10,8 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: site.name,
     description: site.description,
     lang: "ko",
-    start_url: "/?source=app",
+    // 가벼운 시작 화면(public/start.html)을 먼저 열고 홈으로 넘어가요 → 휴대폰 시작 화면이 아주 잠깐만 보여요
+    start_url: "/start.html",
     scope: "/",
     display: "standalone",
     orientation: "portrait",

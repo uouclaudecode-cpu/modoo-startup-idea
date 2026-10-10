@@ -17,13 +17,16 @@ import { LockLogo } from "@/lib/logo";
 const SCRIPT = `(function(){
 var el=document.getElementById('app-splash');if(!el)return;
 var standalone=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
-var seen=false;try{seen=sessionStorage.getItem('blk-splash')==='1';sessionStorage.setItem('blk-splash','1')}catch(e){}
+var seen=false,from=0;try{seen=sessionStorage.getItem('blk-splash')==='1';sessionStorage.setItem('blk-splash','1');from=Number(sessionStorage.getItem('blk-splash-at'))||0;sessionStorage.removeItem('blk-splash-at')}catch(e){}
 if(!standalone||seen)return;
 el.style.display='block';
 var meta=document.querySelector('meta[name="theme-color"]');var old=meta&&meta.getAttribute('content');
 if(meta)meta.setAttribute('content','#ffffff');
-requestAnimationFrame(function(){var t=document.getElementById('app-splash-text');if(t){t.style.opacity='1';t.style.transform='translateY(0)'}});
-var shownAt=Date.now(),done=false;
+var t=document.getElementById('app-splash-text');
+/* 시작 화면(public/start.html)에서 넘어왔으면 글이 이미 보이던 중이라 그대로, 아니면 스르르 */
+var fromStart=from&&Date.now()-from<15000;
+if(t){if(fromStart){t.style.transition='none';t.style.opacity='1';t.style.transform='translateY(0)'}else requestAnimationFrame(function(){t.style.opacity='1';t.style.transform='translateY(0)'})}
+var shownAt=fromStart?from:Date.now(),done=false;
 function hide(){if(done)return;done=true;var wait=Math.max(0,2500-(Date.now()-shownAt));setTimeout(function(){el.style.opacity='0';if(meta&&old)meta.setAttribute('content',old);setTimeout(function(){el.style.display='none'},450)},wait)}
 if(document.readyState==='complete')hide();else window.addEventListener('load',hide);
 setTimeout(hide,6000);

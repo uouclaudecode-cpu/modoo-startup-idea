@@ -5,15 +5,19 @@
 // 오프라인 화면은 스타일이 파일 안에 다 들어 있는 public/offline.html이에요.
 // (예전처럼 /offline 화면을 저장하면 그때의 로그인 상태·배포 CSS에 묶여서, 몇 주 뒤엔 깨져 보일 수 있었어요)
 // offline.html을 고치면 아래 CACHE 이름을 올려 주세요 → 이 파일이 바뀌어 설치된 앱이 새로 받아요.
-const CACHE = "b-lock-v3";
+const CACHE = "b-lock-v4";
 const OFFLINE_URL = "/offline.html";
+// 설치한 앱의 시작 화면 (manifest start_url). 저장해 두고 바로 보여 줘서 휴대폰 시작 화면이 오래 남지 않게 해요.
+const START_URL = "/start.html";
 const ICON = "/icons/icon-192-v4.png"; // src/app/icons/[file]/route.tsx 의 ICON_V와 맞춰요
 // 인터넷이 될 때 가끔(6시간에 한 번) 오프라인 화면을 새로 받아 둬요.
 // 서비스 워커는 쉬면 금방 꺼져서 변수 값이 사라지므로, 저장된 사본의 Date(받은 시각)로 판단해요.
 const REFRESH_MS = 6 * 60 * 60 * 1000;
 
 function cacheOffline(mode) {
-  return caches.open(CACHE).then((cache) => cache.add(new Request(OFFLINE_URL, { cache: mode })));
+  return caches
+    .open(CACHE)
+    .then((cache) => Promise.all([OFFLINE_URL, START_URL].map((u) => cache.add(new Request(u, { cache: mode })))));
 }
 
 function refreshOffline() {
@@ -46,6 +50,24 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   // 화면 이동만 다룹니다. 인터넷이 되면 항상 서버에서 새로 받아요.
   if (event.request.mode !== "navigate") return;
+  // 시작 화면만은 저장해 둔 것을 바로 보여 주고, 뒤에서 새로 받아 둬요
+  if (new URL(event.request.url).pathname === START_URL) {
+    event.respondWith(
+      caches.match(START_URL).then((cached) => {
+        const fresh = fetch(event.request)
+          .then((res) => {
+            if (res.ok) {
+              const copy = res.clone(); // 바로 복사해 둬야 화면에 쓰는 원본과 겹치지 않아요
+              caches.open(CACHE).then((c) => c.put(START_URL, copy));
+            }
+            return res;
+          })
+          .catch(() => cached || caches.match(OFFLINE_URL));
+        return cached || fresh;
+      }),
+    );
+    return;
+  }
   event.respondWith(
     fetch(event.request)
       .then((res) => {
