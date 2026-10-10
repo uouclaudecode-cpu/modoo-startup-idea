@@ -30,11 +30,12 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
   const COLS = "id, vehicle_id, reporter_id, contact_mode, kind, latitude, longitude, location_text, description, image_path, contact, created_at";
   const [first, { data: lookupRows, error: lookupErr }, { data: muteRow }] = await Promise.all([
     // 사유·알려 준 사람 수(037)까지. 아직 설정 전이면 예전 열만 다시 읽어요
-    supabase.from("reports").select(`${COLS}, reason, notice_count`).eq("vehicle_id", vehicle.id).order("created_at", { ascending: false }),
+    supabase.from("reports").select(`${COLS}, reason, notice_count, thanked_at`).eq("vehicle_id", vehicle.id).order("created_at", { ascending: false }),
     // 구매 전 도난 조회 기록 (시간·방법만, 주인만)
     supabase.rpc("owner_vehicle_lookups", { p_vehicle: vehicle.id }),
     supabase.from("vehicles").select("notice_muted_until").eq("id", vehicle.id).maybeSingle(),
   ]);
+  // 아직 설정 전(037·039)이면 예전 열만 다시 읽어요
   const { data, error } = first.error ? await supabase.from("reports").select(COLS).eq("vehicle_id", vehicle.id).order("created_at", { ascending: false }) : first;
   const mutedUntil = (muteRow as { notice_muted_until?: string | null } | null)?.notice_muted_until ?? null;
   if (lookupErr) console.error(lookupErr);

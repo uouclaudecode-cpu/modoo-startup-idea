@@ -14,7 +14,7 @@ import { noticeInfo } from "@/lib/notices";
 import { hasMoneyRequest, type Trust } from "@/lib/alerts";
 
 /** 주인이 남긴 처리 표시 (확인함·연락함 / 대화 차단). 목록에서 읽어 오지 않았으면 undefined */
-type ReportRow = Report & { handled_at?: string | null; chat_blocked_at?: string | null };
+type ReportRow = Report & { handled_at?: string | null; chat_blocked_at?: string | null; thanked_at?: string | null };
 
 export function ReportCard({ report: r, imageUrl, trust }: { report: ReportRow; imageUrl: string | null; trust: Trust | null }) {
   const toast = useToast();
@@ -23,6 +23,9 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: ReportRow; 
   const [handledAt, setHandledAt] = useState<string | null>(r.handled_at ?? null);
   const [blockedAt, setBlockedAt] = useState<string | null>(r.chat_blocked_at ?? null);
   const [marking, setMarking] = useState(false);
+  // '도움이 됐어요' (039): 보낸 사람의 활동 기록(칭호)에 '고맙다는 인정'으로 쌓여요
+  const [thankedAt, setThankedAt] = useState<string | null>(r.thanked_at ?? null);
+  const [thanking, setThanking] = useState(false);
   const needsAction = r.contact_mode === "chat" || r.contact_mode === "callback";
   // QR '주인에게 알리기'로 온 알림이면 사유 (037)
   const notice = noticeInfo(r.reason);
@@ -51,6 +54,15 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: ReportRow; 
       cancelled = true;
     };
   }, [needsAction, r.id, r.handled_at]);
+
+  async function thank(next: boolean) {
+    setThanking(true);
+    const { data, error } = await createClient().rpc("thank_report", { p_report: r.id, p_thanked: next });
+    setThanking(false);
+    if (error) return toast.error(friendlyError(error, "표시하지 못했어요."));
+    setThankedAt((data as string | null) ?? null);
+    toast.success(next ? "고맙다는 마음을 전했어요. 💛" : "표시를 풀었어요.");
+  }
 
   async function markHandled(next: boolean) {
     setMarking(true);
@@ -205,6 +217,20 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: ReportRow; 
             </a>
           )}
         </div>
+      )}
+
+      {/* 도움이 됐다면: 보낸 사람(로그인한 경우)에게 알림이 가고, 그 사람의 활동 기록에 쌓여요 */}
+      {thankedAt ? (
+        <div className="flex items-center justify-between gap-2 rounded-xl bg-amber-50 px-3 py-2.5 text-[13px] font-semibold text-amber-900 ring-1 ring-amber-200">
+          <span>💛 고맙다는 마음을 전했어요</span>
+          <button type="button" onClick={() => thank(false)} disabled={thanking} className="-my-2 py-2 text-ink-muted underline-offset-2 hover:underline disabled:opacity-60">
+            취소
+          </button>
+        </div>
+      ) : (
+        <Button variant="secondary" full loading={thanking} loadingText="전하는 중..." onClick={() => thank(true)} className="bg-amber-50 text-amber-900 ring-amber-200 hover:bg-amber-100">
+          💛 도움이 됐어요
+        </Button>
       )}
 
       <Button variant="secondary" full onClick={() => setOpen(!open)} aria-expanded={open}>

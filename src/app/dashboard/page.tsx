@@ -24,7 +24,9 @@ import { StickerActions } from "@/components/vehicle/StickerActions";
 import { Card, ErrorState, StatusBadge } from "@/components/ui";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
+import { ActivityCard } from "@/components/profile/ActivityCard";
 import { ProfileCard } from "@/components/profile/ProfileCard";
+import type { Activity } from "@/lib/activity";
 import { POST_LIST_COLUMNS } from "@/lib/community";
 import { vehicleImageUrl } from "@/lib/images";
 import { createClient } from "@/lib/supabase/server";
@@ -35,7 +37,7 @@ export const metadata: Metadata = { title: "MY" };
 /**
  * MY: 내 정보와 더 많은 기능 (설정은 맨 위 카드의 ⚙️ 한 곳)
  * 매일 확인하는 것(내 이동수단 상태·받은 제보·시작 안내·잃어버렸어요)은 홈에 있어요.
- * 여기에는 프로필 → 내 이동수단 관리 → QR 스티커 → 내 분실 글 → 메뉴 → 운영자 순서로 둬요.
+ * 여기에는 프로필 → 나의 활동(칭호) → 내 이동수단 관리 → QR 스티커 → 내 분실 글 → 메뉴 → 운영자 순서로 둬요.
  */
 export default async function MyPage({ searchParams }: { searchParams: Promise<{ welcome?: string }> }) {
   const { welcome } = await searchParams;
@@ -47,7 +49,7 @@ export default async function MyPage({ searchParams }: { searchParams: Promise<{
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/dashboard");
 
-  const [{ data: profile }, { data: vehicles, error }, { data: myPosts }] = await Promise.all([
+  const [{ data: profile }, { data: vehicles, error }, { data: myPosts }, { data: activity, error: actErr }] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("vehicles").select("*").is("deleted_at", null).order("created_at", { ascending: false }),
     supabase
@@ -57,7 +59,10 @@ export default async function MyPage({ searchParams }: { searchParams: Promise<{
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(5),
+    // 나의 활동 (039가 아직 없으면 카드만 빠져요)
+    supabase.rpc("my_activity"),
   ]);
+  if (actErr) console.error(actErr);
   if (error) {
     console.error(error);
     return <ErrorState title="정보를 불러오지 못했어요" description="인터넷 연결을 확인하고 새로고침해 주세요." />;
@@ -75,6 +80,8 @@ export default async function MyPage({ searchParams }: { searchParams: Promise<{
       <div className="space-y-3">
         <h1 className="sr-only">MY</h1>
         <ProfileCard userId={user.id} nickname={nickname} avatarPath={(profile?.avatar_path as string | null | undefined) ?? null} vehicleCount={list.length} />
+        {/* 나의 B-LOCK 활동 (칭호·도와준 횟수 등) */}
+        {activity && <ActivityCard a={activity as Activity} />}
       </div>
 
       {/* ② 내 이동수단 관리 (상태·잃어버렸어요는 홈 카드에서) */}
