@@ -366,7 +366,7 @@ begin
   end if;
   return v_n;
 end;
-$;
+$$;
 revoke execute on function public.import_bike_hazards(int, jsonb, boolean) from public, anon, authenticated;
 grant execute on function public.import_bike_hazards(int, jsonb, boolean) to authenticated;
 
