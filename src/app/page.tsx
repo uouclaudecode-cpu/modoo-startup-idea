@@ -62,14 +62,15 @@ const QUICK_NO_VEHICLE = [
 const QUICK = [
   { href: "/ride", label: "라이딩 시작", icon: Route, color: "text-emerald-600", bg: "bg-emerald-50" },
   { href: "/navigate", label: "길 안내", icon: Navigation, color: "text-brand-600", bg: "bg-brand-50" },
-  { href: "/maintenance", label: "소모품·정비", icon: Wrench, color: "text-amber-600", bg: "bg-amber-50" },
   { href: "/spots", label: "보관소·공기주입기", icon: Wind, color: "text-sky-600", bg: "bg-sky-50" },
+  // 정비는 내 이동수단 카드 안에 있어서, 여기엔 가끔 쓰는 도난 조회를 둬요
+  { href: "/check", label: "도난 조회", icon: Search, color: "text-rose-600", bg: "bg-rose-50" },
 ];
 
 /**
  * 홈
- * - 로그인: 시작 안내(처음) → 진행 중인 경보·답장 기다림 → 내 이동수단 카드(잃어버렸어요·QR·제보·정비) → 바로가기 → 근처 도난 경보 → 지금 찾고 있어요 → 도난 예방 도구
- * - 처음 온 사람: 소개 → 3단계 → 라이딩도 한 앱에서 → 근처 도난 경보 → 지금 찾고 있어요 → 도난 예방 도구 → 안심 문구
+ * - 로그인: 지금 확인할 것(시작 안내·경보·답장 기다림·이어 타기, 있을 때만) → 내 이동수단 카드 → 바로가기 4 → 우리 동네 소식
+ * - 처음 온 사람: 소개 → 3단계 → 라이딩도 한 앱에서 → 우리 동네 소식 → 도난 예방 도구 → 안심 문구
  */
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ bye?: string; welcome?: string }> }) {
   const { bye, welcome } = await searchParams;
@@ -259,29 +260,29 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </section>
       )}
 
-      {/* ④ 근처 도난 경보 */}
-      <Link href="/alerts" className="flex items-center gap-3 rounded-2xl bg-rose-50 p-4 ring-1 ring-rose-100 transition-colors hover:bg-rose-100/70">
-        <Siren aria-hidden className="h-6 w-6 flex-none text-rose-600" />
-        <span className="min-w-0 flex-1">
-          <span className="block font-bold text-rose-800">근처 도난 경보</span>
-          <span className="block text-[13px] text-rose-700/80">방금 도둑맞은 자전거·킥보드를 같이 찾아 주세요</span>
-        </span>
-        <ChevronRight aria-hidden className="h-5 w-5 flex-none text-rose-400" />
-      </Link>
-
-      {/* ⑤ 지금 찾고 있어요 (분실 커뮤니티) */}
-      <section>
-        <div className="flex items-end justify-between gap-3">
+      {/* ④ 우리 동네 소식: 근처 도난 경보 + 지금 찾고 있는 분실 글 (같은 이야기라 한 묶음) */}
+      <section aria-labelledby="town-title" className="space-y-3">
+        <div className="flex items-end justify-between gap-3 px-1">
           <div>
-            <h2 className="text-xl font-bold tracking-tight">지금 찾고 있어요</h2>
-            <p className="mt-1 text-sm text-ink-muted">비슷한 자전거·킥보드를 봤다면 댓글로 알려 주세요.</p>
+            <h2 id="town-title" className="text-xl font-bold tracking-tight">
+              우리 동네 소식
+            </h2>
+            <p className="mt-1 text-sm text-ink-muted">근처에서 찾고 있는 자전거·킥보드예요. 봤다면 알려 주세요.</p>
           </div>
           <Link href="/community" className="flex flex-none items-center text-sm font-semibold text-brand-700 hover:underline">
             전체 보기 <ChevronRight aria-hidden className="h-4 w-4" />
           </Link>
         </div>
+        <Link href="/alerts" className="flex items-center gap-3 rounded-2xl bg-rose-50 px-4 py-3 ring-1 ring-rose-100 transition-colors hover:bg-rose-100/70">
+          <Siren aria-hidden className="h-5 w-5 flex-none text-rose-600" />
+          <span className="min-w-0 flex-1">
+            <span className="block font-bold text-rose-800">근처 도난 경보</span>
+            <span className="block text-[13px] text-rose-700/80">방금 도둑맞은 자전거·킥보드를 같이 찾아 주세요</span>
+          </span>
+          <ChevronRight aria-hidden className="h-5 w-5 flex-none text-rose-400" />
+        </Link>
         {posts === null ? (
-          <p role="alert" className="mt-4 rounded-2xl bg-rose-50/60 p-4 text-center text-[15px] text-ink-soft ring-1 ring-rose-200">
+          <p role="alert" className="rounded-2xl bg-rose-50/60 p-4 text-center text-[15px] text-ink-soft ring-1 ring-rose-200">
             글을 불러오지 못했어요. 잠시 후 새로고침하거나{" "}
             <Link href="/community" className="font-semibold text-brand-700 underline">
               커뮤니티
@@ -289,7 +290,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             에서 확인해 주세요.
           </p>
         ) : posts.length > 0 ? (
-          <ul className="mt-4 space-y-3">
+          <ul className="space-y-3">
             {posts.map((p) => (
               <li key={p.id}>
                 <PostCard post={p} avatarPath={recent?.avatars[p.id]} />
@@ -297,7 +298,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             ))}
           </ul>
         ) : (
-          <Card className="mt-4 flex flex-col items-center gap-3 py-8 text-center">
+          <Card className="flex flex-col items-center gap-3 py-8 text-center">
             <MessagesSquare aria-hidden className="h-8 w-8 text-brand-600" />
             <p className="text-[15px] text-ink-soft">지금 찾는 중인 글이 없어요. 잃어버렸다면 분실 글을 올려 보세요.</p>
             <ButtonLink href="/community/new" variant="secondary">
@@ -305,22 +306,30 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             </ButtonLink>
           </Card>
         )}
+        {/* 이동수단이 없는 회원은 바로가기에 지도가 있어요 */}
+        {me && me.list.length > 0 && (
+          <Link href="/stats" className="flex items-center justify-center gap-1.5 py-1 text-sm font-semibold text-ink-muted hover:text-ink">
+            <MapPinned aria-hidden className="h-4 w-4" />
+            우리 동네 도난 다발 지도 보기
+            <ChevronRight aria-hidden className="h-4 w-4" />
+          </Link>
+        )}
       </section>
 
-      {/* ⑥ 도난 예방 도구 (QR 찍기는 아래 메뉴 가운데 버튼이라 여기서는 빼요). 이동수단이 없는 회원은 위 바로가기에 있어서 빼요 */}
-      {(!me || me.list.length > 0) && (
-      <section aria-labelledby="tools-title" className="space-y-3">
-        <h2 id="tools-title" className="px-1 text-xl font-bold tracking-tight">
-          도난 예방 도구
-        </h2>
-        <div className="grid grid-cols-2 gap-3">
-          <ToolCard href="/check" icon={Search} color="text-brand-600" title="도난 조회" text="중고로 사기 전 번호·판매 글로 확인" />
-          <ToolCard href="/stats" icon={MapPinned} color="text-rose-600" title="도난 다발 지도" text="어디서 많이 도둑맞을까?" />
-        </div>
-      </section>
+      {/* ⑤ 처음 온 사람에게: 도난 예방 도구 (회원은 바로가기·동네 소식 안에 있어요) */}
+      {!me && (
+        <section aria-labelledby="tools-title" className="space-y-3">
+          <h2 id="tools-title" className="px-1 text-xl font-bold tracking-tight">
+            도난 예방 도구
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            <ToolCard href="/check" icon={Search} color="text-brand-600" title="도난 조회" text="중고로 사기 전 번호·판매 글로 확인" />
+            <ToolCard href="/stats" icon={MapPinned} color="text-rose-600" title="도난 다발 지도" text="어디서 많이 도둑맞을까?" />
+          </div>
+        </section>
       )}
 
-      {/* ⑦ 안심 문구 (처음 온 사람에게) */}
+      {/* ⑥ 안심 문구 (처음 온 사람에게) */}
       {!me && (
         <p className="flex items-start gap-2 rounded-2xl bg-slate-100 p-4 text-[13px] leading-relaxed text-ink-soft">
           <Lock aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
