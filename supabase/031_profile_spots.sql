@@ -322,17 +322,16 @@ grant select on public.bike_hazards to anon, authenticated;
 -- 지도 범위 안의 사고 잦은 곳 (가장 최근 해 자료만, 최대 300곳)
 create or replace function public.bike_hazards_in_box(p_min_lat double precision, p_min_lng double precision, p_max_lat double precision, p_max_lng double precision)
 returns json
-language sql stable security definer set search_path = public as $$
-  with y as (select max(year) as year from public.bike_hazards)
+language sql stable security definer set search_path = public as $body$
   select coalesce(json_agg(json_build_object(
            'id', h.spot_cd, 'year', h.year, 'name', h.name, 'lat', h.lat, 'lng', h.lng, 'radius_m', h.radius_m,
            'accidents', h.accidents, 'casualties', h.casualties, 'deaths', h.deaths, 'serious', h.serious) order by h.accidents desc), '[]'::json)
-    from (select * from public.bike_hazards, y
-           where bike_hazards.year = y.year
-             and lat between p_min_lat and p_max_lat and lng between p_min_lng and p_max_lng
+    from (select b.* from public.bike_hazards b
+           where b.year = (select max(m.year) from public.bike_hazards m)
+             and b.lat between p_min_lat and p_max_lat and b.lng between p_min_lng and p_max_lng
              and (p_max_lat - p_min_lat) <= 1.5 and (p_max_lng - p_min_lng) <= 1.5
-           order by accidents desc limit 300) h;
-$$;
+           order by b.accidents desc limit 300) h;
+$body$;
 revoke execute on function public.bike_hazards_in_box(double precision, double precision, double precision, double precision) from public, anon, authenticated;
 grant execute on function public.bike_hazards_in_box(double precision, double precision, double precision, double precision) to anon, authenticated;
 
