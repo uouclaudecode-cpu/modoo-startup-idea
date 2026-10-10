@@ -8,12 +8,12 @@ import { formatDistance } from "@/lib/ride/geo";
  */
 export function ActivityCard({ a }: { a: Activity }) {
   const lv = activityLevel(a);
-  const stats: { emoji: string; label: string; value: string; note?: string }[] = [
-    { emoji: "🙌", label: "도와준 횟수", value: `${a.helped}번`, note: "QR 제보·목격 제보" },
-    { emoji: "💛", label: "고맙다는 인정", value: `${a.thanked}번`, note: "주인이 도움이 됐다고 표시" },
-    { emoji: "🎉", label: "되찾아 준 이동수단", value: `${a.returned}대` },
-    { emoji: "🚲", label: "되찾은 내 이동수단", value: `${a.recovered}대` },
-    { emoji: "📏", label: "라이딩", value: a.ride_m > 0 ? formatDistance(a.ride_m) : "0km", note: a.ride_count > 0 ? `${a.ride_count}번 탔어요` : undefined },
+  const stats: { emoji: string; label: string; value: string; note: string }[] = [
+    { emoji: "🙌", label: "주인에게 알려 준 횟수", value: `${a.helped}번`, note: "QR을 찍어 알려 주거나 도난 경보에 본 곳을 알려 준 횟수" },
+    { emoji: "💛", label: "받은 고마워요", value: `${a.thanked}번`, note: "주인이 도움이 됐다고 한 횟수" },
+    { emoji: "🎉", label: "되찾아 준 이동수단", value: `${a.returned}대`, note: "내가 알려 준 뒤 주인이 찾았어요" },
+    { emoji: "🚲", label: "되찾은 내 이동수단", value: `${a.recovered}대`, note: "잃어버렸다가 다시 찾았어요" },
+    { emoji: "📏", label: "라이딩 거리", value: a.ride_m > 0 ? formatDistance(a.ride_m) : "0 km", note: a.ride_count > 0 ? `모두 ${a.ride_count}번 탔어요` : "아직 탄 기록이 없어요" },
   ];
   return (
     <Card id="activity" className="scroll-mt-20 space-y-4 p-4">
@@ -26,7 +26,7 @@ export function ActivityCard({ a }: { a: Activity }) {
           <p className="text-xl font-extrabold tracking-tight">{lv.now.name}</p>
           {lv.next ? (
             <p className="text-[13px] text-ink-muted">
-              {lv.next.emoji} {lv.next.name}까지 <b className="text-ink">{lv.toNext}점</b>
+              <b className="text-ink">{lv.toNext}점</b>만 더 모으면 {lv.next.emoji} {lv.next.name}
             </p>
           ) : (
             <p className="text-[13px] text-ink-muted">최고 칭호예요!</p>
@@ -45,13 +45,13 @@ export function ActivityCard({ a }: { a: Activity }) {
               <span aria-hidden>{s.emoji}</span> {s.label}
             </dt>
             <dd className="mt-0.5 text-lg font-extrabold tabular-nums">{s.value}</dd>
-            {s.note && <dd className="text-[11px] text-ink-faint">{s.note}</dd>}
+            <dd className="text-[11px] leading-snug text-ink-faint">{s.note}</dd>
           </div>
         ))}
       </dl>
       <div className="space-y-0.5 text-[12px] leading-relaxed text-ink-muted">
         <p>{lv.now.hint}</p>
-        <p className="text-ink-faint">점수: 도와준 1점 · 인정 3점 · 되찾아 줌 10점</p>
+        <p className="text-ink-faint">점수 모으는 법: 알려 주기 1점 · 고마워요 받기 3점 · 되찾아 주기 10점</p>
       </div>
     </Card>
   );
