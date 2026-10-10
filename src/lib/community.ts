@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { publicImageUrl, vehicleImageUrl } from "./images";
 import type { VehicleType } from "./types";
 
@@ -82,3 +83,27 @@ export function postImageUrl(p: Pick<LostPost, "image_bucket" | "image_path">) {
 }
 
 export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** 글 ID → 글쓴이 프로필 사진 경로 (032_community_avatars.sql). 실패하면 빈 값이라 사진 없이 보여요. */
+export async function loadPostAvatars(supabase: SupabaseClient, postIds: string[]): Promise<Record<string, string>> {
+  // 한 번에 100개씩 (데이터베이스 함수가 100개까지 받아요)
+  const chunks: string[][] = [];
+  for (let i = 0; i < postIds.length; i += 100) chunks.push(postIds.slice(i, i + 100));
+  const results = await Promise.all(chunks.map((ids) => supabase.rpc("post_author_avatars", { p_post_ids: ids })));
+  const out: Record<string, string> = {};
+  for (const { data, error } of results) {
+    if (error) console.error(error);
+    else Object.assign(out, data ?? {});
+  }
+  return out;
+}
+
+/** 댓글 ID → 댓글 쓴 사람 프로필 사진 경로 */
+export async function loadCommentAvatars(supabase: SupabaseClient, postId: string): Promise<Record<string, string>> {
+  const { data, error } = await supabase.rpc("post_comment_avatars", { p_post: postId });
+  if (error) {
+    console.error(error);
+    return {};
+  }
+  return (data ?? {}) as Record<string, string>;
+}

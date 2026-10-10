@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { ogFonts, ShieldLogo } from "@/lib/ogImage";
+import { ogFonts, BrandLogo } from "@/lib/ogImage";
 import { shareSegments, type Zone } from "@/lib/ride/export";
 import { averageSpeed, formatDistance, formatDuration, type LatLng } from "@/lib/ride/geo";
 
@@ -47,7 +47,7 @@ export async function renderRideCard(ride: RideCardData) {
     (
       <div style={{ width: SIZE, height: SIZE, display: "flex", flexDirection: "column", background: "#0f1b3d", color: "#fff", padding: 64, fontFamily: "Pretendard" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 34 }}>
-          <ShieldLogo size={44} />
+          <BrandLogo size={44} color="#ffffff" hole="#0f1b3d" />
           <span>B-LOCK 라이딩</span>
           <span style={{ marginLeft: "auto", color: "#a9b8e8", fontSize: 30 }}>{day}</span>
         </div>

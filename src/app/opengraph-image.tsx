@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/config/site";
-import { OG_SIZE, ogFonts, ShieldLogo } from "@/lib/ogImage";
+import { OG_SIZE, ogFonts, BrandLogo } from "@/lib/ogImage";
 
 export const alt = `${site.name} · ${site.tagline}`;
 export const size = OG_SIZE;
@@ -24,8 +24,8 @@ export default async function OpengraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div style={{ display: "flex", width: 96, height: 96, borderRadius: 24, background: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" }}>
-            <ShieldLogo size={64} />
+          <div style={{ display: "flex", width: 96, height: 96, borderRadius: 24, background: "#ffffff", alignItems: "center", justifyContent: "center" }}>
+            <BrandLogo size={64} />
           </div>
           <div style={{ fontSize: 56 }}>{site.name}</div>
         </div>

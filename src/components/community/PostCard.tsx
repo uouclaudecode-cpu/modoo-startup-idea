@@ -2,8 +2,10 @@ import Link from "next/link";
 import { CalendarDays, MapPin, MessageSquare } from "lucide-react";
 import { Card } from "@/components/ui";
 import { PostStatusBadge } from "@/components/community/PostStatusBadge";
+import { Avatar } from "@/components/profile/Avatar";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { postImageUrl, postKind, type LostPost } from "@/lib/community";
+import { avatarUrl } from "@/lib/images";
 import { cn } from "@/lib/cn";
 import { formatDate, timeAgo } from "@/lib/format";
 import { typeLabel } from "@/lib/types";
@@ -28,8 +30,8 @@ export type PostListItem = Pick<
   | "created_at"
 >;
 
-/** 커뮤니티 목록의 분실·발견 글 한 줄 */
-export function PostCard({ post: p }: { post: PostListItem }) {
+/** 커뮤니티 목록의 분실·발견 글 한 줄. avatarPath: 글쓴이 프로필 사진 (loadPostAvatars) */
+export function PostCard({ post: p, avatarPath }: { post: PostListItem; avatarPath?: string | null }) {
   const resolved = p.status === "resolved";
   const kind = postKind(p.kind);
   const spec = [typeLabel(p.type), p.color, [p.brand, p.model].filter(Boolean).join(" ")].filter(Boolean).join(" · ");
@@ -63,8 +65,11 @@ export function PostCard({ post: p }: { post: PostListItem }) {
             )}
           </div>
           <div className="mt-1.5 flex items-center gap-3 text-[13px] text-ink-faint">
-            <span>
-              {p.author_name} · {timeAgo(p.created_at)}
+            <span className="flex min-w-0 items-center gap-1.5">
+              <Avatar src={avatarUrl(avatarPath)} name={p.author_name} className="h-5 w-5 text-[10px]" />
+              <span className="truncate">
+                {p.author_name} · {timeAgo(p.created_at)}
+              </span>
             </span>
             <span className="ml-auto flex items-center gap-1 font-semibold text-ink-muted" aria-label={`댓글 ${p.comment_count}개`}>
               <MessageSquare aria-hidden className="h-3.5 w-3.5" />

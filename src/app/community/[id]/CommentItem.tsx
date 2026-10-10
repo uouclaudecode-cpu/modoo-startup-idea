@@ -6,6 +6,7 @@ import { useState } from "react";
 import { CornerDownRight, ExternalLink, EyeOff, Lock, MapPin, MessageSquareReply, Trash2 } from "lucide-react";
 import { Button, Modal, useToast } from "@/components/ui";
 import { ContentMenu } from "@/components/community/ContentMenu";
+import { Avatar } from "@/components/profile/Avatar";
 import type { PostComment } from "@/lib/community";
 import { cn } from "@/lib/cn";
 import { formatDateTime, friendlyError, timeAgo } from "@/lib/format";
@@ -19,6 +20,8 @@ type Thread = {
   comment: PostComment;
   replies: PostComment[];
   imageOf: Record<string, string | null>;
+  /** 댓글 ID → 프로필 사진 주소 */
+  avatarOf: Record<string, string | null>;
   /** 지금 보는 사람이 글쓴이인지 */
   viewerIsAuthor: boolean;
   postId: string;
@@ -28,7 +31,7 @@ type Thread = {
 };
 
 /** 댓글 하나 + 답글들 + 답글 쓰기 */
-export function CommentThread({ comment, replies, imageOf, viewerIsAuthor, postId, stickerSpot, loggedIn }: Thread) {
+export function CommentThread({ comment, replies, imageOf, avatarOf, viewerIsAuthor, postId, stickerSpot, loggedIn }: Thread) {
   const [replying, setReplying] = useState(false);
   // 답글은 글쓴이(주인)와 원래 댓글 쓴 사람이 주고받아요
   const canReply = loggedIn && comment.can_view && (viewerIsAuthor || comment.is_mine);
@@ -38,6 +41,7 @@ export function CommentThread({ comment, replies, imageOf, viewerIsAuthor, postI
       <CommentBody
         comment={comment}
         imageUrl={imageOf[comment.id] ?? null}
+        avatarUrl={avatarOf[comment.id] ?? null}
         canDelete={comment.is_mine || viewerIsAuthor}
         loggedIn={loggedIn}
         postId={postId}
@@ -49,6 +53,7 @@ export function CommentThread({ comment, replies, imageOf, viewerIsAuthor, postI
               key={r.id}
               comment={r}
               imageUrl={imageOf[r.id] ?? null}
+              avatarUrl={avatarOf[r.id] ?? null}
               canDelete={r.is_mine || viewerIsAuthor}
               loggedIn={loggedIn}
               postId={postId}
@@ -85,6 +90,7 @@ export function CommentThread({ comment, replies, imageOf, viewerIsAuthor, postI
 type BodyProps = {
   comment: PostComment;
   imageUrl: string | null;
+  avatarUrl: string | null;
   canDelete: boolean;
   /** 신고·차단 메뉴: 로그인 안 했으면 로그인 안내를 보여줘요 */
   loggedIn: boolean;
@@ -92,7 +98,7 @@ type BodyProps = {
   reply?: boolean;
 };
 
-function CommentBody({ comment: c, imageUrl, canDelete, loggedIn, postId, reply }: BodyProps) {
+function CommentBody({ comment: c, imageUrl, avatarUrl, canDelete, loggedIn, postId, reply }: BodyProps) {
   const router = useRouter();
   const toast = useToast();
   const [confirm, setConfirm] = useState(false);
@@ -132,15 +138,19 @@ function CommentBody({ comment: c, imageUrl, canDelete, loggedIn, postId, reply 
   return (
     <div className={cn("space-y-2.5 rounded-2xl p-4 ring-1", c.is_secret ? "bg-amber-50/60 ring-amber-300" : "bg-white ring-line/70")}>
       <div className="flex items-center gap-2">
-        <span
-          aria-hidden
-          className={cn(
-            "grid h-8 w-8 place-items-center rounded-full text-sm font-bold",
-            c.is_post_author ? "bg-brand-600 text-white" : "bg-brand-50 text-brand-700",
-          )}
-        >
-          {c.author_name.slice(0, 1)}
-        </span>
+        {avatarUrl ? (
+          <Avatar src={avatarUrl} name={c.author_name} className={cn("h-8 w-8 text-sm", c.is_post_author && "ring-2 ring-brand-600")} />
+        ) : (
+          <span
+            aria-hidden
+            className={cn(
+              "grid h-8 w-8 flex-none place-items-center rounded-full text-sm font-bold",
+              c.is_post_author ? "bg-brand-600 text-white" : "bg-brand-50 text-brand-700",
+            )}
+          >
+            {Array.from(c.author_name)[0]}
+          </span>
+        )}
         <span className="min-w-0 truncate text-sm font-semibold">{c.author_name}</span>
         {c.is_post_author && <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[12px] font-semibold text-brand-700">글쓴이</span>}
         {c.is_mine && <span className="text-[12px] text-ink-faint">(나)</span>}

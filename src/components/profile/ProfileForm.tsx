@@ -138,7 +138,7 @@ export function ProfileForm({ userId, nickname, avatarPath, onSaved }: Props) {
             </Button>
           )}
         </div>
-        <p className="text-center text-[13px] text-ink-muted">사진은 MY 화면에만 보여요. 얼굴 사진이 아니어도 괜찮아요.</p>
+        <p className="text-center text-[13px] text-ink-muted">사진은 MY와 커뮤니티 글·댓글에 보여요. 얼굴 사진이 아니어도 괜찮아요.</p>
       </div>
 
       <Input

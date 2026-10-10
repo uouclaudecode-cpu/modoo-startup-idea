@@ -3,14 +3,14 @@ import { Bike, ChevronRight, Lock, MapPin, MapPinned, MessagesSquare, Plus, Prin
 import { site } from "@/config/site";
 import { ButtonLink, Card } from "@/components/ui";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
-import { POST_LIST_COLUMNS } from "@/lib/community";
+import { loadPostAvatars, POST_LIST_COLUMNS } from "@/lib/community";
 import { createClient, getUser } from "@/lib/supabase/server";
 
 /**
  * 최근 '찾는 중' 글 3개.
  * 불러오지 못해도 첫 화면은 그대로 보여요. 이때는 null을 돌려줘서 '글이 없어요' 대신 '불러오지 못했어요'를 보여줘요.
  */
-async function recentPosts(): Promise<PostListItem[] | null> {
+async function recentPosts(): Promise<{ posts: PostListItem[]; avatars: Record<string, string> } | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("lost_posts")
@@ -23,12 +23,14 @@ async function recentPosts(): Promise<PostListItem[] | null> {
     console.error(error);
     return null;
   }
-  return (data ?? []) as PostListItem[];
+  const posts = (data ?? []) as PostListItem[];
+  return { posts, avatars: await loadPostAvatars(supabase, posts.map((p) => p.id)) };
 }
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ bye?: string }> }) {
   const { bye } = await searchParams;
-  const [posts, user] = await Promise.all([recentPosts(), getUser()]);
+  const [recent, user] = await Promise.all([recentPosts(), getUser()]);
+  const posts = recent?.posts ?? null;
   return (
     <div className="space-y-8 sm:space-y-12">
       {bye === "1" && !user && (
@@ -143,7 +145,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <ul className="mt-4 space-y-3">
             {posts.map((p) => (
               <li key={p.id}>
-                <PostCard post={p} />
+                <PostCard post={p} avatarPath={recent?.avatars[p.id]} />
               </li>
             ))}
           </ul>

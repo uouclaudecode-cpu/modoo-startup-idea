@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { ButtonLink, EmptyState, ErrorState } from "@/components/ui";
 import { ListRows } from "@/components/skeletons/PageSkeletons";
 import { PostCard, type PostListItem } from "@/components/community/PostCard";
-import { POST_LIST_COLUMNS } from "@/lib/community";
+import { loadPostAvatars, POST_LIST_COLUMNS } from "@/lib/community";
 import { cn } from "@/lib/cn";
 import { createClient } from "@/lib/supabase/server";
 import { VEHICLE_TYPES } from "@/lib/types";
@@ -139,6 +139,7 @@ async function PostResults({ q, status, type, page, moreHref }: { q: string; sta
 
   const posts = (data ?? []) as PostListItem[];
   const hasMore = posts.length > page * PAGE_SIZE;
+  const avatars = await loadPostAvatars(supabase, posts.slice(0, page * PAGE_SIZE).map((p) => p.id));
 
   return (
     <>
@@ -160,7 +161,7 @@ async function PostResults({ q, status, type, page, moreHref }: { q: string; sta
           <ul className="space-y-3">
             {posts.slice(0, page * PAGE_SIZE).map((p) => (
               <li key={p.id}>
-                <PostCard post={p} />
+                <PostCard post={p} avatarPath={avatars[p.id]} />
               </li>
             ))}
           </ul>

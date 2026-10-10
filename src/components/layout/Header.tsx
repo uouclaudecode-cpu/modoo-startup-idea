@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { MessagesSquare, QrCode, Route, Settings, ShieldCheck } from "lucide-react";
+import { MessagesSquare, QrCode, Route, Settings } from "lucide-react";
+import { LockLogo } from "@/lib/logo";
 import { site } from "@/config/site";
 import { buttonClass } from "@/components/ui/Button";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
@@ -17,9 +18,7 @@ export async function Header() {
     <header className="sticky top-0 z-40 print:hidden border-b border-line/80 bg-white/90 pt-[env(safe-area-inset-top)] backdrop-blur">
       <div className="mx-auto flex h-14 max-w-3xl items-center gap-1 px-4">
         <Link href="/" aria-label={`${site.name} 홈`} className="mr-auto flex items-center gap-2 whitespace-nowrap font-extrabold tracking-tight text-ink">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 text-white">
-            <ShieldCheck aria-hidden className="h-5 w-5" />
-          </span>
+          <LockLogo size={30} />
           {site.name}
         </Link>
         <Link href="/community" className={cn(buttonClass("ghost"), "hidden h-10 px-2.5 text-sm sm:inline-flex")}>

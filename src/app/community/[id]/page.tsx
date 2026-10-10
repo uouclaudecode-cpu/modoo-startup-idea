@@ -6,10 +6,11 @@ import { ButtonLink, Card, buttonClass } from "@/components/ui";
 import { ContentMenu } from "@/components/community/ContentMenu";
 import { PinMap, type MapPin as PinMapPin } from "@/components/map/PinMap";
 import { PostStatusBadge } from "@/components/community/PostStatusBadge";
+import { Avatar } from "@/components/profile/Avatar";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
-import { postImageUrl, UUID_RE, type LostPost, type PostComment } from "@/lib/community";
+import { loadCommentAvatars, loadPostAvatars, postImageUrl, UUID_RE, type LostPost, type PostComment } from "@/lib/community";
 import { formatDate, formatDateTime, timeAgo } from "@/lib/format";
-import { publicImageUrl } from "@/lib/images";
+import { avatarUrl, publicImageUrl } from "@/lib/images";
 import { createClient } from "@/lib/supabase/server";
 import { typeLabel } from "@/lib/types";
 import { CommentForm } from "./CommentForm";
@@ -60,6 +61,9 @@ export default async function PostPage({ params }: Params) {
     supabase.auth.getUser(),
     supabase.rpc("get_post_comments", { p_post: post.id }),
   ]);
+  // 글쓴이·댓글 쓴 사람 프로필 사진 (032가 아직 없으면 사진 없이 보여요)
+  const [postAvatars, commentAvatars] = await Promise.all([loadPostAvatars(supabase, [post.id]), loadCommentAvatars(supabase, post.id)]);
+  const authorAvatar = avatarUrl(postAvatars[post.id]);
   if (commentErr) console.error(commentErr);
   const user = userData.user;
   const isAuthor = user?.id === post.author_id;
@@ -74,6 +78,8 @@ export default async function PostPage({ params }: Params) {
     for (const u of urls ?? []) if (u.path && u.signedUrl) signed.set(u.path, u.signedUrl);
   }
   const imageOf: Record<string, string | null> = {};
+  const avatarOf: Record<string, string | null> = {};
+  for (const c of comments) avatarOf[c.id] = avatarUrl(commentAvatars[c.id]);
   for (const c of comments) {
     imageOf[c.id] = !c.image_path ? null : c.is_secret ? (signed.get(c.image_path) ?? null) : publicImageUrl("community-images", c.image_path);
   }
@@ -154,7 +160,8 @@ export default async function PostPage({ params }: Params) {
               )}
             </div>
             <h1 className="text-xl font-extrabold leading-snug tracking-tight sm:text-2xl">{post.title}</h1>
-            <p className="text-[13px] text-ink-muted">
+            <p className="flex items-center gap-1.5 text-[13px] text-ink-muted">
+              <Avatar src={authorAvatar} name={post.author_name} className="h-6 w-6 text-[11px]" />
               {post.author_name} · <time dateTime={post.created_at} title={formatDateTime(post.created_at)}>{timeAgo(post.created_at)}</time>
             </p>
           </div>
@@ -250,6 +257,7 @@ export default async function PostPage({ params }: Params) {
                 comment={c}
                 replies={repliesOf(c.id)}
                 imageOf={imageOf}
+                avatarOf={avatarOf}
                 viewerIsAuthor={isAuthor}
                 postId={post.id}
                 stickerSpot={stickerSpot}

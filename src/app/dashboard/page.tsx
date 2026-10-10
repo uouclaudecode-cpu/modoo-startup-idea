@@ -240,15 +240,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <ul className="space-y-3">
             {(myPosts as PostListItem[]).map((p) => (
               <li key={p.id}>
-                <PostCard post={p} />
+                <PostCard post={p} avatarPath={(profile?.avatar_path as string | null | undefined) ?? null} />
               </li>
             ))}
           </ul>
         </Section>
       )}
 
-      {/* ⑧ 더보기 */}
-      <Section title="더보기">
+      {/* ⑧ 기록·도구·설정 메뉴 */}
+      <Section title="기록·도구·설정">
         <Card className="divide-y divide-line/70 p-0">
           <MenuRow href="/alerts#mine" icon={History} label="내 경보·제보 기록" />
           <MenuRow href="/rides" icon={Route} label="라이딩 기록·통계" />
