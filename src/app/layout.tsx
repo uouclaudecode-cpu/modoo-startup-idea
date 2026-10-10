@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import "./globals.css";
 import { site } from "@/config/site";
 import { AppSplash } from "@/components/layout/AppSplash";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { Header } from "@/components/layout/Header";
 import { InstallPrompt } from "@/components/layout/InstallPrompt";
+import { NavProgress } from "@/components/layout/NavProgress";
 import { IntroSlides } from "@/components/onboarding/IntroSlides";
 import { ToastProvider } from "@/components/ui/Toast";
 
@@ -42,6 +44,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       {/* 휴대폰: 아래 메뉴 높이만큼 여백 */}
       <body className="min-h-dvh pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-0">
         <AppSplash />
+        <Suspense fallback={null}>
+          <NavProgress />
+        </Suspense>
         <ToastProvider>
           <Header />
           <main className="mx-auto w-full max-w-3xl px-4 pb-16 pt-6 print:max-w-none print:p-0">{children}</main>
