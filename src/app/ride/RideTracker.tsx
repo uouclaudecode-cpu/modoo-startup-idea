@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BatteryMedium, ChevronRight, History, MapPin, Navigation, Pause, Play, Satellite, ShieldCheck, Square, SunMedium, Trash2, Wind } from "lucide-react";
+import { BatteryMedium, ChevronRight, History, MapPin, Navigation, Pause, Play, Satellite, ShieldCheck, Square, SunMedium, Trash2, Wind, Wrench } from "lucide-react";
 import { Button, Card, Modal, useToast } from "@/components/ui";
 import { RideMap } from "@/components/ride/RideMap";
 import { cn } from "@/lib/cn";
@@ -18,13 +18,16 @@ import { usesBattery } from "@/lib/subtypes";
 /** 라이딩 화면 아래에 보여 줄 최근 기록 */
 export type RecentRide = { id: string; started_at: string; elapsed_sec: number; distance_m: number; vehicle_type: string | null; vehicle_name: string | null };
 
+/** 라이딩 탭 위쪽 정비 알림: 가장 급한 소모품 하나 */
+export type CareTip = { vehicleName: string; label: string; emoji: string; urgent: boolean; more: number };
+
 export type RideVehicle = { id: string; name: string; type: VehicleType; subtype?: string | null; odometer_m: number };
 
 const LAST_VEHICLE_KEY = "b-lock:last-ride-vehicle";
 /** 이보다 짧으면 저장할 의미가 없어서 버리기만 제안 */
 const MIN_SAVE_METERS = 10;
 
-export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideVehicle[]; userId: string; recent?: RecentRide[] }) {
+export function RideTracker({ vehicles, userId, recent = [], careTip = null }: { vehicles: RideVehicle[]; userId: string; recent?: RecentRide[]; careTip?: CareTip | null }) {
   const router = useRouter();
   const toast = useToast();
   const t = useRideTracker(userId);
@@ -248,18 +251,45 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
         </p>
       )}
 
-      {/* 쉬는 중: 길 안내 · 공기주입기 바로가기 */}
+      {/* 쉬는 중: 라이딩과 함께 쓰는 것들 (길 안내 · 보관소·공기주입기 · 소모품·정비) */}
       {t.status === "idle" && (
-        <div className="grid grid-cols-2 gap-2">
-          <Link href="/navigate" className="flex h-12 items-center justify-center gap-1.5 rounded-xl bg-white text-[15px] font-semibold ring-1 ring-inset ring-line hover:bg-slate-50">
-            <Navigation aria-hidden className="h-[18px] w-[18px] text-brand-600" />
-            길 안내
-          </Link>
-          <Link href="/spots" className="flex h-12 items-center justify-center gap-1.5 rounded-xl bg-white text-[15px] font-semibold ring-1 ring-inset ring-line hover:bg-slate-50">
-            <Wind aria-hidden className="h-[18px] w-[18px] text-emerald-600" />
-            보관소·공기주입기
-          </Link>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { href: "/navigate", label: "길 안내", Icon: Navigation, color: "text-brand-600" },
+            { href: "/spots", label: "보관소·공기주입기", Icon: Wind, color: "text-emerald-600" },
+            { href: "/maintenance", label: "소모품·정비", Icon: Wrench, color: "text-amber-600" },
+          ].map(({ href, label, Icon, color }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex min-h-[76px] flex-col items-center justify-center gap-1.5 rounded-2xl bg-white px-1.5 py-2.5 text-center text-[13px] font-semibold leading-tight ring-1 ring-inset ring-line hover:bg-slate-50"
+            >
+              <Icon aria-hidden className={cn("h-6 w-6", color)} />
+              <span className="break-keep">{label}</span>
+            </Link>
+          ))}
         </div>
+      )}
+      {/* 쉬는 중: 교체·점검할 때가 된 소모품 */}
+      {t.status === "idle" && careTip && (
+        <Link
+          href="/maintenance"
+          className={cn(
+            "flex items-center gap-3 rounded-2xl px-4 py-3 ring-1",
+            careTip.urgent ? "bg-rose-50 text-rose-900 ring-rose-200" : "bg-amber-50 text-amber-900 ring-amber-200",
+          )}
+        >
+          <span aria-hidden className="text-2xl">
+            {careTip.emoji}
+          </span>
+          <span className="min-w-0 flex-1 text-[14px] leading-snug">
+            <b>
+              {careTip.vehicleName} {careTip.label} {careTip.urgent ? "교체할 때예요" : "점검해 주세요"}
+            </b>
+            {careTip.more > 0 && <span className="block text-[12px] opacity-80">그 밖에 {careTip.more}건 더 있어요</span>}
+          </span>
+          <ChevronRight aria-hidden className="h-5 w-5 flex-none opacity-60" />
+        </Link>
       )}
 
       <div className="relative">

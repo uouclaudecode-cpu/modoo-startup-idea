@@ -39,6 +39,7 @@ export async function middleware(request: NextRequest) {
     path.startsWith("/admin") ||
     path === "/ride" ||
     path.startsWith("/rides") ||
+    path.startsWith("/maintenance") ||
     path.startsWith("/settings") ||
     path.startsWith("/notifications");
   if (needsLogin && !user) {

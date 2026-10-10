@@ -25,7 +25,7 @@ const TABS = [
     match: (p: string) => under(p, ["/scan", "/check", "/report", "/r", "/t", "/v", "/c"]),
     primary: true,
   },
-  { href: "/ride", label: "라이딩", icon: Route, match: (p: string) => under(p, ["/ride", "/rides", "/navigate", "/spots"]) },
+  { href: "/ride", label: "라이딩", icon: Route, match: (p: string) => under(p, ["/ride", "/rides", "/navigate", "/spots", "/maintenance"]) },
   {
     href: "/dashboard",
     label: "MY",

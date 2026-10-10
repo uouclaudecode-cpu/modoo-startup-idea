@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bike, BookOpen, Bug, Gauge, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Navigation, Plus, Printer, Route, Search, Siren, Wind } from "lucide-react";
+import { Bike, BookOpen, Bug, Gauge, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Navigation, Plus, Printer, Route, Search, Siren, Wind, Wrench } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
-import { MaintenanceOverview } from "@/components/maintenance/MaintenanceOverview";
 import { PushPrompt } from "@/components/onboarding/PushPrompt";
 import { WelcomeGuide, welcomeGuideVisible } from "@/components/onboarding/WelcomeGuide";
 import { InboxCard, type InboxItem } from "@/components/vehicle/InboxCard";
@@ -226,11 +225,17 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       {/* ⑤ QR 스티커 (시작 안내가 보이는 동안은 안내 안에 같은 버튼이 있어요) */}
       {list.length > 0 && !guideOpen && <StickerActions withLink title="QR 스티커" />}
 
-      {/* ⑥ 정비 */}
-      {list.length > 0 && (
-        <Section title="소모품·정비">
+      {/* ⑥ 정비: 전체는 라이딩 탭의 '소모품·정비'에서, MY에는 교체가 급한 것만 */}
+      {replaceAlerts.length > 0 && (
+        <Section
+          title="교체할 소모품"
+          action={
+            <Link href="/maintenance" className="inline-flex h-10 items-center gap-0.5 rounded-xl px-2 text-sm font-semibold text-brand-700 hover:bg-brand-50">
+              정비 전체 <ChevronRight aria-hidden className="h-4 w-4" />
+            </Link>
+          }
+        >
           <div className="space-y-3">
-            <MaintenanceOverview vehicles={list} parts={(allParts ?? []) as VehiclePart[]} now={now} />
             {replaceAlerts.map(({ v, items }) => (
               <MaintenanceAlert key={v.id} vehicleId={v.id} vehicleName={v.name} items={items} now={now} />
             ))}
@@ -256,8 +261,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         <div className="space-y-3">
           <MenuGroup title="라이딩">
             <MenuRow href="/rides" icon={Route} label="라이딩 기록·통계" />
+            <MenuRow href="/maintenance" icon={Wrench} label="소모품·정비" />
             <MenuRow href="/navigate" icon={Navigation} label="자전거 길 안내" />
-            <MenuRow href="/spots" icon={Wind} label="공기주입기·자전거 보관소" />
+            <MenuRow href="/spots" icon={Wind} label="보관소·공기주입기" />
           </MenuGroup>
           <MenuGroup title="도난·안전">
             <MenuRow href="/alerts#mine" icon={History} label="내 경보·제보 기록" />
