@@ -257,7 +257,7 @@ export function RideTracker({ vehicles, userId, recent = [] }: { vehicles: RideV
           </Link>
           <Link href="/spots" className="flex h-12 items-center justify-center gap-1.5 rounded-xl bg-white text-[15px] font-semibold ring-1 ring-inset ring-line hover:bg-slate-50">
             <Wind aria-hidden className="h-[18px] w-[18px] text-emerald-600" />
-            공기주입기
+            보관소·공기주입기
           </Link>
         </div>
       )}

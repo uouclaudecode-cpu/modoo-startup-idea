@@ -193,7 +193,7 @@ export function SpotsExplorer({ loggedIn, initialKind }: { loggedIn: boolean; in
         {loggedIn ? (
           <button type="button" onClick={() => setAdding(true)} className="inline-flex h-10 items-center gap-1 rounded-xl bg-brand-50 px-3.5 text-sm font-semibold text-brand-700 hover:bg-brand-100">
             <Plus aria-hidden className="h-4 w-4" />
-            공기주입기 알려 주기
+            {label} 알려 주기
           </button>
         ) : (
           <Link href="/login?next=/spots" className="text-sm font-semibold text-brand-700 hover:underline">
@@ -248,15 +248,15 @@ export function SpotsExplorer({ loggedIn, initialKind }: { loggedIn: boolean; in
         자료: 행정안전부 자전거보관소정보, 도로교통공단 자전거사고 다발지역(공공데이터포털), B-LOCK 회원 제보. 실제와 다를 수 있어요.
       </p>
 
-      <AddPumpModal
+      <AddSpotModal
+        kind={kind}
         open={adding}
         start={mapCenter ?? me}
         onClose={() => setAdding(false)}
         onAdded={() => {
           setAdding(false);
           toast.success("알려 주셔서 고마워요! 지도에 바로 보여요.");
-          if (kind !== "pump") setKind("pump");
-          else if (origin) load(origin, "pump");
+          if (origin) load(origin, kind);
         }}
       />
     </div>
@@ -414,10 +414,36 @@ function HazardCard({ h, onClose }: { h: MergedHazard; onClose: () => void }) {
   );
 }
 
-function AddPumpModal({ open, start, onClose, onAdded }: { open: boolean; start: LatLng | null; onClose: () => void; onAdded: () => void }) {
+/** 종류별 '알려 주기' 안내 (지금 보고 있는 종류에 맞춰요) */
+const ADD_TEXT: Record<Exclude<SpotKind, "all">, { title: string; desc: string; place: string; note: string }> = {
+  pump: {
+    title: "공기주입기 알려 주기",
+    desc: "자전거 가게 앞, 공원, 지하철역처럼 누구나 쓸 수 있는 공기주입기를 알려 주세요. 다른 회원에게 바로 보여요.",
+    place: "예: 태화강역 2번 출구 앞",
+    note: "예: 프레스타·슈레더 둘 다 돼요, 밤 10시까지",
+  },
+  parking: {
+    title: "자전거 보관소 알려 주기",
+    desc: "누구나 세울 수 있는 자전거 거치대나 보관소를 알려 주세요. 다른 회원에게 바로 보여요.",
+    place: "예: 삼산동 롯데백화점 뒤 거치대",
+    note: "예: CCTV가 있어요, 밤에는 어두워요",
+  },
+  repair: {
+    title: "수리대 알려 주기",
+    desc: "공구가 달려 있어 누구나 쓸 수 있는 자전거 수리대를 알려 주세요. 다른 회원에게 바로 보여요.",
+    place: "예: 태화강 국가정원 자전거 쉼터",
+    note: "예: 육각렌치·타이어 레버가 있어요",
+  },
+};
+
+function AddSpotModal({ kind, open, start, onClose, onAdded }: { kind: Exclude<SpotKind, "all">; open: boolean; start: LatLng | null; onClose: () => void; onAdded: () => void }) {
+  const text = ADD_TEXT[kind];
   const [where, setWhere] = useState<PickedLocation | null>(null);
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
+  const [racks, setRacks] = useState("");
+  const [shade, setShade] = useState(false);
+  const [pump, setPump] = useState(false);
   const [repair, setRepair] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -427,6 +453,9 @@ function AddPumpModal({ open, start, onClose, onAdded }: { open: boolean; start:
       setWhere(start);
       setName("");
       setNote("");
+      setRacks("");
+      setShade(false);
+      setPump(false);
       setRepair(false);
       setError("");
     }
@@ -437,25 +466,38 @@ function AddPumpModal({ open, start, onClose, onAdded }: { open: boolean; start:
   async function submit() {
     if (!where) return setError("지도에서 위치를 골라 주세요.");
     if (!name.trim()) return setError("장소 이름을 적어 주세요.");
+    const n = racks.trim() === "" ? null : Number(racks);
+    if (n != null && (!Number.isInteger(n) || n < 1 || n > 1000)) return setError("보관 대수는 1~1000 사이 숫자로 적어 주세요.");
     setError("");
     setLoading(true);
-    const { error: err } = await createClient().rpc("add_bike_spot", {
+    const { error: err } = await createClient().rpc("add_bike_spot_v2", {
+      p_kind: kind,
       p_name: name.trim(),
       p_lat: where.lat,
       p_lng: where.lng,
       p_note: note.trim() || null,
-      p_repair: repair,
+      p_racks: kind === "parking" ? n : null,
+      p_shade: kind === "parking" ? shade : null,
+      p_pump: kind !== "pump" && pump,
+      p_repair: kind !== "repair" && repair,
     });
     setLoading(false);
     if (err) return setError(friendlyError(err, "저장하지 못했어요. 잠시 후 다시 시도해 주세요."));
     onAdded();
   }
 
+  const check = (checked: boolean, set: (v: boolean) => void, label: string) => (
+    <label className="flex min-h-11 items-center gap-2.5 text-[15px]">
+      <input type="checkbox" checked={checked} onChange={(e) => set(e.target.checked)} className="h-5 w-5 rounded accent-brand-600" />
+      {label}
+    </label>
+  );
+
   return (
     <Modal
       open={open}
       onClose={onClose}
-      title="공기주입기 알려 주기"
+      title={text.title}
       footer={
         <Button full loading={loading} loadingText="저장 중..." onClick={submit}>
           지도에 올리기
@@ -463,14 +505,19 @@ function AddPumpModal({ open, start, onClose, onAdded }: { open: boolean; start:
       }
     >
       <div className="space-y-4">
-        <p className="text-sm leading-relaxed text-ink-muted">자전거 가게 앞, 공원, 지하철역처럼 누구나 쓸 수 있는 공기주입기를 알려 주세요. 다른 회원에게 바로 보여요.</p>
+        <p className="text-sm leading-relaxed text-ink-muted">{text.desc}</p>
         <LocationPicker label="위치" value={where} onChange={setWhere} />
-        <Input label="장소 이름" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} placeholder="예: 태화강역 2번 출구 앞" />
-        <Textarea label="설명 (선택)" value={note} onChange={(e) => setNote(e.target.value)} maxLength={200} rows={2} placeholder="예: 프레스타·슈레더 둘 다 돼요, 밤 10시까지" />
-        <label className="flex min-h-11 items-center gap-2.5 text-[15px]">
-          <input type="checkbox" checked={repair} onChange={(e) => setRepair(e.target.checked)} className="h-5 w-5 rounded accent-brand-600" />
-          수리 공구(수리대)도 있어요
-        </label>
+        <Input label="장소 이름" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} placeholder={text.place} />
+        {kind === "parking" && (
+          <Input label="세울 수 있는 대수 (선택)" type="number" inputMode="numeric" min={1} max={1000} value={racks} onChange={(e) => setRacks(e.target.value)} placeholder="예: 10" />
+        )}
+        <Textarea label="설명 (선택)" value={note} onChange={(e) => setNote(e.target.value)} maxLength={200} rows={2} placeholder={text.note} />
+        <div>
+          <p className="text-sm font-semibold text-ink-soft">함께 있는 것</p>
+          {kind === "parking" && check(shade, setShade, "지붕이 있어요")}
+          {kind !== "pump" && check(pump, setPump, "공기주입기도 있어요")}
+          {kind !== "repair" && check(repair, setRepair, "수리 공구(수리대)도 있어요")}
+        </div>
         {error && <p className="text-[13px] text-rose-600">{error}</p>}
       </div>
     </Modal>
