@@ -17,8 +17,8 @@ export async function Header() {
   return (
     <header className="sticky top-0 z-40 print:hidden border-b border-line/80 bg-white/90 pt-[env(safe-area-inset-top)] backdrop-blur">
       <div className="mx-auto flex h-14 max-w-3xl items-center gap-1 px-4">
-        <Link href="/" aria-label={`${site.name} 홈`} className="mr-auto flex items-center gap-2 whitespace-nowrap font-extrabold tracking-tight text-ink">
-          <LockLogo size={30} />
+        <Link href="/" aria-label={`${site.name} 홈`} className="mr-auto flex items-center gap-2 whitespace-nowrap text-lg font-extrabold tracking-tight text-ink">
+          <LockLogo size={38} />
           {site.name}
         </Link>
         <Link href="/community" className={cn(buttonClass("ghost"), "hidden h-10 px-2.5 text-sm sm:inline-flex")}>
