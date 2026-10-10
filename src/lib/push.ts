@@ -1,5 +1,6 @@
 import { isAllowedPushEndpoint } from "./pushEndpoint";
 import { createClient } from "./supabase/client";
+import { loadFinderThreads } from "./finderThreads";
 
 /**
  * 화면(브라우저)용 웹 푸시 도우미: 지원 여부 확인, 알림 켜기·끄기.
@@ -158,8 +159,9 @@ export async function unsubscribePush(): Promise<void> {
   if (!sub) return;
 
   const endpoint = sub.endpoint;
-  // 브라우저 구독을 먼저 끝내요. 네트워크가 느려 아래 삭제가 늦어도, 끝난 구독은 서버가 다음 알림 때 알아서 지워요.
-  await sub.unsubscribe();
   const { error } = await createClient().from("push_subscriptions").delete().eq("endpoint", endpoint);
   if (error) console.error("알림 기기 삭제 실패", error);
+  // 이 기기에서 보낸 발견 제보 대화가 있으면 그 답장 알림은 계속 받도록 브라우저 구독은 남겨요 (내 계정 알림은 위에서 끊겼어요)
+  if (loadFinderThreads().length > 0) return;
+  await sub.unsubscribe();
 }

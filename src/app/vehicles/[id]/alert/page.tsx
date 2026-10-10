@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "도난 경보 보내기" };
 export default async function NewAlertPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { supabase, vehicle } = await getOwnedVehicle(id, `/vehicles/${id}/alert`);
-  const { data: open } = await supabase.from("theft_alerts").select("id").eq("vehicle_id", vehicle.id).eq("status", "open").maybeSingle();
+  const { data: open } = await supabase.from("theft_alerts").select("id").eq("vehicle_id", vehicle.id).eq("status", "open").gt("expires_at", new Date().toISOString()).maybeSingle();
   if (open) redirect(`/alerts/${open.id}`);
   // 마지막으로 세운 곳이 있으면 잃어버린 곳으로 미리 채워요
   const { data: parking } = await supabase.from("parking_spots").select("lat, lng, note, parked_at").eq("vehicle_id", vehicle.id).maybeSingle();

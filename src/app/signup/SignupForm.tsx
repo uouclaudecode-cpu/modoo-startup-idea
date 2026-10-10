@@ -62,6 +62,11 @@ export function SignupForm({ next = "/" }: { next?: string }) {
       });
       return;
     }
+    // 이미 가입(확인까지)한 이메일이면 Supabase가 오류 대신 빈 identities 를 돌려주고 메일은 보내지 않아요
+    if (data.user && data.user.identities?.length === 0) {
+      setErrors({ form: "이미 가입된 이메일이에요. 로그인하거나 비밀번호 찾기를 해 주세요." });
+      return;
+    }
     if (data.session) {
       // 이메일 확인을 쓰지 않는 설정이면 바로 로그인됩니다.
       toast.success("가입했어요! 환영해요.");

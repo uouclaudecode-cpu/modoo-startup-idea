@@ -7,7 +7,7 @@ import { ChatSkeleton } from "@/components/skeletons/PageSkeletons";
 import { Button, Card, EmptyState, ErrorState, Textarea, useToast } from "@/components/ui";
 import { hasMoneyRequest } from "@/lib/alerts";
 import { copyText } from "@/lib/clipboard";
-import { loadFinderThreads, type FinderThreadRef } from "@/lib/finderThreads";
+import { loadFinderThreads, saveFinderThread, type FinderThreadRef } from "@/lib/finderThreads";
 import { formatDateTime, friendlyError, timeAgo } from "@/lib/format";
 import { browserPushSubscription } from "@/lib/push";
 import { createClient } from "@/lib/supabase/client";
@@ -54,7 +54,9 @@ export function FinderChat() {
       const list = loadFinderThreads();
       const t = tokenFromHash(list);
       setRefs(list);
-      setToken(t ?? (list.length === 1 ? list[0].token : null));
+      // 답장 알림(#rid=…)으로 왔는데 이 기기에 없는 대화면 다른 대화를 대신 열지 않아요
+      const ridMiss = !t && /rid=/.test(window.location.hash);
+      setToken(t ?? (!ridMiss && list.length === 1 ? list[0].token : null));
       setReady(true);
     };
     read();
@@ -81,6 +83,11 @@ export function FinderChat() {
     }
     setLoadError(false);
     setThread(data ? (data as Thread) : "missing");
+    // 다른 기기에서 저장한 대화 주소로 열었어도 이 기기에 기억해 둬요 (답장 알림을 누르면 바로 열리게)
+    const rid = (data as { report_id?: string } | null)?.report_id;
+    if (rid && !loadFinderThreads().some((t) => t.token === token)) {
+      saveFinderThread({ token, reportId: rid, createdAt: (data as { created_at?: string }).created_at ?? new Date().toISOString(), label: "발견 제보" });
+    }
   }, [token]);
 
   async function retry() {

@@ -50,7 +50,8 @@ export async function middleware(request: NextRequest) {
   }
   // 이미 로그인했는데 로그인·회원가입 화면에 오면 가려던 곳(없으면 내 이동수단)으로
   if (user && (path === "/login" || path === "/signup")) {
-    const next = safeNext(request.nextUrl.searchParams.get("next"));
+    let next = safeNext(request.nextUrl.searchParams.get("next"));
+    if (/^\/(login|signup)(\/|\?|$)/.test(next)) next = "/";
     return NextResponse.redirect(new URL(next, request.nextUrl.origin));
   }
   // 개발용 디자인 확인 화면은 실제 사이트에서 숨김

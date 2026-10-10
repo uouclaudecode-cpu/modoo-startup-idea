@@ -25,6 +25,7 @@ type Props = {
 export function OwnerChat({ reportId, createdAt, trust, anonymous, blockedAt, onBlockedChange }: Props) {
   const toast = useToast();
   const [msgs, setMsgs] = useState<Msg[] | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [confirmBlock, setConfirmBlock] = useState(false);
@@ -38,7 +39,12 @@ export function OwnerChat({ reportId, createdAt, trust, anonymous, blockedAt, on
       .select("id, sender, body, created_at")
       .eq("report_id", reportId)
       .order("created_at");
-    if (error) return console.error(error);
+    if (error) {
+      console.error(error);
+      setLoadFailed(true);
+      return;
+    }
+    setLoadFailed(false);
     setMsgs(data as Msg[]);
   }, [reportId]);
 
@@ -83,7 +89,16 @@ export function OwnerChat({ reportId, createdAt, trust, anonymous, blockedAt, on
     <div className="space-y-2 rounded-xl bg-slate-50 p-3">
       <p className="text-[13px] font-semibold text-ink-muted">발견자와 익명 대화</p>
       {msgs === null ? (
-        <p className="text-[13px] text-ink-muted">불러오는 중...</p>
+        loadFailed ? (
+          <p className="flex items-center justify-between gap-2 text-[13px] text-rose-700">
+            대화를 불러오지 못했어요.
+            <button type="button" onClick={load} className="flex-none font-semibold underline-offset-2 hover:underline">
+              다시 시도
+            </button>
+          </p>
+        ) : (
+          <p className="text-[13px] text-ink-muted">불러오는 중...</p>
+        )
       ) : msgs.length === 0 ? (
         <p className="text-[13px] text-ink-muted">아직 대화가 없어요. 먼저 고맙다는 인사를 보내 보세요.</p>
       ) : (
