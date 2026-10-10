@@ -177,15 +177,29 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
         </div>
         {v.status === "recovered" && <p className="text-sm text-ink-muted">최근 주인이 되찾은 이동수단이에요.</p>}
       </Card>
+      {/* 1) 발견 제보가 먼저: 분실 신고 전이어도, 버려진 자전거라면 주인이 아직 모를 수 있어요 */}
+      {!ownVehicleId && (
+        <div className="rounded-3xl bg-gradient-to-br from-orange-500 to-rose-600 p-5 text-white shadow-lift">
+          <p className="flex items-center gap-2 text-lg font-extrabold">
+            <MapPinned aria-hidden className="h-5 w-5" />
+            혹시 주인을 잃은 것 같나요?
+          </p>
+          <p className="mt-1.5 text-[14px] leading-relaxed text-white/90">
+            엉뚱한 곳에 버려져 있거나 이상해 보이면, 주인이 아직 모를 수 있어요. 지금 위치와 사진을 보내 주세요.
+          </p>
+          <ButtonLink href={`${reportHref}?kind=found`} variant="light" size="lg" full className="mt-4" icon={<MapPinned aria-hidden className="h-5 w-5" />}>
+            발견 제보하기
+          </ButtonLink>
+        </div>
+      )}
+      {/* 2) 주인에게 알리기 (사유 고르기) */}
       {notice}
-      <div className="grid grid-cols-2 gap-2">
+      {/* 3) 직접 메시지 */}
+      {!ownVehicleId && (
         <ButtonLink href={`${reportHref}?kind=contact`} full variant="secondary" icon={<MessageCircle aria-hidden className="h-4 w-4" />}>
-          메시지 쓰기
+          주인에게 직접 메시지 쓰기
         </ButtonLink>
-        <ButtonLink href={`${reportHref}?kind=found`} full variant="secondary" icon={<MapPinned aria-hidden className="h-4 w-4" />}>
-          발견 제보
-        </ButtonLink>
-      </div>
+      )}
       {privacy}
       {details}
     </div>
