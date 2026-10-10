@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import type { NavRoute, NavStep } from "@/lib/nav";
 import { rateLimiter } from "@/lib/rateLimit";
+import { bumpUsage } from "@/lib/usage";
 
 /**
  * 자전거 길찾기: 오픈스트리트맵 자전거 길찾기 서버(OSRM, routing.openstreetmap.de)에 물어봐요.
@@ -24,6 +25,7 @@ export async function GET(req: Request) {
   const to = parse(url.searchParams.get("to"));
   if (!from || !to) return NextResponse.json({ error: "출발지와 도착지를 국내 위치로 골라 주세요." }, { status: 400 });
 
+  after(() => bumpUsage("routing"));
   const q = `${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson&steps=true&alternatives=false`;
   try {
     const r = await fetch(`${OSRM}/${q}`, {

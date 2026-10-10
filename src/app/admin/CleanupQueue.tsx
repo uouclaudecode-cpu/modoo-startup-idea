@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react";
 import { Button, Card, useToast } from "@/components/ui";
 import { friendlyError } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
+import { withThumb } from "@/lib/images";
 
 type Item = { bucket: string; path: string };
 
@@ -33,7 +34,8 @@ export function CleanupQueue({ count }: { count: number }) {
         for (const it of items) byBucket.set(it.bucket, [...(byBucket.get(it.bucket) ?? []), it.path]);
         for (const [bucket, paths] of byBucket) {
           // 이미 없는 파일은 그냥 넘어가요 (오류 없이 지워진 목록에서 빠짐)
-          const { error: rmErr } = await supabase.storage.from(bucket).remove(paths);
+          // 목록용 작은 사진(_t)도 함께 지워요 (없으면 그냥 넘어가요)
+          const { error: rmErr } = await supabase.storage.from(bucket).remove(withThumb(paths));
           if (rmErr) throw rmErr;
           const { data: n, error: clrErr } = await supabase.rpc("admin_clear_cleanup", { p_bucket: bucket, p_paths: paths });
           if (clrErr) throw clrErr;

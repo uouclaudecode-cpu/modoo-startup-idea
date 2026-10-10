@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { distance } from "@/lib/ride/geo";
 import { rateLimiter } from "@/lib/rateLimit";
+import { bumpUsage } from "@/lib/usage";
 
 /**
  * 장소 검색 (길 안내 도착지).
@@ -17,6 +18,8 @@ type KakaoPlace = { place_name: string; road_address_name: string; address_name:
 type KakaoAddress = { address_name: string; x: string; y: string; road_address?: { address_name: string; building_name?: string } | null };
 
 async function kakao(path: string, params: Record<string, string>, key: string) {
+  // 카카오는 부를 때마다 사용량을 세요 (무료 한도 넘으면 건당 요금)
+  after(() => bumpUsage("kakao_search"));
   const u = new URL(`https://dapi.kakao.com/v2/local/search/${path}.json`);
   for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
   // 카카오 정책: 결과를 서버에 저장하면 안 돼서 매번 새로 불러요 (cache: no-store)
@@ -50,6 +53,7 @@ async function searchKakao(q: string, at: { lat: number; lng: number } | null, k
 type NominatimItem = { lat: string; lon: string; name?: string; display_name: string };
 
 async function searchOsm(q: string, at: { lat: number; lng: number } | null): Promise<PlaceResult[]> {
+  after(() => bumpUsage("osm_search"));
   const n = new URL("https://nominatim.openstreetmap.org/search");
   n.searchParams.set("q", q);
   n.searchParams.set("format", "jsonv2");

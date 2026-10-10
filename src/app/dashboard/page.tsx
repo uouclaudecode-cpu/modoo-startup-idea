@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bike, BookOpen, Bug, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Navigation, Plus, Printer, Route, Search, Siren, Wind } from "lucide-react";
+import { Bike, BookOpen, Bug, Gauge, ChartColumn, ChevronRight, Flag, History, MapPin, MessageCircleQuestion, Navigation, Plus, Printer, Route, Search, Siren, Wind } from "lucide-react";
 import { MaintenanceAlert } from "@/components/maintenance/MaintenanceAlert";
 import { MaintenanceOverview } from "@/components/maintenance/MaintenanceOverview";
 import { PushPrompt } from "@/components/onboarding/PushPrompt";
@@ -277,6 +277,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <MenuRow href="/admin/areas" icon={MapPin} label="관심 구역 통계" />
             <MenuRow href="/admin/spots" icon={Wind} label="공기주입기·보관소·사고 자료" />
             <MenuRow href="/admin/reports" icon={Flag} label="신고 처리" />
+            <MenuRow href="/admin/usage" icon={Gauge} label="서비스 사용량" />
             <MenuRow href="/admin/errors" icon={Bug} label={`오류 알림${errorCount ? ` (${errorCount})` : ""}`} />
           </Card>
         )}

@@ -5,6 +5,7 @@ import { Bike, LocateFixed, MapPinOff } from "lucide-react";
 import { Skeleton } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import {
+  createMap,
   loadNaverMaps,
   MapUnavailableError,
   onNaverAuthFailure,
@@ -64,7 +65,7 @@ export function RideMap({ path, current = null, follow = false, fit = false, cla
         if (cancelled || !elRef.current) return;
         mapsRef.current = maps;
         const start = current ?? path[path.length - 1] ?? DEFAULT_CENTER;
-        const map = new maps.Map(elRef.current, {
+        const map = createMap(maps, elRef.current, {
           center: new maps.LatLng(start.lat, start.lng),
           zoom: 16,
           minZoom: 7,

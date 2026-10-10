@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Crosshair, MapPin, X } from "lucide-react";
 import { Button, Skeleton } from "@/components/ui";
 import { useCurrentLocation } from "@/lib/location";
-import { loadNaverMaps, MapUnavailableError, onNaverAuthFailure, type NaverMaps, type NMap, type NMarker } from "@/lib/naverMap";
+import { createMap, loadNaverMaps, MapUnavailableError, onNaverAuthFailure, type NaverMaps, type NMap, type NMarker } from "@/lib/naverMap";
 
 export type PickedLocation = { lat: number; lng: number };
 
@@ -33,7 +33,7 @@ export function LocationPicker({ value, onChange, label }: { value: PickedLocati
         if (cancelled || !elRef.current) return;
         mapsRef.current = maps;
         const start = value ?? DEFAULT_CENTER;
-        const map = new maps.Map(elRef.current, {
+        const map = createMap(maps, elRef.current, {
           center: new maps.LatLng(start.lat, start.lng),
           zoom: value ? 17 : 15,
           scaleControl: false,

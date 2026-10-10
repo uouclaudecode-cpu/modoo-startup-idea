@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Bike, LocateFixed, MapPinOff } from "lucide-react";
 import { Skeleton } from "@/components/ui";
 import { cn } from "@/lib/cn";
-import { loadNaverMaps, MapUnavailableError, onNaverAuthFailure, type NaverMaps, type NLayer, type NMap, type NMarker, type NPolyline } from "@/lib/naverMap";
+import { createMap, loadNaverMaps, MapUnavailableError, onNaverAuthFailure, type NaverMaps, type NLayer, type NMap, type NMarker, type NPolyline } from "@/lib/naverMap";
 import type { LatLng } from "@/lib/ride/geo";
 
 /** 첫 화면 기본 위치: 울산대학교 */
@@ -78,7 +78,7 @@ export function BikeMap({ pins = [], circles = [], onPinClick, route, passedInde
         if (cancelled || !elRef.current) return;
         mapsRef.current = maps;
         const start = center ?? current ?? DEFAULT_CENTER;
-        const map = new maps.Map(elRef.current, {
+        const map = createMap(maps, elRef.current, {
           center: new maps.LatLng(start.lat, start.lng),
           zoom: 15,
           minZoom: 7,

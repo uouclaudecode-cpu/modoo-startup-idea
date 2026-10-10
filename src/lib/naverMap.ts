@@ -1,3 +1,5 @@
+import { bumpUsage } from "./usage";
+
 /**
  * 네이버 지도 JavaScript API v3 불러오기 (Client ID는 NEXT_PUBLIC_NAVER_MAP_CLIENT_ID 환경변수)
  * 스크립트는 처음 한 번만 넣고, 이후에는 같은 Promise를 돌려줘요.
@@ -43,6 +45,12 @@ declare global {
     /** 네이버 지도가 인증(Client ID·웹 서비스 URL)에 실패하면 부르는 함수 */
     navermap_authFailure?: () => void;
   }
+}
+
+/** 네이버 지도 만들기 + 사용량 세기 (지도를 하나 만들 때마다 1번, 관리자 '사용량' 화면용) */
+export function createMap(maps: NaverMaps, el: HTMLElement, opts: Record<string, unknown>) {
+  void bumpUsage("naver_map");
+  return new maps.Map(el, opts);
 }
 
 export const NAVER_MAP_CLIENT_ID = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID ?? "";

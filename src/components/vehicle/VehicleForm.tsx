@@ -8,7 +8,7 @@ import { PhotoPicker } from "@/components/ui/PhotoPicker";
 import { StickerSpotInput } from "@/components/vehicle/StickerSpotInput";
 import { cn } from "@/lib/cn";
 import { friendlyError } from "@/lib/format";
-import { prepareImage, vehicleImageUrl } from "@/lib/images";
+import { prepareImage, thumbPath, vehicleImageUrl, withThumb } from "@/lib/images";
 import { createClient } from "@/lib/supabase/client";
 import { VEHICLE_TYPES, type Vehicle, type VehicleType } from "@/lib/types";
 import { BIKE_SUBTYPES } from "@/lib/subtypes";
@@ -63,19 +63,24 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
         return;
       }
 
-      // 1) 사진 올리기 (본인 폴더: {사용자ID}/{무작위}.jpg)
+      // 1) 사진 올리기 (본인 폴더: {사용자ID}/{무작위}.webp + 목록용 작은 사진 _t.webp)
       if (photo) {
-        let blob: Blob;
+        let img: Awaited<ReturnType<typeof prepareImage>>;
         try {
-          blob = await prepareImage(photo);
+          img = await prepareImage(photo, { thumb: true });
         } catch (err) {
           setErrors({ photo: err instanceof Error ? err.message : "사진을 처리하지 못했어요." });
           return;
         }
-        imagePath = `${user.id}/${crypto.randomUUID()}.jpg`;
+        imagePath = `${user.id}/${crypto.randomUUID()}.${img.ext}`;
         const { error: upErr } = await supabase.storage
           .from("vehicle-images")
-          .upload(imagePath, blob, { contentType: "image/jpeg", upsert: false });
+          .upload(imagePath, img.blob, { contentType: img.type, upsert: false });
+        if (!upErr && img.thumb) {
+          // 작은 사진은 실패해도 큰 사진으로 보여 줘요
+          const { error: tErr } = await supabase.storage.from("vehicle-images").upload(thumbPath(imagePath), img.thumb.blob, { contentType: img.thumb.type, upsert: false });
+          if (tErr) console.error(tErr);
+        }
         if (upErr) {
           console.error(upErr);
           imagePath = null;
@@ -130,7 +135,7 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
     } catch (err) {
       console.error(err);
       // 저장에 실패하면 먼저 올린 사진을 지워 쓰레기 파일이 남지 않게 합니다.
-      if (imagePath) await supabase.storage.from("vehicle-images").remove([imagePath]);
+      if (imagePath) await supabase.storage.from("vehicle-images").remove(withThumb([imagePath]));
       setErrors({ form: friendlyError(err, `${editing ? "수정하지" : "등록하지"} 못했어요. 잠시 후 다시 시도해 주세요.`) });
       toast.error(`${editing ? "수정하지" : "등록하지"} 못했어요.`);
     } finally {

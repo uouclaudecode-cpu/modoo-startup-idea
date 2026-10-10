@@ -98,7 +98,7 @@ export default async function VehicleDetailPage({
       {/* 머리: 작은 사진 + 이름·상태. 자세한 정보는 접어 둬요 */}
       <Card className="p-4">
         <div className="flex items-center gap-4">
-          <VehicleImage src={vehicleImageUrl(vehicle.image_path)} type={vehicle.type} alt={vehicle.name} className="h-20 w-20 flex-none rounded-2xl" />
+          <VehicleImage thumb src={vehicleImageUrl(vehicle.image_path)} type={vehicle.type} alt={vehicle.name} className="h-20 w-20 flex-none rounded-2xl" />
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
               <h1 className="min-w-0 break-words text-xl font-extrabold tracking-tight">{vehicle.name}</h1>

@@ -132,7 +132,7 @@ export function ListingCheck() {
                   const href = m.alert_id ? `/alerts/${m.alert_id}` : m.post_id ? `/community/${m.post_id}` : null;
                   const body = (
                     <>
-                      <VehicleImage src={vehicleImageUrl(m.vehicle.image_path)} type={m.vehicle.type} alt="" className="h-16 w-16 flex-none rounded-lg" />
+                      <VehicleImage thumb src={vehicleImageUrl(m.vehicle.image_path)} type={m.vehicle.type} alt="" className="h-16 w-16 flex-none rounded-lg" />
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-bold">{vehicleTitle(m.vehicle)}</p>
                         <p className="truncate text-[13px] text-ink-muted">

@@ -11,7 +11,7 @@ import { LocationPicker, type PickedLocation } from "@/components/map/LocationPi
 import { cn } from "@/lib/cn";
 import { POST_KIND_META, postImageUrl, type LostPost, type PostKind } from "@/lib/community";
 import { friendlyError } from "@/lib/format";
-import { uploadPhoto, vehicleImageUrl } from "@/lib/images";
+import { uploadPhoto, vehicleImageUrl, withThumb } from "@/lib/images";
 import type { VehicleStatus } from "@/lib/status";
 import { createClient } from "@/lib/supabase/client";
 import { VEHICLE_TYPES, typeEmoji, type VehicleType } from "@/lib/types";
@@ -205,7 +205,7 @@ export function NewPostForm({
       let image: Image = NO_IMAGE;
       if (photo) {
         try {
-          uploaded = await uploadPhoto(supabase, "community-images", user.id, photo);
+          uploaded = await uploadPhoto(supabase, "community-images", user.id, photo, { thumb: true });
         } catch (err) {
           setErrors({ photo: err instanceof Error ? err.message : "사진을 처리하지 못했어요." });
           return;
@@ -265,7 +265,7 @@ export function NewPostForm({
       router.refresh();
     } catch (err) {
       console.error(err);
-      if (uploaded) await supabase.storage.from("community-images").remove([uploaded]);
+      if (uploaded) await supabase.storage.from("community-images").remove(withThumb([uploaded]));
       const what = post ? "글을 고치지" : "글을 올리지";
       setErrors({ form: friendlyError(err, `${what} 못했어요. 잠시 후 다시 시도해 주세요.`) });
       toast.error(`${what} 못했어요.`);

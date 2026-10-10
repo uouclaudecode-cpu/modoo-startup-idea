@@ -62,14 +62,14 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
     const supabase = createClient();
     let imagePath: string | null = null;
     if (opts.photo) {
-      let blob: Blob;
+      let img: Awaited<ReturnType<typeof prepareImage>>;
       try {
-        blob = await prepareImage(opts.photo);
+        img = await prepareImage(opts.photo);
       } catch (err) {
         throw new Error(err instanceof Error ? err.message : "사진을 처리하지 못했어요.");
       }
-      imagePath = `reports/${crypto.randomUUID()}.jpg`;
-      const { error: upErr } = await supabase.storage.from("report-images").upload(imagePath, blob, { contentType: "image/jpeg" });
+      imagePath = `reports/${crypto.randomUUID()}.${img.ext}`;
+      const { error: upErr } = await supabase.storage.from("report-images").upload(imagePath, img.blob, { contentType: img.type });
       if (upErr) {
         console.error(upErr);
         throw new Error("사진 업로드에 실패했어요. 다시 시도해 주세요.");

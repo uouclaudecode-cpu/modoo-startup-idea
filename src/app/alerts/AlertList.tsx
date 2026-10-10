@@ -58,7 +58,7 @@ export function AlertList({ initial, areaLabel }: { initial: NearbyAlert[]; area
               <li key={a.id}>
                 <Link href={`/alerts/${a.id}`}>
                   <Card className="flex gap-4 p-3 transition-shadow hover:shadow-lift">
-                    <VehicleImage src={vehicleImageUrl(a.image_path)} type={a.type} alt={vehicleTitle(a)} className="h-24 w-24 flex-none rounded-xl" />
+                    <VehicleImage thumb src={vehicleImageUrl(a.image_path)} type={a.type} alt={vehicleTitle(a)} className="h-24 w-24 flex-none rounded-xl" />
                     <div className="min-w-0 flex-1 py-0.5">
                       <p className="flex items-center gap-1.5 text-[12px] font-bold text-rose-600">
                         <Siren aria-hidden className="h-3.5 w-3.5" />

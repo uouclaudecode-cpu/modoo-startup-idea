@@ -6,6 +6,7 @@
 import { distance } from "./ride/geo";
 import { SGG_CODES } from "./sggCodes";
 import { toSpotRow, type PublicParkingItem } from "./spots";
+import { bumpUsage } from "./usage";
 
 const SPOTS_ENDPOINT = "https://apis.data.go.kr/1741000/bicycle_parking_info/info";
 const HAZARD_ENDPOINT = "https://apis.data.go.kr/B552061/frequentzoneBicycle/getRestFrequentzoneBicycle";
@@ -50,6 +51,7 @@ export async function fetchSpotRows(key: string, start: number, pages: number) {
   const got = await Promise.all(Array.from({ length: pages }, (_, i) => fetchSpotsPage(key, start + i)));
   const raw = got.flatMap((p) => p.items);
   const rows = raw.map(toSpotRow).filter((r): r is NonNullable<typeof r> => r !== null);
+  await bumpUsage("data_go_kr", pages);
   return { total: got[0]?.total ?? 0, rows, skipped: raw.length - rows.length };
 }
 
@@ -132,6 +134,7 @@ export async function fetchHazardRows(key: string, year: number, from: number, c
     items.push(...got.flat());
   }
   const rows = items.map(toHazardRow).filter((r): r is NonNullable<typeof r> => r !== null);
+  await bumpUsage("data_go_kr", codes.length);
   const end = from + codes.length;
   return { rows, done: end, total: SGG_CODES.length, next: end < SGG_CODES.length ? end : null };
 }
@@ -139,5 +142,6 @@ export async function fetchHazardRows(key: string, year: number, from: number, c
 /** 자료가 올라온 가장 최근 해: 지난해 자료가 아직 없으면 그 전 해 (서울 강남구로 확인) */
 export async function latestHazardYear(key: string) {
   const y = new Date().getFullYear() - 1;
+  await bumpUsage("data_go_kr");
   return (await fetchHazardArea(key, y, "11680")).length > 0 ? y : y - 1;
 }

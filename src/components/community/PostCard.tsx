@@ -38,7 +38,7 @@ export function PostCard({ post: p, avatarPath }: { post: PostListItem; avatarPa
   return (
     <Link href={`/community/${p.id}`} className="block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
       <Card className={cn("flex gap-4 p-3 transition-shadow hover:shadow-lift", resolved && "opacity-75")}>
-        <VehicleImage src={postImageUrl(p)} type={p.type} alt={p.title} className="h-24 w-24 flex-none rounded-xl sm:h-28 sm:w-28" />
+        <VehicleImage thumb src={postImageUrl(p)} type={p.type} alt={p.title} className="h-24 w-24 flex-none rounded-xl sm:h-28 sm:w-28" />
         <div className="min-w-0 flex-1 py-0.5">
           <div className="flex items-center gap-2">
             <PostStatusBadge status={p.status} kind={kind} />

@@ -45,7 +45,7 @@ export function MyAlerts({ items, failed }: { items: MyAlert[]; failed: boolean 
               return (
                 <li key={`${a.role}-${a.id}`}>
                   <Link href={`/alerts/${a.id}`} className="flex items-center gap-3 py-2.5">
-                    <VehicleImage src={vehicleImageUrl(a.image_path)} type={a.type} alt={title} className="h-14 w-14 flex-none rounded-xl" />
+                    <VehicleImage thumb src={vehicleImageUrl(a.image_path)} type={a.type} alt={title} className="h-14 w-14 flex-none rounded-xl" />
                     <span className="min-w-0 flex-1">
                       <span className="flex flex-wrap items-center gap-x-1.5 text-[13px] text-ink-muted">
                         <span className={`font-semibold ${a.role === "owner" ? "text-rose-600" : "text-brand-700"}`}>{a.role === "owner" ? "내 경보" : "내가 제보"}</span>

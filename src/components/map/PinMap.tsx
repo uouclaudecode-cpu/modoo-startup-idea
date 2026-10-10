@@ -5,7 +5,7 @@ import { ExternalLink, MapPinOff } from "lucide-react";
 import { Skeleton } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { kakaoMapLink } from "@/lib/map";
-import { loadNaverMaps, MapUnavailableError, onNaverAuthFailure, type NInfoWindow, type NMap, type NMarker } from "@/lib/naverMap";
+import { createMap, loadNaverMaps, MapUnavailableError, onNaverAuthFailure, type NInfoWindow, type NMap, type NMarker } from "@/lib/naverMap";
 
 export type MapPin = {
   lat: number;
@@ -47,7 +47,7 @@ export function PinMap({ pins, className }: { pins: MapPin[]; className?: string
     loadNaverMaps()
       .then((maps) => {
         if (cancelled || !elRef.current || list.length === 0) return;
-        map = new maps.Map(elRef.current, {
+        map = createMap(maps, elRef.current, {
           center: new maps.LatLng(list[0].lat, list[0].lng),
           zoom: 16,
           scaleControl: false,
