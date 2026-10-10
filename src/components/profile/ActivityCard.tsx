@@ -10,7 +10,7 @@ export function ActivityCard({ a }: { a: Activity }) {
   const lv = activityLevel(a);
   const stats: { emoji: string; label: string; value: string; note: string }[] = [
     { emoji: "🙌", label: "주인에게 알려 준 횟수", value: `${a.helped}번`, note: "QR을 찍어 알려 주거나 도난 경보에 본 곳을 알려 준 횟수" },
-    { emoji: "💛", label: "받은 고마워요", value: `${a.thanked}번`, note: "주인이 도움이 됐다고 한 횟수" },
+    { emoji: "💛", label: "받은 감사 인사", value: `${a.thanked}번`, note: "주인이 내 제보에 '도움이 됐어요'를 눌렀어요" },
     { emoji: "🎉", label: "되찾아 준 이동수단", value: `${a.returned}대`, note: "내가 알려 준 뒤 주인이 찾았어요" },
     { emoji: "🚲", label: "되찾은 내 이동수단", value: `${a.recovered}대`, note: "잃어버렸다가 다시 찾았어요" },
     { emoji: "📏", label: "라이딩 거리", value: a.ride_m > 0 ? formatDistance(a.ride_m) : "0 km", note: a.ride_count > 0 ? `모두 ${a.ride_count}번 탔어요` : "아직 탄 기록이 없어요" },
@@ -51,7 +51,7 @@ export function ActivityCard({ a }: { a: Activity }) {
       </dl>
       <div className="space-y-0.5 text-[12px] leading-relaxed text-ink-muted">
         <p>{lv.now.hint}</p>
-        <p className="text-ink-faint">점수 모으는 법: 알려 주기 1점 · 고마워요 받기 3점 · 되찾아 주기 10점</p>
+        <p className="text-ink-faint">점수 모으는 법: 알려 주기 1점 · 감사 인사 받기 3점 · 되찾아 주기 10점</p>
       </div>
     </Card>
   );
