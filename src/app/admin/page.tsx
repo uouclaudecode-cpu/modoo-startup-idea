@@ -34,7 +34,7 @@ export default async function AdminHomePage() {
 
   if (error) {
     console.error(error);
-    // PGRST202: 함수를 찾지 못함 → 007_admin_stats.sql 을 아직 실행하지 않은 경우
+    // PGRST202: 함수를 찾지 못함 → 007_admin_stats.sql을 아직 실행하지 않은 경우
     const missing = error.code === "PGRST202";
     return (
       <div className="mx-auto max-w-xl space-y-5">
@@ -45,7 +45,7 @@ export default async function AdminHomePage() {
           title="통계를 불러오지 못했어요"
           description={
             missing
-              ? "Supabase에 supabase/007_admin_stats.sql 을 아직 실행하지 않은 것 같아요. 실행한 뒤 다시 불러와 주세요."
+              ? "Supabase에 supabase/007_admin_stats.sql을 아직 실행하지 않은 것 같아요. 실행한 뒤 다시 불러와 주세요."
               : friendlyError(error, "인터넷 연결을 확인하고 다시 불러와 주세요.")
           }
           action={

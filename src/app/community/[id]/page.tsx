@@ -8,7 +8,7 @@ import { PinMap, type MapPin as PinMapPin } from "@/components/map/PinMap";
 import { PostStatusBadge } from "@/components/community/PostStatusBadge";
 import { Avatar } from "@/components/profile/Avatar";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
-import { loadCommentAvatars, loadPostAvatars, postImageUrl, UUID_RE, type LostPost, type PostComment } from "@/lib/community";
+import { loadCommentAvatars, loadPostAvatars, POST_KIND_META, postImageUrl, postKind, UUID_RE, type LostPost, type PostComment } from "@/lib/community";
 import { formatDate, formatDateTime, timeAgo } from "@/lib/format";
 import { avatarUrl, publicImageUrl } from "@/lib/images";
 import { createClient } from "@/lib/supabase/server";
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const p = res.post;
   const description = `${typeLabel(p.type)}${p.color ? ` · ${p.color}` : ""}${p.lost_area ? ` · ${p.lost_area}` : ""} — 보셨다면 댓글로 알려 주세요.`;
   // 카카오톡 등 공유 미리보기에 제목·설명이 나오도록 (사진 카드는 opengraph-image.tsx 가 만들어요)
-  const status = p.status === "resolved" ? "[찾았어요]" : "[찾는 중]";
+  const status = `[${POST_KIND_META[postKind(p.kind)].status[p.status === "resolved" ? "resolved" : "open"]}]`;
   return {
     title: p.title,
     description,
@@ -94,10 +94,12 @@ export default async function PostPage({ params }: Params) {
     stickerSpot = v?.sticker_spot ?? "";
   }
 
-  // 지도 핀: 잃어버린 곳 + 볼 수 있는 댓글 중 위치를 남긴 것 (비밀 댓글은 볼 수 있는 사람에게만)
+  const kind = postKind(post.kind);
+  const meta = POST_KIND_META[kind];
+  // 지도 핀: 잃어버린(발견한) 곳 + 볼 수 있는 댓글 중 위치를 남긴 것 (비밀 댓글은 볼 수 있는 사람에게만)
   const pins: PinMapPin[] = [];
   if (post.lost_lat != null && post.lost_lng != null) {
-    pins.push({ lat: post.lost_lat, lng: post.lost_lng, mark: "분실", label: `잃어버린 곳${post.lost_area ? `: ${post.lost_area}` : ""}`, color: "rose" });
+    pins.push({ lat: post.lost_lat, lng: post.lost_lng, mark: kind === "found" ? "발견" : "분실", label: `${meta.place}${post.lost_area ? `: ${post.lost_area}` : ""}`, color: "rose" });
   }
   let seen = 0;
   for (const c of comments) {
@@ -147,7 +149,7 @@ export default async function PostPage({ params }: Params) {
         <div className="space-y-4 p-5">
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-2">
-              <PostStatusBadge status={post.status} />
+              <PostStatusBadge status={post.status} kind={kind} />
               {user && !isAuthor && (
                 <ContentMenu
                   target="post"
@@ -171,7 +173,7 @@ export default async function PostPage({ params }: Params) {
               <p className="flex items-start gap-2">
                 <MapPin aria-hidden className="mt-0.5 h-4 w-4 flex-none text-rose-600" />
                 <span>
-                  <span className="text-[13px] text-ink-muted">잃어버린 곳</span>
+                  <span className="text-[13px] text-ink-muted">{meta.place}</span>
                   <br />
                   <b>{post.lost_area}</b>
                 </span>
@@ -180,7 +182,7 @@ export default async function PostPage({ params }: Params) {
             {post.lost_on && (
               <p className="flex items-center gap-2">
                 <CalendarDays aria-hidden className="h-4 w-4 flex-none text-rose-600" />
-                <span className="text-[13px] text-ink-muted">잃어버린 날</span>
+                <span className="text-[13px] text-ink-muted">{meta.day}</span>
                 <b>{formatDate(post.lost_on)}</b>
               </p>
             )}
@@ -201,7 +203,7 @@ export default async function PostPage({ params }: Params) {
       {pins.length > 0 && (
         <section aria-label="지도" className="space-y-1.5">
           <PinMap pins={pins} className="h-60" />
-          <p className="text-[12px] text-ink-muted">빨간 핀은 잃어버린 곳, 파란·주황 핀은 댓글로 알려 준 본 곳이에요. 핀을 누르면 설명이 보여요.</p>
+          <p className="text-[12px] text-ink-muted">빨간 핀은 {meta.place}, 파란·주황 핀은 댓글로 알려 준 본 곳이에요. 핀을 누르면 설명이 보여요.</p>
         </section>
       )}
 

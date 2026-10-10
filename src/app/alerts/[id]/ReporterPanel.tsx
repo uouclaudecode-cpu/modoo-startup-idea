@@ -147,7 +147,7 @@ export function ReporterPanel({ alert, mySightings, myRewards, photos }: { alert
                     setError("");
                   }}
                   aria-pressed={kind === k}
-                  className={`flex h-12 items-center justify-center gap-1.5 rounded-xl text-[14px] font-semibold ring-1 ring-inset transition-colors ${kind === k ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink ring-line hover:bg-slate-50"}`}
+                  className={`flex min-h-12 items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-center text-[14px] leading-tight font-semibold ring-1 ring-inset transition-colors ${kind === k ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-ink ring-line hover:bg-slate-50"}`}
                 >
                   <Icon aria-hidden className="h-4 w-4" />
                   {label}
@@ -174,14 +174,14 @@ export function ReporterPanel({ alert, mySightings, myRewards, photos }: { alert
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                 />
-                <Input label="판매 가격 (선택)" inputMode="numeric" placeholder="예: 150000" value={price} onChange={(e) => setPrice(e.target.value)} />
+                <Input label="판매 가격 (선택)" inputMode="numeric" placeholder="예) 150000" value={price} onChange={(e) => setPrice(e.target.value)} />
                 <PhotoPicker label="매물 캡처 (선택)" hint="글이 지워져도 남도록 캡처를 같이 올려 주세요." value={photo} onChange={setPhoto} />
                 <p className="rounded-xl bg-orange-50 p-3 text-[13px] leading-relaxed text-orange-900">
                   판매자에게 따지거나 혼자 만나러 가지 마세요. 링크는 주인에게만 보여요.
                 </p>
               </>
             )}
-            <Textarea label="한 줄 메모 (선택)" placeholder="예: 정문 앞 거치대, 흰 림 같아요" value={note} maxLength={300} rows={2} onChange={(e) => setNote(e.target.value)} />
+            <Textarea label="한 줄 메모 (선택)" placeholder="예) 정문 앞 거치대, 흰 림 같아요" value={note} maxLength={300} rows={2} onChange={(e) => setNote(e.target.value)} />
             {error && (
               <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
                 {error}
@@ -239,7 +239,7 @@ export function ReporterPanel({ alert, mySightings, myRewards, photos }: { alert
           </>
         }
       >
-        <Textarea label="이유 (선택)" placeholder="예: 남의 자전거 같아요, 장난 경보 같아요" value={flagReason} maxLength={200} rows={3} onChange={(e) => setFlagReason(e.target.value)} />
+        <Textarea label="이유 (선택)" placeholder="예) 남의 자전거 같아요, 장난 경보 같아요" value={flagReason} maxLength={200} rows={3} onChange={(e) => setFlagReason(e.target.value)} />
       </Modal>
     </div>
   );

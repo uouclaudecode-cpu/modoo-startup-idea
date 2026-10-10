@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { createClient } from "@supabase/supabase-js";
 import { site } from "@/config/site";
-import { postImageUrl, UUID_RE, type LostPost } from "@/lib/community";
+import { POST_KIND_META, postImageUrl, postKind, UUID_RE, type LostPost } from "@/lib/community";
 import { formatDate } from "@/lib/format";
 import { fetchAsDataUrl, OG_SIZE, ogFonts, BrandLogo } from "@/lib/ogImage";
 import { supabaseEnv } from "@/lib/supabase/env";
@@ -11,7 +11,7 @@ export const alt = "B-LOCK 분실 글";
 export const size = OG_SIZE;
 export const contentType = "image/png";
 
-type Row = Pick<LostPost, "title" | "type" | "color" | "brand" | "model" | "lost_area" | "lost_on" | "status" | "image_bucket" | "image_path">;
+type Row = Pick<LostPost, "kind" | "title" | "type" | "color" | "brand" | "model" | "lost_area" | "lost_on" | "status" | "image_bucket" | "image_path">;
 
 /**
  * 분실 글을 카카오톡 등에 공유할 때 보이는 카드: 사진 + 찾는 중/찾았어요 + 제목 + 잃어버린 곳.
@@ -25,7 +25,7 @@ export default async function PostOgImage({ params }: { params: Promise<{ id: st
     const supabase = createClient(url, key, { auth: { persistSession: false } });
     const { data, error } = await supabase
       .from("lost_posts")
-      .select("title, type, color, brand, model, lost_area, lost_on, status, image_bucket, image_path")
+      .select("kind, title, type, color, brand, model, lost_area, lost_on, status, image_bucket, image_path")
       .eq("id", id)
       .is("deleted_at", null)
       .maybeSingle();
@@ -34,6 +34,7 @@ export default async function PostOgImage({ params }: { params: Promise<{ id: st
   }
   const photo = post ? await fetchAsDataUrl(postImageUrl(post)) : null;
   const open = post?.status !== "resolved";
+  const meta = POST_KIND_META[postKind(post?.kind)];
   const spec = post ? [typeLabel(post.type), post.color, [post.brand, post.model].filter(Boolean).join(" ")].filter(Boolean).join(" · ") : "";
 
   return new ImageResponse(
@@ -69,7 +70,7 @@ export default async function PostOgImage({ params }: { params: Promise<{ id: st
                   color: open ? "#be123c" : "#1d41cc",
                 }}
               >
-                {open ? "찾는 중" : "찾았어요"}
+                {meta.status[open ? "open" : "resolved"]}
               </div>
             )}
             <div style={{ display: "flex", fontSize: 50, lineHeight: 1.25, maxHeight: 190, overflow: "hidden" }}>
@@ -78,7 +79,7 @@ export default async function PostOgImage({ params }: { params: Promise<{ id: st
             {spec && <div style={{ display: "flex", fontSize: 30, color: "#475569" }}>{spec}</div>}
             {post?.lost_area && (
               <div style={{ display: "flex", fontSize: 30, color: "#334155" }}>
-                잃어버린 곳: {post.lost_area}
+                {meta.place}: {post.lost_area}
                 {post.lost_on ? ` · ${formatDate(post.lost_on).slice(5)}` : ""}
               </div>
             )}

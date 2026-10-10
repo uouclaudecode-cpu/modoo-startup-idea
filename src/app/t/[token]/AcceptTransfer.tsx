@@ -51,9 +51,7 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
         <div className="space-y-1 p-5">
           <p className="text-[13px] font-semibold text-ink-muted">{typeLabel(v.type)}</p>
           <p className="text-xl font-extrabold">{[v.brand, v.model].filter(Boolean).join(" ") || v.name}</p>
-          <p className="text-[15px] text-ink-soft">
-            {v.color ? `색상 ${v.color}` : ""}
-          </p>
+          {v.color && <p className="text-[15px] text-ink-soft">색상 {v.color}</p>}
         </div>
       </Card>
 
@@ -65,7 +63,7 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
         {mode === "sticker" && (
           <>
             <p className="text-[14px] leading-relaxed text-ink-soft">
-              판매자에게 숨은 스티커 위치를 물어보고, 자전거에 붙은 그 스티커를 찍어 주세요. 같은 기기인지 확인해요. 카메라가 안 되면 스티커의 QR 바로 아래에 적힌 조회 번호 8자리를 넣어도 돼요.
+              판매자에게 숨은 스티커 위치를 물어보고, 이동수단에 붙은 그 스티커를 찍어 주세요. 같은 이동수단인지 확인해요. 카메라가 안 되면 스티커의 QR 바로 아래에 적힌 조회 번호 8자리를 넣어도 돼요.
             </p>
             {scanned ? (
               <p className="flex items-center gap-2 rounded-xl bg-emerald-50 p-3 text-[14px] font-semibold text-emerald-800">
@@ -100,7 +98,7 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
         )}
         {mode === "serial" && (
           <>
-            <p className="text-[14px] leading-relaxed text-ink-soft">이 기기에는 스티커가 없어요. 프레임에 새겨진 차대번호(프레임 번호) 전체를 직접 보고 적어 주세요. 자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요. (판매자가 불러 주는 번호 말고 실물을 확인하세요)</p>
+            <p className="text-[14px] leading-relaxed text-ink-soft">이 이동수단에는 스티커가 없어요. 프레임에 새겨진 차대번호(프레임 번호) 전체를 직접 보고 적어 주세요. 자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요. (판매자가 불러 주는 번호 말고 실물을 확인하세요)</p>
             <Input label="차대번호 (프레임 번호 전체)" value={last4} maxLength={40} onChange={(e) => setLast4(e.target.value.toUpperCase())} autoComplete="off" autoCapitalize="characters" />
           </>
         )}
@@ -108,7 +106,7 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
           <>
             <p className="flex items-start gap-2 rounded-xl bg-orange-50 p-3 text-[14px] leading-relaxed text-orange-900">
               <TriangleAlert aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
-              이 기기에는 스티커도 차대번호도 등록돼 있지 않아 앱으로 실물을 대조할 수 없어요. 사진과 실물이 같은지 꼼꼼히 확인해 주세요.
+              이 이동수단에는 스티커도 차대번호도 등록돼 있지 않아 앱으로 실물을 대조할 수 없어요. 사진과 실물이 같은지 꼼꼼히 확인해 주세요.
             </p>
             <label className="flex items-center gap-2 text-[15px]">
               <input type="checkbox" className="h-5 w-5 accent-brand-600" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
@@ -119,7 +117,7 @@ export function AcceptTransfer({ token, peek }: { token: string; peek: Pending }
       </Card>
 
       <div className="rounded-2xl bg-slate-100 p-4 text-[13px] leading-relaxed text-ink-soft">
-        받으면 정비 기록·QR 스티커·차대번호 등록이 내 계정으로 넘어오고, 이전 주인은 이 기기를 더 이상 볼 수 없어요. 등록 사진과 구매 정보는 넘어오지 않으니 받은 뒤 새로 넣어 주세요. 앱 QR은 새로 만들어져요. 스티커는 새 곳에 숨기고 위치를 적어 두세요.
+        받으면 정비 기록·QR 스티커·차대번호 등록이 내 계정으로 넘어오고, 이전 주인은 이 이동수단을 더 이상 볼 수 없어요. 등록 사진과 구매 정보는 넘어오지 않으니 받은 뒤 새로 넣어 주세요. 앱 QR은 새로 만들어져요. 스티커는 새 곳에 숨기고 위치를 적어 두세요.
       </div>
 
       {error && (

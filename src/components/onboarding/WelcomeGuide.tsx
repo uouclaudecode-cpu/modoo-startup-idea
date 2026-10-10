@@ -24,7 +24,7 @@ export function WelcomeGuide({ nickname, hasVehicle, hasSticker, hasPush, fresh,
   return (
     <Card className="space-y-3 bg-gradient-to-br from-brand-50 to-white">
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0">
           <p className="font-bold">{fresh ? `환영해요, ${nickname}님! 🎉` : "시작하기"}</p>
           <p className="text-[13px] text-ink-muted">이 3단계만 하면 잃어버렸을 때 찾을 준비가 끝나요.</p>
         </div>

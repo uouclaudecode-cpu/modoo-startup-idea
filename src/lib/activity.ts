@@ -15,11 +15,11 @@ export type Activity = {
 };
 
 export const LEVELS = [
-  { min: 0, emoji: "🌱", name: "새싹", hint: "길에서 본 자전거 QR을 찍어 주인에게 알려 주면 칭호가 올라가요." },
+  { min: 0, emoji: "🌱", name: "새싹", hint: "길에서 본 이동수단의 QR을 찍어 주인에게 알려 주면 칭호가 올라가요." },
   { min: 1, emoji: "🤝", name: "좋은 이웃", hint: "제보가 도움이 됐다고 인정받으면 더 빨리 올라가요." },
   { min: 10, emoji: "🛡️", name: "동네 지킴이", hint: "누군가의 이동수단을 되찾아 주면 크게 올라가요." },
   { min: 30, emoji: "🦸", name: "우리 동네 영웅", hint: "벌써 동네의 든든한 영웅이에요!" },
-  { min: 100, emoji: "👑", name: "전설의 지킴이", hint: "최고 칭호예요. 고마워요!" },
+  { min: 100, emoji: "👑", name: "전설의 지킴이", hint: "모두가 믿는 지킴이예요. 고마워요!" },
 ] as const;
 
 export function activityPoints(a: Pick<Activity, "helped" | "thanked" | "returned">) {

@@ -125,7 +125,7 @@ export function AlertSettings(p: Props) {
               근처 도난 경보
             </h2>
             <p className="mt-0.5 text-[13px] leading-relaxed text-ink-muted">
-              관심 동네 근처에서 자전거·킥보드 도난 경보가 나오면 알려 드려요. 위치는 약 1km 단위로만 저장하고 실시간으로 추적하지 않아요. 하루 최대 3건이에요.
+              관심 동네 근처에서 이동수단 도난 경보가 나오면 알려 드려요. 위치는 약 1km 단위로만 저장하고 실시간으로 추적하지 않아요. 하루 최대 3건이에요.
             </p>
           </div>
           <span className="flex flex-none items-center gap-2">
@@ -157,7 +157,7 @@ export function AlertSettings(p: Props) {
         {on && (
           <>
             <LocationPicker label="관심 동네 (집·학교·회사 근처)" value={area} onChange={setArea} />
-            <Input label="동네 이름 (선택)" placeholder="예: 울산대 근처" value={label} maxLength={60} onChange={(e) => setLabel(e.target.value)} />
+            <Input label="동네 이름 (선택)" placeholder="예) 우리 집 근처" value={label} maxLength={60} onChange={(e) => setLabel(e.target.value)} />
             <div>
               <p className="mb-2 text-sm font-semibold">받을 반경</p>
               <div className="grid grid-cols-4 gap-2">
@@ -175,7 +175,7 @@ export function AlertSettings(p: Props) {
               </div>
             </div>
             <label className="flex items-center gap-2 text-[15px]">
-              <input type="checkbox" className="h-5 w-5 accent-brand-600" checked={quiet} onChange={(e) => setQuiet(e.target.checked)} />
+              <input type="checkbox" className="h-5 w-5 flex-none accent-brand-600" checked={quiet} onChange={(e) => setQuiet(e.target.checked)} />
               밤 11시 ~ 아침 7시에는 받지 않기
             </label>
           </>
@@ -194,8 +194,8 @@ export function AlertSettings(p: Props) {
           </div>
         ) : (
           on && (
-            <p className="flex items-center gap-1.5 text-[13px] font-semibold text-emerald-700">
-              <CircleCheck aria-hidden className="h-4 w-4 flex-none" />
+            <p className="flex items-start gap-1.5 text-[13px] font-semibold text-emerald-700">
+              <CircleCheck aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
               켜져 있어요 · {saved.label || "고른 동네"} 반경 {radiusText(saved.radius)}
             </p>
           )

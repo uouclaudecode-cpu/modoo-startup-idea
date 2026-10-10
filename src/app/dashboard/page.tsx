@@ -148,7 +148,7 @@ export default async function MyPage({ searchParams }: { searchParams: Promise<{
           </MenuGroup>
           <MenuGroup title="도난·안전">
             <MenuRow href="/alerts#mine" icon={History} label="내 경보·제보 기록" />
-            <MenuRow href="/check" icon={Search} label="도난 조회 · 중고 매물 확인" />
+            <MenuRow href="/check" icon={Search} label="도난 조회·중고 매물 확인" />
             <MenuRow href="/get-sticker" icon={MapPin} label="스티커 받는 곳" />
           </MenuGroup>
           <MenuGroup title="도움말">
@@ -160,7 +160,7 @@ export default async function MyPage({ searchParams }: { searchParams: Promise<{
           <Card className="mt-3 divide-y divide-line/70 p-0">
             <p className="px-4 py-2.5 text-[12px] font-bold text-ink-muted">운영자</p>
             <MenuRow href="/admin" icon={ChartColumn} label="운영 통계" />
-            <MenuRow href="/admin/stickers" icon={Printer} label="스티커 관리 · 받는 곳" />
+            <MenuRow href="/admin/stickers" icon={Printer} label="스티커 관리·받는 곳" />
             <MenuRow href="/admin/areas" icon={MapPin} label="관심 구역 통계" />
             <MenuRow href="/admin/spots" icon={Wind} label="보관소·공기주입기·사고 자료" />
             <MenuRow href="/admin/reports" icon={Flag} label="신고 처리" />

@@ -49,7 +49,10 @@ export function ActivityCard({ a }: { a: Activity }) {
           </div>
         ))}
       </dl>
-      <p className="text-[12px] leading-relaxed text-ink-muted">{lv.now.hint} 점수: 도와준 1점 · 인정 3점 · 되찾아 줌 10점</p>
+      <div className="space-y-0.5 text-[12px] leading-relaxed text-ink-muted">
+        <p>{lv.now.hint}</p>
+        <p className="text-ink-faint">점수: 도와준 1점 · 인정 3점 · 되찾아 줌 10점</p>
+      </div>
     </Card>
   );
 }

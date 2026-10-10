@@ -110,9 +110,9 @@ export default async function AlertPage({
 
       <Card className="overflow-hidden p-0">
         <div className={`flex items-center gap-2 px-5 py-3 text-white ${open ? "bg-rose-600" : "bg-slate-600"}`}>
-          <Siren aria-hidden className="h-5 w-5" />
-          <p className="font-bold">{open ? "도난 경보 · 수색 중" : `도난 경보 · ${ALERT_STATUS[a.status]}`}</p>
-          {a.police_reported && <span className="ml-auto rounded-full bg-white/20 px-2.5 py-0.5 text-[12px] font-semibold">경찰 신고 완료</span>}
+          <Siren aria-hidden className="h-5 w-5 flex-none" />
+          <p className="min-w-0 font-bold">{open ? "도난 경보 · 수색 중" : `도난 경보 · ${ALERT_STATUS[a.status]}`}</p>
+          {a.police_reported && <span className="ml-auto flex-none whitespace-nowrap rounded-full bg-white/20 px-2.5 py-0.5 text-[12px] font-semibold">경찰 신고 완료</span>}
         </div>
         <VehicleImage src={vehicleImageUrl(a.vehicle.image_path)} type={a.vehicle.type} alt={vehicleTitle(a.vehicle)} className="aspect-[4/3]" />
         <div className="space-y-3 p-5">
@@ -150,7 +150,7 @@ export default async function AlertPage({
       {open && (
         <ShareButton
           title={`🚨 ${vehicleTitle(a.vehicle)} 도난 경보`}
-          text={`${a.place_label ?? "근처"}에서 ${vehicleTitle(a.vehicle)}을(를) 도둑맞았어요. 비슷한 걸 보면 알려 주세요!`}
+          text={`${a.place_label ?? "근처"}에서 ${vehicleTitle(a.vehicle)} 도난 경보예요. 비슷한 걸 보면 알려 주세요!`}
           path={`/alerts/${a.id}`}
           label="공유해서 같이 찾기"
         />

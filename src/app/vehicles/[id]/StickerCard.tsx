@@ -68,7 +68,7 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
           <QrCode aria-hidden className="h-4 w-4 text-brand-600" />
           QR · 스티커
         </p>
-        <span className="text-sm text-ink-muted">{stickers.length ? `스티커 ${stickers.length}장 연결됨` : "연결한 스티커 없음"}</span>
+        <span className="flex-none whitespace-nowrap text-sm text-ink-muted">{stickers.length ? `스티커 ${stickers.length}장 연결됨` : "연결한 스티커 없음"}</span>
       </div>
 
       <ButtonLink href={`/vehicles/${vehicleId}/qr`} variant="secondary" full size="lg" icon={<QrCode aria-hidden className="h-5 w-5" />}>

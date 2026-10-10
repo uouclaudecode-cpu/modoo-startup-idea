@@ -58,7 +58,7 @@ export function MaintenanceDiary({ logs, ownedSince = null }: { logs: Maintenanc
         <EmptyState
           icon={<BookOpen className="h-7 w-7" />}
           title="아직 정비 기록이 없어요"
-          description="위에서 [정비 완료]를 누르면 날짜·비용·정비소·메모가 여기에 차곡차곡 쌓여요."
+          description="위에서 ‘정비 완료’를 누르면 날짜·비용·정비소·메모가 여기에 차곡차곡 쌓여요."
         />
       ) : (
         <>
@@ -125,14 +125,14 @@ export function MaintenanceDiary({ logs, ownedSince = null }: { logs: Maintenanc
       <Modal
         open={Boolean(deleting)}
         onClose={() => !loading && setDeleting(null)}
-        title="정비 기록 삭제"
+        title="이 정비 기록을 지울까요?"
         footer={
           <>
             <Button variant="ghost" onClick={() => setDeleting(null)} disabled={loading}>
               취소
             </Button>
             <Button variant="danger" loading={loading} loadingText="지우는 중..." onClick={remove}>
-              삭제하기
+              지우기
             </Button>
           </>
         }

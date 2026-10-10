@@ -48,7 +48,7 @@ export default async function ReportPage({
     <div className="mx-auto max-w-xl space-y-4">
       <Link href={`/scan/${encodeURIComponent(token)}`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
         <ChevronLeft aria-hidden className="h-4 w-4" />
-        {typeLabel(v.type)} 정보로 돌아가기
+        이동수단 정보로 돌아가기
       </Link>
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">{mode === "contact" ? "주인에게 연락하기" : "발견 제보하기"}</h1>

@@ -131,7 +131,7 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
             등록자: {profile?.nickname || "회원"} ({auth.user?.email ?? ""})
           </p>
           <p>
-            이 문서는 B-LOCK에 등록된 정보와 B-LOCK에 자동으로 남은 시각을 정리한 것으로, 법적 소유권을 확정하는 공문서는 아니에요. 진위는 QR 또는 {verifyUrl}에서 확인할 수
+            이 문서는 B-LOCK에 등록된 정보와 B-LOCK에 자동으로 남은 시각을 정리한 것으로, 법적 소유권을 확정하는 공문서는 아니에요. 진위는 QR 또는 <span className="break-all">{verifyUrl}</span>에서 확인할 수
             있어요.
           </p>
         </footer>

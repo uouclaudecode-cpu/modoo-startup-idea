@@ -18,9 +18,11 @@ export function MaintenanceAlert({ vehicleId, vehicleName, items, now }: { vehic
       )}
     >
       <p className={cn("flex items-center gap-2 font-bold", urgent ? "text-rose-800" : "text-amber-900")}>
-        <BellRing aria-hidden className="h-5 w-5" />
-        {vehicleName} 정비 알림 {items.length}건
-        <ChevronRight aria-hidden className="ml-auto h-5 w-5 opacity-60" />
+        <BellRing aria-hidden className="h-5 w-5 flex-none" />
+        <span className="min-w-0 truncate">
+          {vehicleName} 정비 알림 {items.length}건
+        </span>
+        <ChevronRight aria-hidden className="ml-auto h-5 w-5 flex-none opacity-60" />
       </p>
       <ul className="mt-2 space-y-1.5">
         {items.slice(0, 4).map(({ part, ratio }) => {
@@ -28,9 +30,9 @@ export function MaintenanceAlert({ vehicleId, vehicleName, items, now }: { vehic
           return (
             <li key={part.id} className="flex items-center gap-2 text-[14px]">
               <span aria-hidden>{PART_META[part.kind].emoji}</span>
-              <span className="font-semibold text-ink">{PART_META[part.kind].label}</span>
-              <span className={cn("rounded-full px-2 py-0.5 text-[12px] font-semibold ring-1 ring-inset", st.badge)}>{st.label}</span>
-              <span className="ml-auto text-[12px] text-ink-muted">{remainingText(part, now)}</span>
+              <span className="min-w-0 truncate font-semibold text-ink">{PART_META[part.kind].label}</span>
+              <span className={cn("flex-none whitespace-nowrap rounded-full px-2 py-0.5 text-[12px] font-semibold ring-1 ring-inset", st.badge)}>{st.label}</span>
+              <span className="ml-auto flex-none whitespace-nowrap text-[12px] text-ink-muted">{remainingText(part, now)}</span>
             </li>
           );
         })}

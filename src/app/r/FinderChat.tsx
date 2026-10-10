@@ -196,7 +196,7 @@ export function FinderChat() {
         <p className="text-[14px] leading-relaxed text-ink-soft">
           {[thread.vehicle.color, thread.vehicle.brand].filter(Boolean).join(" ") || "이동수단"} 주인에게 알림이 갔어요. 주인이 답장하면 이 화면에 보여요. 내 이름·번호는 주인에게 보이지 않아요.
         </p>
-        <div className="grid grid-cols-2 gap-2 pt-1">
+        <div className="grid gap-2 pt-1 min-[400px]:grid-cols-2">
           <Button variant={subscribed ? "secondary" : "primary"} loading={subscribing} loadingText="켜는 중..." icon={<Bell aria-hidden className="h-4 w-4" />} onClick={subscribe} disabled={subscribed}>
             {subscribed ? "알림 켜짐" : "답장 알림 받기"}
           </Button>

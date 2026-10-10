@@ -37,14 +37,14 @@ export function DeleteRideButton({ rideId }: { rideId: string }) {
       <Modal
         open={open}
         onClose={() => !loading && setOpen(false)}
-        title="라이딩 기록 삭제"
+        title="이 라이딩 기록을 지울까요?"
         footer={
           <>
             <Button variant="ghost" onClick={() => setOpen(false)} disabled={loading}>
               취소
             </Button>
             <Button variant="danger" loading={loading} loadingText="지우는 중..." onClick={remove}>
-              삭제하기
+              지우기
             </Button>
           </>
         }

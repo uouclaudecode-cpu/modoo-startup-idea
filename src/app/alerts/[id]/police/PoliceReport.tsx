@@ -203,7 +203,7 @@ export function PoliceReport({ alert, vehicle, stickerCodes, qrValue, photos, ma
         )}
 
         <footer className="space-y-1 border-t border-line pt-2 text-[11px] leading-relaxed text-ink-muted">
-          <p>지도: {mapUrl}</p>
+          <p className="break-all">지도: {mapUrl}</p>
           <p>
             이 문서는 피해자가 B-LOCK에 등록한 정보를 정리한 참고 자료로, 경찰청 공식 서식이 아니에요. 실제 신고는 112 또는 가까운 경찰서·지구대에서 해 주세요. 등록
             시각·소유 이력은 &lsquo;소유 증명서&rsquo;에서 확인할 수 있어요.

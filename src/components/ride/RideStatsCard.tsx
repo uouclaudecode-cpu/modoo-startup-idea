@@ -49,7 +49,7 @@ export function RideStatsCard({ view, buckets }: { view: StatsView; buckets: Buc
               replace
               aria-current={view === v.value ? "true" : undefined}
               className={cn(
-                "rounded-lg px-3 py-1.5 text-sm font-semibold",
+                "rounded-lg px-3 py-2 text-sm font-semibold",
                 view === v.value ? "bg-white text-ink shadow-card" : "text-ink-muted hover:text-ink",
               )}
             >

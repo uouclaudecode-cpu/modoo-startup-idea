@@ -59,7 +59,7 @@ export function PostCard({ post: p, avatarPath }: { post: PostListItem; avatarPa
             )}
             {p.lost_on && (
               <span className="flex items-center gap-1">
-                <CalendarDays aria-hidden className="h-3.5 w-3.5" />
+                <CalendarDays aria-hidden className="h-3.5 w-3.5 flex-none" />
                 {formatDate(p.lost_on).slice(5)} {kind === "found" ? "발견" : "분실"}
               </span>
             )}

@@ -57,7 +57,7 @@ export default async function RidePage() {
             </ButtonLink>
           }
         />
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2">
           <ButtonLink href="/navigate" variant="secondary" icon={<Navigation aria-hidden className="h-4 w-4" />}>
             길 안내
           </ButtonLink>

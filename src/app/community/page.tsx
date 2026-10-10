@@ -73,7 +73,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
           type="search"
           name="q"
           defaultValue={q}
-          placeholder="지역·색상·브랜드 검색 (예: 울산대)"
+          placeholder="지역·색상·브랜드 검색 (예: 검정 자전거)"
           aria-label="분실 글 검색"
           className="h-12 w-full rounded-xl border border-line bg-white pl-12 pr-4 text-[16px] placeholder:text-ink-faint focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
         />

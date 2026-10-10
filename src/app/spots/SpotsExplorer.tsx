@@ -187,16 +187,16 @@ export function SpotsExplorer({ loggedIn, initialKind }: { loggedIn: boolean; in
       )}
 
       <div className="flex items-center justify-between gap-2 px-1">
-        <h2 className="text-lg font-bold">
+        <h2 className="min-w-0 text-lg font-bold">
           가까운 {label} {spots && !loadError ? `${list.length}곳` : ""}
         </h2>
         {loggedIn ? (
-          <button type="button" onClick={() => setAdding(true)} className="inline-flex h-10 items-center gap-1 rounded-xl bg-brand-50 px-3.5 text-sm font-semibold text-brand-700 hover:bg-brand-100">
+          <button type="button" onClick={() => setAdding(true)} className="inline-flex h-10 flex-none items-center gap-1 whitespace-nowrap rounded-xl bg-brand-50 px-3.5 text-sm font-semibold text-brand-700 hover:bg-brand-100">
             <Plus aria-hidden className="h-4 w-4" />
-            {label} 알려 주기
+            알려 주기
           </button>
         ) : (
-          <Link href="/login?next=/spots" className="text-sm font-semibold text-brand-700 hover:underline">
+          <Link href="/login?next=/spots" className="flex-none whitespace-nowrap text-sm font-semibold text-brand-700 hover:underline">
             로그인하고 알려 주기
           </Link>
         )}
@@ -205,9 +205,9 @@ export function SpotsExplorer({ loggedIn, initialKind }: { loggedIn: boolean; in
       {loadError && (
         <p className="flex items-center justify-between gap-2 rounded-xl bg-rose-50 p-3 text-[13px] text-rose-700">
           {loadError}
-          <button type="button" onClick={() => origin && load(origin, kind)} className="inline-flex items-center gap-1 font-semibold">
+          <button type="button" onClick={() => origin && load(origin, kind)} className="inline-flex flex-none items-center gap-1 whitespace-nowrap font-semibold">
             <RefreshCw aria-hidden className="h-4 w-4" />
-            다시
+            다시 시도
           </button>
         </p>
       )}
@@ -378,7 +378,7 @@ function SpotCard({
               </Button>
             </div>
           ) : (
-            <Link href="/login?next=/spots" className="text-sm font-semibold text-brand-700 hover:underline">
+            <Link href="/login?next=/spots" className="flex-none whitespace-nowrap text-sm font-semibold text-brand-700 hover:underline">
               로그인하면 고장 여부를 알려 줄 수 있어요
             </Link>
           )}
@@ -509,7 +509,7 @@ function AddSpotModal({ kind, open, start, onClose, onAdded }: { kind: Exclude<S
         <LocationPicker label="위치" value={where} onChange={setWhere} />
         <Input label="장소 이름" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} placeholder={text.place} />
         {kind === "parking" && (
-          <Input label="세울 수 있는 대수 (선택)" type="number" inputMode="numeric" min={1} max={1000} value={racks} onChange={(e) => setRacks(e.target.value)} placeholder="예: 10" />
+          <Input label="세울 수 있는 대수 (선택)" type="number" inputMode="numeric" min={1} max={1000} value={racks} onChange={(e) => setRacks(e.target.value)} placeholder="예) 10" />
         )}
         <Textarea label="설명 (선택)" value={note} onChange={(e) => setNote(e.target.value)} maxLength={200} rows={2} placeholder={text.note} />
         <div>

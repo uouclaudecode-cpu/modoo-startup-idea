@@ -18,9 +18,9 @@ export default async function TransferPage({ params }: { params: Promise<{ id: s
   const check = stickerCount ? "sticker" : vehicle.serial_last4 ? "serial" : "none";
   return (
     <div className="mx-auto max-w-md space-y-4">
-      <Link href={`/vehicles/${vehicle.id}`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
-        <ChevronLeft aria-hidden className="h-4 w-4" />
-        {vehicle.name}
+      <Link href={`/vehicles/${vehicle.id}`} className="-ml-2 inline-flex h-10 max-w-full items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
+        <ChevronLeft aria-hidden className="h-4 w-4 flex-none" />
+        <span className="truncate">{vehicle.name}</span>
       </Link>
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">소유권 넘기기</h1>

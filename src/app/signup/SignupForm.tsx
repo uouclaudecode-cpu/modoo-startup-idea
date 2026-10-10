@@ -33,7 +33,7 @@ export function SignupForm({ next = "/" }: { next?: string }) {
     if (form.confirm !== form.password) errs.confirm = "비밀번호가 서로 달라요.";
     if (!form.nickname.trim()) errs.nickname = "닉네임을 입력해 주세요.";
     else if (form.nickname.trim().length > 20) errs.nickname = "닉네임은 20자 이하로 정해 주세요.";
-    if (!agree) errs.agree = "약관과 개인정보처리방침에 동의해 주세요.";
+    if (!agree) errs.agree = "필수 항목(만 14세 이상·약관)에 동의해 주세요.";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   }

@@ -42,9 +42,9 @@ export default async function MaintenancePage({ params }: { params: Promise<{ id
 
   return (
     <div className="mx-auto max-w-xl space-y-5">
-      <Link href={`/vehicles/${vehicle.id}`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
-        <ChevronLeft aria-hidden className="h-4 w-4" />
-        {vehicle.name}
+      <Link href={`/vehicles/${vehicle.id}`} className="-ml-2 inline-flex h-10 max-w-full items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
+        <ChevronLeft aria-hidden className="h-4 w-4 flex-none" />
+        <span className="truncate">{vehicle.name}</span>
       </Link>
       <div className="flex items-end justify-between gap-3">
         <div>
@@ -56,7 +56,7 @@ export default async function MaintenancePage({ params }: { params: Promise<{ id
       </div>
       <div className="grid grid-cols-2 gap-2">
         <ButtonLink href="/ride" variant="secondary" icon={<Play aria-hidden className="h-4 w-4" />}>
-          라이딩 기록
+          라이딩 시작
         </ButtonLink>
         <ManualDistance vehicleId={vehicle.id} />
       </div>

@@ -21,9 +21,9 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
   const v = vehicle as typeof vehicle & { purchased_on?: string | null; purchase_place?: string | null };
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <Link href={`/vehicles/${vehicle.id}`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
-        <ChevronLeft aria-hidden className="h-4 w-4" />
-        {vehicle.name}
+      <Link href={`/vehicles/${vehicle.id}`} className="-ml-2 inline-flex h-10 max-w-full items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
+        <ChevronLeft aria-hidden className="h-4 w-4 flex-none" />
+        <span className="truncate">{vehicle.name}</span>
       </Link>
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">소유 증명</h1>

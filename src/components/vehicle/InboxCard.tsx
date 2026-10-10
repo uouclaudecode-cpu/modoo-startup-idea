@@ -26,7 +26,7 @@ export function InboxCard({ items }: { items: InboxItem[] }) {
           <Inbox aria-hidden className="h-5 w-5 text-brand-600" />
           받은 제보·대화
         </p>
-        {waiting > 0 && <span className="rounded-full bg-rose-600 px-2.5 py-0.5 text-[12px] font-bold text-white">답장 기다림 {waiting}</span>}
+        {waiting > 0 && <span className="rounded-full bg-rose-600 px-2.5 py-0.5 text-[12px] font-bold text-white">답장 기다림 {waiting}건</span>}
       </div>
       <ul className="divide-y divide-line/70">
         {items.map((i) => (

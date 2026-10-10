@@ -500,9 +500,9 @@ export function Navigator({ initialDest, ride }: { initialDest: Dest | null; rid
                 <p className="text-2xl font-extrabold tabular-nums">{formatDuration(route.duration)}</p>
                 <p className="text-ink-soft">{formatMeters(route.distance)}</p>
               </div>
-              <p className={cn("flex items-center gap-1.5 text-sm", nextHazards ? "font-semibold text-orange-700" : "text-ink-muted")}>
-                <AlertTriangle aria-hidden className="h-4 w-4" />
-                {nextHazards ? `가는 길에 자전거 사고가 잦은 곳이 ${nextHazards}곳 있어요. 가까워지면 알려 드려요.` : "가는 길에 알려진 자전거 사고 다발 지역은 없어요."}
+              <p className={cn("flex items-start gap-1.5 text-sm", nextHazards ? "font-semibold text-orange-700" : "text-ink-muted")}>
+                <AlertTriangle aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
+                {nextHazards ? `가는 길에 자전거 사고가 잦은 곳이 ${nextHazards}곳 있어요. 가까워지면 알려 드려요.` : "가는 길에 알려진 자전거 사고가 잦은 곳은 없어요."}
               </p>
               {rec.options}
               <Button full size="lg" onClick={start} disabled={!me} icon={<Navigation aria-hidden className="h-5 w-5" />}>

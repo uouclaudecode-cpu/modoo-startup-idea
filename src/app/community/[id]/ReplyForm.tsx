@@ -77,7 +77,7 @@ export function ReplyForm({ postId, parent, stickerSpot, onDone }: { postId: str
             스티커 위치 넣기
           </Button>
         ) : (
-          <p className="text-[13px] text-ink-muted">내 이동수단 &gt; 정보 수정에서 스티커 붙인 위치를 적어 두면 여기서 바로 넣을 수 있어요.</p>
+          <p className="text-[13px] text-ink-muted">홈 → 내 이동수단 → 정보 수정에서 스티커 붙인 위치를 적어 두면 여기서 바로 넣을 수 있어요.</p>
         )
       )}
       <label className="flex cursor-pointer items-center gap-2 text-sm text-ink-soft">

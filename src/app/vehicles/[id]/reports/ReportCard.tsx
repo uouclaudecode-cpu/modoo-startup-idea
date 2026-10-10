@@ -139,7 +139,7 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: ReportRow; 
         </li>
         <li className="flex items-center gap-2 text-ink-soft">
           <Phone aria-hidden className="h-4 w-4 flex-none" />
-          {r.contact_mode === "chat" ? "익명 대화 가능" : r.contact_mode === "callback" ? "전화 요청 (전화를 원해요)" : r.contact ? "연락 가능" : "연락 안 받기"}
+          {r.contact_mode === "chat" ? "익명 대화 가능" : r.contact_mode === "callback" ? "전화를 원해요" : r.contact ? "연락 가능" : "연락 안 받기"}
         </li>
       </ul>
 

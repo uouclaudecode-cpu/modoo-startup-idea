@@ -120,7 +120,7 @@ export function EvidenceBoard({ vehicleId, items, signed, purchasedOn, purchaseP
           <div className="h-full rounded-full bg-brand-600 transition-[width]" style={{ width: `${Math.max(4, (done / EVIDENCE_SLOTS.length) * 100)}%` }} />
         </div>
         <p className="text-[13px] text-ink-muted">
-          차대번호 {serialLast4 ? `등록됨 (••••${serialLast4})` : "미등록 — 이동수단 화면의 '중고거래 → 차대번호'에서 등록해 주세요"}
+          차대번호 {serialLast4 ? `등록됨 (••••${serialLast4})` : "미등록 — 이동수단 화면의 ‘중고거래 → 차대번호’에서 등록해 주세요"}
         </p>
       </Card>
 

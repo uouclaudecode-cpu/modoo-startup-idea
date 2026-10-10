@@ -123,7 +123,7 @@ export default async function RidesPage({ searchParams }: { searchParams: Promis
                           {formatDistance(r.distance_m)} <span className="text-sm font-medium text-ink-muted">· {formatDuration(r.elapsed_sec)}</span>
                         </p>
                         <p className="truncate text-[13px] text-ink-muted">
-                          {formatDateTime(r.started_at)} · {r.vehicle?.name ?? "삭제한 이동수단"} · 평균 {averageSpeed(r.distance_m, r.moving_sec).toFixed(1)}km/h
+                          {formatDateTime(r.started_at)} · {r.vehicle?.name ?? "삭제한 이동수단"} · 평균 {averageSpeed(r.distance_m, r.moving_sec).toFixed(1)} km/h
                         </p>
                       </div>
                       <ChevronRight aria-hidden className="h-5 w-5 flex-none text-ink-faint" />

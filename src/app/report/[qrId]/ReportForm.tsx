@@ -144,7 +144,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
               발견 위치<span className="ml-0.5 text-rose-600">*</span>
             </p>
             <p className="mt-0.5 text-[13px] text-ink-muted">
-              지금 있는 곳 위치를 가져오거나, 아래에 장소를 적어 주세요. 위치는 한 번만 보내고 실시간으로 추적하지 않아요.
+              지금 있는 곳의 위치를 가져오거나, 아래에 장소를 적어 주세요. 위치는 한 번만 보내고 실시간으로 추적하지 않아요.
             </p>
           </div>
           {coords ? (
@@ -168,7 +168,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
             </>
           ) : (
             <Button full size="lg" loading={locating} loadingText="위치 확인 중..." icon={<Crosshair aria-hidden className="h-5 w-5" />} onClick={locate}>
-              📍 지금 위치 가져오기
+              지금 위치 가져오기
             </Button>
           )}
           {locationError && <p className="text-sm text-orange-700">{locationError}</p>}
@@ -176,7 +176,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
           <Input
             label={coords ? "장소 설명 (선택)" : "장소 설명"}
             hint={coords ? undefined : "현재 위치를 쓸 수 없으면 이 칸만 적어도 보낼 수 있어요."}
-            placeholder="예) 울산대학교 학생회관 뒤쪽 자전거 거치대"
+            placeholder="예) ○○역 2번 출구 자전거 거치대"
             value={locationText}
             onChange={(e) => setLocationText(e.target.value)}
             error={errors.location}
@@ -200,7 +200,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
         )}
         <Textarea
           label={mode === "contact" ? "전할 말" : "설명 (선택)"}
-          placeholder={mode === "contact" ? "예) 자전거가 쓰러져 있어서 세워 두었어요." : "예) 학생회관 뒤쪽에 세워져 있었어요."}
+          placeholder={mode === "contact" ? "예) 자전거가 쓰러져 있어서 세워 두었어요." : "예) 거치대 맨 끝에 세워져 있었어요."}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           error={errors.description}

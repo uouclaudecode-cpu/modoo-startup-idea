@@ -24,9 +24,16 @@ const FATE: [string, string][] = [
   ["지워져요", "발견 제보·대화 · 구매 정보 · 등록 사진 · 소유 증명 자료 (발급한 증명서도 무효) · 스티커 위치 메모"],
 ];
 
+/** 공유 문구: 확인 방법에 맞게 */
+const SHARE_CHECK: Record<Check, string> = {
+  sticker: "이동수단에 붙은 숨은 스티커를 찍으면",
+  serial: "프레임의 차대번호를 확인하면",
+  none: "사진과 실물을 확인하고 받으면",
+};
+
 const CHECK_STEP: Record<Check, string> = {
-  sticker: "구매자가 숨은 스티커를 찍거나 QR 아래 조회 번호를 넣어 같은 기기인지 확인해요. 스티커 위치를 알려 주세요.",
-  serial: "구매자가 프레임에 새겨진 차대번호를 직접 보고 적어서 같은 기기인지 확인해요.",
+  sticker: "구매자가 숨은 스티커를 찍거나 QR 아래 조회 번호를 넣어 같은 이동수단인지 확인해요. 스티커 위치를 알려 주세요.",
+  serial: "구매자가 프레임에 새겨진 차대번호를 직접 보고 적어서 같은 이동수단인지 확인해요.",
   none: "구매자가 사진과 실물이 같은지 눈으로 확인해요.",
 };
 
@@ -186,7 +193,7 @@ export function TransferStart({
   }
 
   const link = token ? transferUrl(token) : "";
-  const shareText = `[B-LOCK] ${vehicleName} 소유권 받기 링크예요. 로그인한 뒤 열고, 자전거에 붙은 숨은 스티커를 찍으면 내 이동수단이 돼요.`;
+  const shareText = `[B-LOCK] ${vehicleName} 소유권 받기 링크예요. 로그인한 뒤 열고, ${SHARE_CHECK[check]} 내 이동수단이 돼요.`;
 
   async function copyLink() {
     const ok = await copyText(`${shareText}\n${link}`);
@@ -216,7 +223,7 @@ export function TransferStart({
         <CircleCheck aria-hidden className="h-12 w-12 text-emerald-600" />
         <p className="text-xl font-extrabold">소유권을 넘겼어요</p>
         <p className="text-[15px] leading-relaxed text-ink-muted">
-          {vehicleName}은(는) 이제 구매자의 이동수단이에요. 정비 기록과 스티커는 함께 넘어갔고, 발견 제보·구매 정보·사진은 지웠어요. 라이딩 기록은 내 기록에 남아 있어요.
+          이제 {vehicleName}의 주인은 구매자예요. 정비 기록과 스티커는 함께 넘어갔고, 발견 제보·구매 정보·사진은 지웠어요. 라이딩 기록은 내 기록에 남아 있어요.
         </p>
         <ButtonLink href="/" full size="lg" className="mt-2">
           홈으로
@@ -364,7 +371,7 @@ export function TransferStart({
               <Link href={`/vehicles/${vehicleId}`} className="font-semibold text-brand-700 underline">
                 이동수단 화면
               </Link>
-              에서 그 스티커의 연결을 끊어 주세요. 자전거에 붙은 스티커는 없는데 연결만 남아 있으면 구매자가 받을 수 없어요.
+              에서 그 스티커의 연결을 끊어 주세요. 이동수단에 붙은 스티커는 없는데 연결만 남아 있으면 구매자가 받을 수 없어요.
             </p>
           ) : check === "serial" ? (
             <p>스티커가 없어서 구매자가 프레임에 새겨진 차대번호를 직접 보고 확인해요.</p>

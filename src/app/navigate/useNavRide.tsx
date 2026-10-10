@@ -195,7 +195,7 @@ export function useNavRide(ctx: NavRideCtx, { onKeepGoing }: { onKeepGoing: () =
             {[
               ["거리", formatDistance(result.distance)],
               ["시간", formatDuration(result.elapsedSec)],
-              ["최고 속도", `${result.maxSpeed.toFixed(1)}km/h`],
+              ["최고 속도", `${result.maxSpeed.toFixed(1)} km/h`],
             ].map(([k, v]) => (
               <div key={k} className="rounded-xl bg-slate-50 p-3">
                 <p className="text-[12px] text-ink-muted">{k}</p>

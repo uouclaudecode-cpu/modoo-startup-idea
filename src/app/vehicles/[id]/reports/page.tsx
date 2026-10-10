@@ -78,9 +78,9 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <Link href={`/vehicles/${vehicle.id}`} className="-ml-2 inline-flex h-10 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
-        <ChevronLeft aria-hidden className="h-4 w-4" />
-        {vehicle.name}
+      <Link href={`/vehicles/${vehicle.id}`} className="-ml-2 inline-flex h-10 max-w-full items-center gap-1 rounded-lg px-2 text-sm font-semibold text-ink-muted hover:bg-slate-100 hover:text-ink">
+        <ChevronLeft aria-hidden className="h-4 w-4 flex-none" />
+        <span className="truncate">{vehicle.name}</span>
       </Link>
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -103,8 +103,8 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
           title="아직 받은 제보가 없어요"
           description={
             vehicle.status === "searching"
-              ? "누군가 QR을 스캔해 제보하면 여기에 바로 보여요."
-              : "분실·도난 신고를 하면 QR을 스캔한 사람에게 수색 중 안내가 보여요."
+              ? "누군가 QR을 찍어 제보하면 여기에 바로 보여요."
+              : "분실·도난 신고를 하면 QR을 찍은 사람에게 '수색 중' 안내가 보여요."
           }
         />
       ) : (

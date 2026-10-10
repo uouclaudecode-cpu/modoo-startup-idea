@@ -349,7 +349,7 @@ export function RideTracker({ vehicles, userId, recent = [], careTip = null }: {
           <div className={cn("grid gap-2", t.canResume && !vehicleMissing ? "grid-cols-2" : "grid-cols-1")}>
             {t.canResume && !vehicleMissing && (
               <Button size="lg" className="h-16 text-lg shadow-lift" icon={<Play aria-hidden className="h-6 w-6" />} onClick={t.resume}>
-                다시 시작
+                이어서 타기
               </Button>
             )}
             <Button size="lg" variant="danger" className="h-16 text-lg shadow-lift" icon={<Square aria-hidden className="h-5 w-5" />} onClick={end} disabled={vehicleMissing} title={vehicleMissing ? "저장할 이동수단을 먼저 골라 주세요" : undefined}>
@@ -448,7 +448,7 @@ export function RideTracker({ vehicles, userId, recent = [], careTip = null }: {
                   여기 세웠어요 (주차 위치 저장)
                 </label>
                 {savePark && (
-                  <Input label="세운 곳 메모 (선택)" placeholder="예) 학생회관 뒤 거치대 맨 왼쪽" value={parkNote} maxLength={100} onChange={(e) => setParkNote(e.target.value)} />
+                  <Input label="세운 곳 메모 (선택)" placeholder="예) 아파트 정문 거치대 맨 왼쪽" value={parkNote} maxLength={100} onChange={(e) => setParkNote(e.target.value)} />
                 )}
               </div>
             )}

@@ -97,10 +97,10 @@ export function PostActions({ postId, status, vehicleId }: { postId: string; sta
           body: vehicleId
             ? "글을 '찾았어요'로 바꾸고, 연결된 이동수단이 수색 중이면 '회수 완료'로 함께 바꿔요."
             : "글을 '찾았어요'로 바꿔요. 댓글은 그대로 남아요.",
-          button: "찾았어요로 바꾸기",
+          button: "'찾았어요'로 바꾸기",
           variant: "primary",
         },
-    reopen: { title: "다시 찾는 중", body: "글을 다시 '찾는 중'으로 바꿔요.", button: "찾는 중으로 바꾸기", variant: "primary" },
+    reopen: { title: "다시 찾는 중", body: "글을 다시 '찾는 중'으로 바꿔요.", button: "'찾는 중'으로 바꾸기", variant: "primary" },
     delete: { title: "글 삭제", body: "글을 삭제하면 목록에서 사라지고 댓글도 볼 수 없어요. 되돌릴 수 없어요.", button: "삭제하기", variant: "danger" },
   };
   const c = pending ? CONFIRM[pending] : null;

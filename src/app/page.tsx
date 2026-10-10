@@ -135,7 +135,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <div className="space-y-2 pt-1">
               <div className="flex min-h-9 items-center justify-between gap-2 px-1">
                 <h2 className="text-lg font-bold tracking-tight">내 이동수단</h2>
-                <Link href="/vehicles/new" className="inline-flex h-9 items-center gap-1 rounded-xl bg-brand-50 px-3 text-sm font-semibold text-brand-700 hover:bg-brand-100">
+                <Link href="/vehicles/new" className="inline-flex h-10 items-center gap-1 rounded-xl bg-brand-50 px-3.5 text-sm font-semibold text-brand-700 hover:bg-brand-100">
                   <Plus aria-hidden className="h-4 w-4" />
                   추가
                 </Link>

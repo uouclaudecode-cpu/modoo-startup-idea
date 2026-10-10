@@ -43,7 +43,7 @@ export function ForgotPasswordForm({ expired = false }: { expired?: boolean }) {
         <EmptyState
           icon={<MailCheck className="h-7 w-7" />}
           title="메일을 확인해 주세요"
-          description={`${sent}로 가입했다면 비밀번호를 다시 정하는 링크를 보냈어요. 메일함(스팸함 포함)을 확인하고, 지금 쓰는 이 브라우저에서 링크를 열어 주세요. 링크는 1시간 동안만 쓸 수 있어요.`}
+          description={`${sent} 주소로 가입했다면 비밀번호를 다시 정하는 링크를 보냈어요. 메일함(스팸함 포함)을 확인하고, 지금 쓰는 이 브라우저에서 링크를 열어 주세요. 링크는 1시간 동안만 쓸 수 있어요.`}
           action={
             <ButtonLink href="/login" full>
               로그인 화면으로

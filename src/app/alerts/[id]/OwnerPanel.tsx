@@ -301,7 +301,7 @@ export function OwnerPanel({
                   <Input
                     label="카메라가 안 되면: 스티커 QR 아래 조회 번호"
                     hint="8자리예요. 띄어쓰기·대소문자는 상관없어요."
-                    placeholder="예: AB3X KP9Q"
+                    placeholder="예) AB3X KP9Q"
                     autoCapitalize="none"
                     autoComplete="off"
                     spellCheck={false}

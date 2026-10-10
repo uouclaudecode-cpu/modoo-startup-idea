@@ -89,7 +89,7 @@ export function BlockedUsers() {
             <li key={u.user_id}>
               <Card className="flex items-center gap-3 p-4">
                 <span aria-hidden className="grid h-10 w-10 flex-none place-items-center rounded-full bg-slate-100 font-bold text-ink-muted">
-                  {u.nickname.slice(0, 1)}
+                  {Array.from(u.nickname)[0]}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">{u.nickname}</p>

@@ -34,12 +34,12 @@ export default async function ResetPasswordPage() {
   return (
     <div className="mx-auto max-w-md space-y-4">
       <div className="flex items-center gap-3">
-        <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand-50 text-brand-600">
+        <span className="grid h-11 w-11 flex-none place-items-center rounded-xl bg-brand-50 text-brand-600">
           <KeyRound aria-hidden className="h-5 w-5" />
         </span>
-        <div>
+        <div className="min-w-0">
           <h1 className="text-2xl font-extrabold tracking-tight">새 비밀번호 정하기</h1>
-          <p className="text-sm text-ink-muted">{user.email}</p>
+          <p className="break-all text-sm text-ink-muted">{user.email}</p>
         </div>
       </div>
       {!fromMail && (

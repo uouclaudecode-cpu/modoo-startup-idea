@@ -84,7 +84,7 @@ export function CheckForm({ initial }: { initial: string }) {
               조회하기
             </Button>
             <Button variant="secondary" icon={<Camera aria-hidden className="h-4 w-4" />} onClick={() => setScan((s) => !s)}>
-              {scan ? "카메라 닫기" : "QR 찍어서 조회"}
+              {scan ? "카메라 닫기" : "QR 찍기"}
             </Button>
           </div>
         </form>

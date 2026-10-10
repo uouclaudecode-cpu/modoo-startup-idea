@@ -108,7 +108,7 @@ export default async function VehicleDetailPage({
           </div>
         </div>
         <details className="group mt-3 border-t border-line/70 pt-3">
-          <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-ink-soft marker:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-ink-soft marker:hidden [&::-webkit-details-marker]:hidden">
             자세한 정보·특징
             <ChevronDown aria-hidden className="h-4 w-4 transition-transform group-open:rotate-180" />
           </summary>

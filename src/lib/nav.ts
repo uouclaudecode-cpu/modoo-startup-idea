@@ -100,7 +100,7 @@ export function stepText(s: NavStep) {
   const road = s.name ? `${s.name} 방향, ` : "";
   switch (s.type) {
     case "depart":
-      return s.name ? `${s.name}을(를) 따라 출발하세요` : "출발하세요";
+      return s.name ? `${s.name} 방향으로 출발하세요` : "출발하세요";
     case "arrive":
       return "목적지에 도착해요";
     case "roundabout":

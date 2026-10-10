@@ -56,7 +56,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               className="pointer-events-auto flex w-full max-w-md animate-toast-in items-start gap-3 rounded-2xl bg-slate-900 px-4 py-3.5 text-[15px] text-white shadow-lift"
             >
               <Icon aria-hidden className={cn("mt-0.5 h-5 w-5 flex-none", className)} />
-              <p className="leading-snug">{t.message}</p>
+              <p className="min-w-0 break-words leading-snug">{t.message}</p>
             </div>
           );
         })}

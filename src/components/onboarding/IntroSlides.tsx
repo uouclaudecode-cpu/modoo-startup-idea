@@ -207,8 +207,8 @@ export function IntroSlides() {
               <ChevronRight aria-hidden className="h-5 w-5" />
             </button>
           )}
-          <p className="flex items-center justify-center gap-1 text-[12px] text-ink-muted">
-            <Lock aria-hidden className="h-3.5 w-3.5" />
+          <p className="text-center text-[12px] text-ink-muted">
+            <Lock aria-hidden className="mr-1 inline h-3.5 w-3.5 -translate-y-px" />
             실시간 위치 추적이 아니에요 · 개인정보는 공개하지 않아요
           </p>
         </div>

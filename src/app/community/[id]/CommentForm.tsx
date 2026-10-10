@@ -89,7 +89,7 @@ export function CommentForm({ postId, isAuthor }: { postId: string; isAuthor: bo
       <form onSubmit={onSubmit} noValidate className="space-y-4">
         <Textarea
           label={isAuthor ? "댓글" : "봤다면 알려 주세요"}
-          placeholder={isAuthor ? "예) 알려 주셔서 고마워요! 지금 가볼게요." : "예) 오늘 오후 2시쯤 학생회관 뒤 거치대에서 비슷한 자전거를 봤어요."}
+          placeholder={isAuthor ? "예) 알려 주셔서 고마워요! 지금 가 볼게요." : "예) 오늘 오후 2시쯤 ○○역 앞 거치대에서 비슷한 자전거를 봤어요."}
           value={body}
           onChange={(e) => setBody(e.target.value)}
           error={errors.body}
@@ -149,7 +149,7 @@ export function CommentForm({ postId, isAuthor }: { postId: string; isAuthor: bo
             {loc.error && <p className="text-sm text-orange-700">{loc.error}</p>}
             <Input
               label="장소 설명"
-              placeholder="예) 울산대 학생회관 뒤 자전거 거치대"
+              placeholder="예) ○○역 2번 출구 자전거 거치대"
               value={locationText}
               onChange={(e) => setLocationText(e.target.value)}
               maxLength={200}

@@ -35,7 +35,7 @@ export function ClaimStickerForm({ code, vehicles }: { code: string; vehicles: C
     setLoading(false);
     if (err) {
       console.error(err);
-      setError(friendlyError(err, "등록하지 못했어요. 잠시 후 다시 시도해 주세요."));
+      setError(friendlyError(err, "연결하지 못했어요. 잠시 후 다시 시도해 주세요."));
       return;
     }
     toast.success("스티커를 연결했어요! 주인만 아는 곳에 붙여 주세요.");
@@ -94,7 +94,7 @@ export function ClaimStickerForm({ code, vehicles }: { code: string; vehicles: C
           {error}
         </p>
       )}
-      <Button full size="lg" loading={loading} loadingText="등록 중..." icon={<Tag aria-hidden className="h-5 w-5" />} onClick={claim}>
+      <Button full size="lg" loading={loading} loadingText="연결 중..." icon={<Tag aria-hidden className="h-5 w-5" />} onClick={claim}>
         이 이동수단에 연결하기
       </Button>
     </div>

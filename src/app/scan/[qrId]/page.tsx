@@ -182,7 +182,7 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
         <div className="rounded-3xl bg-gradient-to-br from-orange-500 to-rose-600 p-5 text-white shadow-lift">
           <p className="flex items-center gap-2 text-lg font-extrabold">
             <MapPinned aria-hidden className="h-5 w-5" />
-            혹시 주인을 잃은 것 같나요?
+            혹시 주인이 잃어버린 것 같나요?
           </p>
           <p className="mt-1.5 text-[14px] leading-relaxed text-white/90">
             엉뚱한 곳에 버려져 있거나 이상해 보이면, 주인이 아직 모를 수 있어요. 지금 위치와 사진을 보내 주세요.

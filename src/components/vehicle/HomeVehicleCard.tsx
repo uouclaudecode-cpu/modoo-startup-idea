@@ -25,7 +25,7 @@ export function HomeVehicleCard({ vehicle: v, foundReports, waiting, care }: { v
     <article className={cn("flex h-full flex-col overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-line/70", STATUS_META[status].ring)}>
       {searching && (
         <div className={cn("flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white", status === "reported" ? "bg-orange-500" : "bg-rose-600")}>
-          <Siren aria-hidden className="h-4 w-4" />
+          <Siren aria-hidden className="h-4 w-4 flex-none" />
           {status === "reported" ? `발견 제보 ${foundReports}건이 도착했어요` : "찾고 있어요 · 제보를 기다리는 중"}
         </div>
       )}
@@ -56,7 +56,7 @@ export function HomeVehicleCard({ vehicle: v, foundReports, waiting, care }: { v
           <span aria-hidden>{PART_META[careTop.part.kind].emoji}</span>
           {PART_META[careTop.part.kind].label} · {urgentCare ? "지금 챙겨 주세요" : "곧 챙길 때예요"}
           {care.length > 1 && <span className="opacity-70">외 {care.length - 1}건</span>}
-          <ChevronRight aria-hidden className="ml-auto h-4 w-4 opacity-60" />
+          <ChevronRight aria-hidden className="ml-auto h-4 w-4 flex-none opacity-60" />
         </Link>
       )}
 

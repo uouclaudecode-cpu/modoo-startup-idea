@@ -80,10 +80,10 @@ export function AlertForm({
         {parking && (
           <p className="-mt-2 rounded-xl bg-brand-50 px-3 py-2 text-[13px] text-brand-800">마지막으로 세운 곳을 미리 넣어 뒀어요. 다른 곳에서 잃어버렸다면 지도에서 옮겨 주세요.</p>
         )}
-        <Input label="장소 설명 (선택)" placeholder="예: 학생회관 앞 거치대" value={placeLabel} maxLength={100} onChange={(e) => setPlaceLabel(e.target.value)} />
+        <Input label="장소 설명 (선택)" placeholder="예) 지하철역 2번 출구 앞 거치대" value={placeLabel} maxLength={100} onChange={(e) => setPlaceLabel(e.target.value)} />
         <Textarea
           label="눈에 띄는 특징 (선택)"
-          placeholder="예: 앞바퀴 흰 림, 안장 오른쪽 찢어짐, 핸들에 빨간 테이프"
+          placeholder="예) 앞바퀴 흰 림, 안장 오른쪽 찢어짐, 핸들에 빨간 테이프"
           value={marks}
           maxLength={300}
           rows={3}

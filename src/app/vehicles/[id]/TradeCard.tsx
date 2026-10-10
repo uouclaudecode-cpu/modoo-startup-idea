@@ -132,7 +132,7 @@ export function TradeCard({ vehicleId, serialLast4, searching }: { vehicleId: st
           차대번호(프레임 번호) <b className="text-ink">{serialLast4 ? `••••${serialLast4}` : "등록 안 함"}</b>
           <span className="block text-[12px] text-ink-muted">프레임에 새겨진 번호예요. 같은 번호는 다른 계정에 등록할 수 없어요.</span>
         </p>
-        <Button variant="secondary" className="h-9 flex-none px-3 text-sm" onClick={() => setSerialOpen(true)}>
+        <Button variant="secondary" className="h-10 flex-none px-3 text-sm" onClick={() => setSerialOpen(true)}>
           {serialLast4 ? "바꾸기" : "등록"}
         </Button>
       </div>
@@ -140,15 +140,15 @@ export function TradeCard({ vehicleId, serialLast4, searching }: { vehicleId: st
       {searching && <p className="rounded-xl bg-rose-50 p-3 text-[13px] text-rose-700">수색 중인 이동수단은 거래 기능을 쓸 수 없어요.</p>}
 
       <div className="grid grid-cols-2 gap-2">
-        <Button variant="secondary" disabled={searching} icon={<Link2 aria-hidden className="h-4 w-4" />} onClick={openLinks}>
+        <Button variant="secondary" disabled={searching} className="px-3" icon={<Link2 aria-hidden className="h-4 w-4" />} onClick={openLinks}>
           인증 링크
         </Button>
         {searching ? (
-          <Button variant="secondary" disabled icon={<ArrowRightLeft aria-hidden className="h-4 w-4" />}>
+          <Button variant="secondary" disabled className="px-3" icon={<ArrowRightLeft aria-hidden className="h-4 w-4" />}>
             소유권 넘기기
           </Button>
         ) : (
-          <ButtonLink href={`/vehicles/${vehicleId}/transfer`} variant="secondary" icon={<ArrowRightLeft aria-hidden className="h-4 w-4" />}>
+          <ButtonLink href={`/vehicles/${vehicleId}/transfer`} variant="secondary" className="px-3" icon={<ArrowRightLeft aria-hidden className="h-4 w-4" />}>
             소유권 넘기기
           </ButtonLink>
         )}
@@ -171,9 +171,9 @@ export function TradeCard({ vehicleId, serialLast4, searching }: { vehicleId: st
       >
         <form id="serial-form" onSubmit={saveSerial} className="space-y-3">
           <p className="text-[14px] leading-relaxed text-ink-soft">
-            흔히 &lsquo;프레임 번호&rsquo;·&lsquo;시리얼 번호&rsquo;라고 불러요. 자전거는 자전거를 뒤집으면 페달 사이 프레임 아랫면(바텀 브래킷)에, 전동킥보드는 발판 아래나 핸들 기둥에 새겨져 있어요. 없는 자전거도 있는데, 그럴 땐 숨은 QR 스티커만으로도 충분해요. 번호 전체는 암호처럼 바꿔 저장하고, 화면에는 끝 4자리만 보여요. 비워서 저장하면 지워져요.
+            흔히 &lsquo;프레임 번호&rsquo;·&lsquo;시리얼 번호&rsquo;라고 불러요. 자전거는 뒤집으면 페달 사이 프레임 아랫면(바텀 브래킷)에, 전동킥보드는 발판 아래나 핸들 기둥에 새겨져 있어요. 없는 자전거도 있는데, 그럴 땐 숨은 QR 스티커만으로도 충분해요. 번호 전체는 암호처럼 바꿔 저장하고, 화면에는 끝 4자리만 보여요. 비워서 저장하면 지워져요.
           </p>
-          <Input label="차대번호 (프레임 번호)" placeholder="예: WTU123A4567B" value={serial} onChange={(e) => setSerial(e.target.value)} error={serialError} autoComplete="off" autoCapitalize="characters" />
+          <Input label="차대번호 (프레임 번호)" placeholder="예) WTU123A4567B" value={serial} onChange={(e) => setSerial(e.target.value)} error={serialError} autoComplete="off" autoCapitalize="characters" />
         </form>
       </Modal>
 
@@ -236,7 +236,7 @@ export function TradeCard({ vehicleId, serialLast4, searching }: { vehicleId: st
                             {formatDateTime(l.expires_at)}까지 · 조회 {l.view_count}회
                           </span>
                         </button>
-                        <Button variant="ghost" className="h-9 flex-none px-3 text-sm text-rose-600" onClick={() => revoke(l)}>
+                        <Button variant="ghost" className="h-10 flex-none px-3 text-sm text-rose-600" onClick={() => revoke(l)}>
                           끄기
                         </Button>
                       </li>

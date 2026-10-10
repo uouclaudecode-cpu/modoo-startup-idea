@@ -66,16 +66,16 @@ const NO_IMAGE: Image = { image_bucket: null, image_path: null };
 const KIND_COPY: Record<PostKind, { hint: string; title: string; place: string; body: string; bodyHint: string; bodyError: string }> = {
   lost: {
     hint: "내 자전거·킥보드를 찾고 있어요",
-    title: "예) 울산대 정문 근처에서 검정 자전거를 잃어버렸어요",
-    place: "예) 울산대학교 정문 자전거 거치대",
+    title: "예) 지하철역 앞에서 검정 자전거를 잃어버렸어요",
+    place: "예) ○○역 2번 출구 자전거 거치대",
     body: "예) 10월 7일 오후 3시쯤 세워 뒀는데 저녁에 보니 없어졌어요.\n안장 오른쪽에 흠집, 앞바퀴에 파란 스티커가 있어요.",
     bodyHint: "흠집·스티커·부착물 같은 특징을 적어 주세요. 전화번호·주소는 적지 마세요.",
     bodyError: "잃어버린 상황과 특징을 적어 주세요.",
   },
   found: {
     hint: "주인 없는 자전거·킥보드를 발견했어요",
-    title: "예) 학생회관 앞에 며칠째 세워진 검정 자전거 주인을 찾아요",
-    place: "예) 울산대학교 학생회관 앞 거치대",
+    title: "예) 아파트 앞에 며칠째 세워진 검정 자전거 주인을 찾아요",
+    place: "예) ○○아파트 정문 앞 거치대",
     body: "예) 10월 5일부터 자물쇠 없이 같은 자리에 세워져 있어요.\n앞바구니가 달린 검정 자전거예요.",
     bodyHint: "주인이 맞는지 물어볼 수 있게 눈에 띄는 특징 하나는 적지 말고 남겨 두세요. 전화번호·주소는 적지 마세요.",
     bodyError: "발견한 상황과 특징을 적어 주세요.",
@@ -320,7 +320,7 @@ export function NewPostForm({
         <Card className="space-y-3">
           <div>
             <p className="text-sm font-semibold text-ink-soft">내 이동수단 연결 (선택)</p>
-            <p className="mt-0.5 text-[13px] text-ink-muted">연결하면 사진·색상·브랜드가 채워지고, QR을 스캔한 사람도 이 글을 볼 수 있어요.</p>
+            <p className="mt-0.5 text-[13px] text-ink-muted">연결하면 사진·색상·브랜드가 채워지고, QR을 찍은 사람도 이 글을 볼 수 있어요.</p>
           </div>
           <div className="grid gap-2">
             {[{ id: "", name: "연결 안 함" } as Partial<VehicleOption>, ...vehicles].map((v) => (
@@ -353,7 +353,7 @@ export function NewPostForm({
                 <Siren aria-hidden className="mr-1 inline h-4 w-4 align-[-3px]" />
                 <b>{vehicle.name}</b> 상태도 &lsquo;수색 중&rsquo;으로 바꾸기
                 <span className="mt-0.5 block text-[13px] text-rose-700/80">
-                  QR을 스캔한 사람에게 분실 안내가 보이고 발견 제보를 받을 수 있어요. 바꾸면 이동수단의 도난·분실 이력에 &lsquo;수색 1회&rsquo;가
+                  QR을 찍은 사람에게 분실 안내가 보이고 발견 제보를 받을 수 있어요. 바꾸면 이동수단의 도난·분실 이력에 &lsquo;수색 1회&rsquo;가
                   남아서, 나중에 중고로 팔 때 안심거래 화면에서 사는 사람에게도 보여요. 잠깐 둔 곳을 잊은 거라면 끄고 올려도 돼요.
                 </span>
               </span>

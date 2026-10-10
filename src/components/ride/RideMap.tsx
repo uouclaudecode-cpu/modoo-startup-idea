@@ -204,7 +204,7 @@ export function RideMap({ path, current = null, follow = false, fit = false, cla
         <button
           type="button"
           onClick={recenter}
-          className="absolute bottom-10 right-3 inline-flex h-10 items-center gap-1.5 rounded-full bg-white px-3.5 text-sm font-semibold text-brand-700 shadow-lift ring-1 ring-line"
+          className="absolute bottom-10 right-3 inline-flex h-10 items-center gap-1.5 rounded-full bg-white px-3.5 text-[13px] font-semibold text-brand-700 shadow-lift ring-1 ring-line"
         >
           <LocateFixed aria-hidden className="h-4 w-4" />내 위치로
         </button>
