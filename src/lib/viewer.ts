@@ -10,8 +10,12 @@ export const loadViewer = cache(async () => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { user: null, unread: 0 };
-  const { count, error } = await supabase.from("notifications").select("id", { count: "exact", head: true }).is("read_at", null);
+  if (!user) return { user: null, unread: 0, chatUnread: 0 };
+  const [{ count, error }, { count: chatCount }] = await Promise.all([
+    supabase.from("notifications").select("id", { count: "exact", head: true }).is("read_at", null),
+    // 대화 알림(tag chat-…)만: 머리글 💬 빨간 점
+    supabase.from("notifications").select("id", { count: "exact", head: true }).is("read_at", null).like("tag", "chat-%"),
+  ]);
   if (error) console.error(error);
-  return { user, unread: error ? 0 : (count ?? 0) };
+  return { user, unread: error ? 0 : (count ?? 0), chatUnread: chatCount ?? 0 };
 });

@@ -49,6 +49,18 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
     return <ErrorState title="제보를 불러오지 못했어요" description="인터넷 연결을 확인하고 새로고침해 주세요." />;
   }
   const reports = (data ?? []) as Report[];
+  // 이 화면을 열면 이 이동수단의 대화 알림은 읽은 것으로 (머리글 💬 빨간 점이 꺼지게)
+  if (reports.length) {
+    const { error: readErr } = await supabase
+      .from("notifications")
+      .update({ read_at: new Date().toISOString() })
+      .in(
+        "tag",
+        reports.map((r) => `chat-${r.id}`),
+      )
+      .is("read_at", null);
+    if (readErr) console.error(readErr);
+  }
 
   // 제보 사진은 비공개라서, 소유자에게만 1시간 동안 열리는 주소를 만듭니다.
   const paths = reports.map((r) => r.image_path).filter((p): p is string => Boolean(p));

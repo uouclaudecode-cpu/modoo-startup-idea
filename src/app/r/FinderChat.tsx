@@ -112,6 +112,15 @@ export function FinderChat() {
     setThread(data ? (data as Thread) : "missing");
     // 다른 기기에서 저장한 대화 주소로 열었어도 이 기기에 기억해 둬요 (답장 알림을 누르면 바로 열리게)
     const reportId = (data as { report_id?: string } | null)?.report_id;
+    if (reportId && seenCountRef.current === null) {
+      // 로그인했을 때만 바뀌어요 (로그인 전이면 조용히 넘어가요)
+      void createClient()
+        .from("notifications")
+        .update({ read_at: new Date().toISOString() })
+        .eq("tag", `chat-${reportId}`)
+        .is("read_at", null)
+        .then(({ error: e }) => e && console.error(e));
+    }
     if (token && reportId && !loadFinderThreads().some((t) => t.token === token)) {
       saveFinderThread({ token, reportId, createdAt: (data as { created_at?: string }).created_at ?? new Date().toISOString(), label: "발견 제보" });
     }
