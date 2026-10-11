@@ -26,7 +26,7 @@ export function WelcomeGuide({ nickname, hasVehicle, hasSticker, hasPush, fresh,
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-bold">{fresh ? `환영해요, ${nickname}님! 🎉` : "시작하기"}</p>
-          <p className="text-[13px] text-ink-muted">이 3단계만 하면 잃어버렸을 때 찾을 준비가 끝나요.</p>
+          <p className="text-[13px] text-ink-muted">3단계면 찾을 준비 끝이에요.</p>
         </div>
         <span className="flex-none rounded-full bg-white px-2.5 py-1 text-[13px] font-bold tabular-nums text-brand-700 ring-1 ring-brand-200">{doneCount}/3</span>
       </div>
@@ -56,7 +56,7 @@ export function WelcomeGuide({ nickname, hasVehicle, hasSticker, hasPush, fresh,
                   <Tag aria-hidden className="h-4 w-4 text-brand-600" />
                   QR 준비 후 연결
                 </span>
-                <span className="block text-[13px] leading-snug text-ink-muted">출력한 QR은 바로 붙이면 되고, 받은 스티커는 한 번 찍어서 연결한 뒤 붙여요. 주인만 아는 곳에 숨겨 주세요.</span>
+                <span className="block text-[13px] leading-snug text-ink-muted">주인만 아는 곳에 숨겨 붙여요. 받은 스티커는 먼저 찍어서 연결해요.</span>
               </span>
             </div>
             {hasVehicle && !hasSticker && (
@@ -68,7 +68,7 @@ export function WelcomeGuide({ nickname, hasVehicle, hasSticker, hasPush, fresh,
             )}
           </div>
         </li>
-        <Step n={3} done={hasPush} active={current === 2} icon={Bell} title="알림 켜기" text="누가 내 QR로 제보하거나 메시지를 보내면 바로 알려 드려요." href="/settings#push" />
+        <Step n={3} done={hasPush} active={current === 2} icon={Bell} title="알림 켜기" text="제보가 오면 바로 알려 드려요." href="/settings#push" />
       </ol>
     </Card>
   );

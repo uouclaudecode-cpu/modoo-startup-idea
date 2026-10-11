@@ -103,7 +103,7 @@ export default async function AlertPage({
         <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 p-4 text-emerald-800 ring-1 ring-emerald-200">
           <BadgeCheck aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
           <p className="text-[15px] leading-relaxed">
-            <b>경보를 보냈어요.</b> 근처 {a.recipients ?? 0}명에게 알림이 갔어요. 제보가 오면 알림으로 알려 드릴게요. 직접 찾아가지 말고, 위험하면 112에 신고하세요.
+            <b>경보를 보냈어요.</b> 근처 {a.recipients ?? 0}명에게 알렸어요. 직접 찾아가지 말고, 위험하면 112에 신고하세요.
           </p>
         </div>
       )}
@@ -164,7 +164,7 @@ export default async function AlertPage({
         <ReporterPanel alert={a} mySightings={sightings} myRewards={rewards} photos={photos} />
       ) : open ? (
         <Card className="space-y-3 text-center">
-          <p className="text-[15px] leading-relaxed text-ink-soft">비슷한 걸 봤다면 로그인하고 제보해 주세요. 제보자 정보는 주인에게 보이지 않아요.</p>
+          <p className="text-[15px] leading-relaxed text-ink-soft">비슷한 걸 봤다면 로그인하고 제보해 주세요.</p>
           <ButtonLink href={`/login?next=${encodeURIComponent(`/alerts/${a.id}`)}`} full size="lg">
             로그인하고 제보하기
           </ButtonLink>
@@ -172,7 +172,7 @@ export default async function AlertPage({
       ) : null}
 
       <p className="rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
-        직접 다가가거나 되찾으려 하지 마세요. 위험하면 112에 신고하세요. 경보 내용은 주인이 적은 거예요. B-LOCK은 실시간 위치 추적을 하지 않아요.
+        직접 되찾으려 하지 말고, 위험하면 112에 신고하세요.
       </p>
     </div>
   );

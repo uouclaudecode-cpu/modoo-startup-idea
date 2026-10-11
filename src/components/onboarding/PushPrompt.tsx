@@ -58,7 +58,7 @@ export function PushPrompt({ userId, urgent }: { userId: string; urgent: boolean
     try {
       await subscribePush();
       setShown(null);
-      toast.success("알림을 켰어요. 이제 제보나 메시지가 오면 바로 알려 드려요.");
+      toast.success("알림을 켰어요.");
       router.refresh();
     } catch (e) {
       console.error("알림 켜기 실패", e);
@@ -78,16 +78,16 @@ export function PushPrompt({ userId, urgent }: { userId: string; urgent: boolean
       // 저장소를 못 써도 이번에는 닫아요
     }
     setShown(null);
-    toast.info("MY → ⚙️ 설정 → 휴대폰 알림에서 언제든 켤 수 있어요.");
+    toast.info("MY → ⚙️ 설정에서 언제든 켤 수 있어요.");
   }
 
   const title = urgent ? "수색 중인데 알림이 꺼져 있어요" : shown === "denied" ? "알림이 차단돼 있어요" : "알림이 꺼져 있어요";
   const text =
     shown === "install"
-      ? "iPhone은 Safari에서 '홈 화면에 추가'한 앱으로 열어야 알림을 받을 수 있어요. 발견 제보가 와도 모를 수 있어요."
+      ? "iPhone은 Safari에서 '홈 화면에 추가'한 앱으로 열어야 알림이 와요."
       : shown === "denied"
-        ? "브라우저에서 알림을 막아 두었어요. 허용해야 발견 제보·메시지를 바로 받을 수 있어요."
-        : "누가 내 QR로 발견 제보를 하거나 메시지를 보내도 바로 알 수 없어요.";
+        ? "허용해야 발견 제보를 바로 받을 수 있어요."
+        : "발견 제보가 와도 바로 알 수 없어요.";
 
   return (
     <section

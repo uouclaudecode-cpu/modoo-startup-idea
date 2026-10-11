@@ -75,14 +75,13 @@ export function ListingCheck() {
             판매 글로 확인하기
           </h2>
           <p className="mt-1 text-[14px] leading-relaxed text-ink-muted">
-            당근·번개장터·중고나라 판매 글 주소를 붙여 넣으세요. 주소가 안 열리면 글 내용을 복사해 넣어도 돼요.
+            판매 글 주소나 내용을 붙여 넣으세요.
           </p>
         </div>
         <div className="flex gap-2 rounded-xl bg-brand-50 p-3 text-[13px] leading-relaxed text-brand-900">
           <Info aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
           <p>
-            <b>이렇게 확인해요:</b> 판매 글의 <b>글자(제목·설명)</b>를 B-LOCK에 도난·분실 신고된 자전거·킥보드의 브랜드·모델·색상과 비교해요.{" "}
-            <b>사진은 비교하지 않아요.</b> 그래서 B-LOCK에 신고되지 않은 도난품이나, 글에 브랜드·모델을 안 적은 경우는 찾지 못해요.
+            글자만 신고된 브랜드·모델과 비교해요. <b>사진은 비교하지 않아요.</b>
           </p>
         </div>
         <Textarea
@@ -107,7 +106,7 @@ export function ListingCheck() {
         <Card className="space-y-3">
           {res.fetched === "failed" && (
             <p className="rounded-xl bg-amber-50 p-3 text-[13px] leading-relaxed text-amber-900">
-              판매 글을 열지 못했어요. 글의 제목과 설명을 복사해서 넣으면 더 정확하게 비교할 수 있어요.
+              판매 글을 열지 못했어요. 내용을 복사해 넣어 주세요.
             </p>
           )}
           {res.listing && (
@@ -124,7 +123,7 @@ export function ListingCheck() {
                 <ShieldAlert aria-hidden className="h-7 w-7 flex-none" />
                 <div>
                   <p className="font-extrabold">비슷한 도난 신고가 {res.matches.length}건 있어요</p>
-                  <p className="text-[13px] text-rose-50">글자가 겹친 것뿐이라 다른 자전거일 수도 있어요. 사진과 특징을 비교해 보고, 같은 것 같으면 사지 말고 주인에게 알려 주세요.</p>
+                  <p className="text-[13px] text-rose-50">다를 수도 있어요. 같아 보이면 사지 말고 주인에게 알려 주세요.</p>
                 </div>
               </div>
               <ul className="space-y-2">
@@ -164,7 +163,7 @@ export function ListingCheck() {
               <ShieldCheck aria-hidden className="h-7 w-7 flex-none" />
               <div>
                 <p className="font-extrabold">B-LOCK 신고 중에는 비슷한 게 없어요</p>
-                <p className="text-[13px] text-emerald-50">안전하다는 뜻은 아니에요. 아래처럼 판매자에게 인증을 요청하고, 실물의 차대번호도 꼭 확인하세요.</p>
+                <p className="text-[13px] text-emerald-50">안전하다는 뜻은 아니에요. 차대번호도 꼭 확인하세요.</p>
               </div>
             </div>
           )}
@@ -190,7 +189,7 @@ export function ListingCheck() {
           판매자에게 확인 요청하기
         </h2>
         <p className="text-[14px] leading-relaxed text-ink-muted">
-          진짜 주인이라면 B-LOCK &lsquo;안심거래 인증 링크&rsquo;를 보낼 수 있어요. 아래 메시지를 복사해 판매자 채팅에 보내 보세요. 이유 없이 거절하거나 말을 돌리면 조심하세요.
+          진짜 주인은 인증 링크를 보낼 수 있어요. 거절하면 조심하세요.
         </p>
         <pre className="whitespace-pre-wrap rounded-xl bg-slate-50 p-3 font-sans text-[13px] leading-relaxed text-ink-soft">{SELLER_MSG}</pre>
         <Button variant="secondary" full icon={<Copy aria-hidden className="h-4 w-4" />} onClick={copyMsg}>

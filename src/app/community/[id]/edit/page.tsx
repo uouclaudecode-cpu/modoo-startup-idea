@@ -47,13 +47,13 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">글 고치기</h1>
         <p className="mt-1 text-sm leading-relaxed text-ink-muted">
-          고친 내용은 바로 보여요. 달린 댓글과 &lsquo;찾는 중·찾았어요&rsquo; 상태는 그대로예요. 연락처는 적지 마세요.
+          댓글과 상태는 그대로예요. 연락처는 적지 마세요.
         </p>
       </div>
       {post.hidden_at && (
         <div role="status" className="flex items-start gap-3 rounded-2xl bg-amber-50 p-4 text-[14px] leading-relaxed text-amber-900 ring-1 ring-amber-200">
           <EyeOff aria-hidden className="mt-0.5 h-5 w-5 flex-none text-amber-600" />
-          <p>신고가 많아 숨겨진 글이에요. 고쳐도 운영자가 확인하기 전까지는 다른 사람에게 보이지 않아요.</p>
+          <p>신고가 많아 숨겨진 글이에요. 운영자 확인 전까지는 안 보여요.</p>
         </div>
       )}
       <NewPostForm vehicles={vehicles} initialVehicleId={editable.vehicle_id ?? ""} post={editable} />

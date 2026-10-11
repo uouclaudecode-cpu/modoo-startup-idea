@@ -90,7 +90,7 @@ export function PoliceReport({ alert, vehicle, stickerCodes, qrValue, photos, ma
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">112 도난 신고서</h1>
           <p className="mt-1 text-[15px] leading-relaxed text-ink-muted">
-            경찰서에 가져가거나 112 문자로 보낼 정보를 한 장으로 정리해요. 아래 칸은 이 화면에서만 쓰고 저장하지 않아요.
+            신고에 필요한 정보를 한 장으로 정리해요. 적은 내용은 저장하지 않아요.
           </p>
         </div>
         <Card className="space-y-3">
@@ -105,7 +105,7 @@ export function PoliceReport({ alert, vehicle, stickerCodes, qrValue, photos, ma
           <Input label="연락처" type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" />
           <Input
             label="차대번호 (프레임 번호 전체, 선택)"
-            hint={vehicle.serial_last4 ? `등록된 번호 끝 4자리: ${vehicle.serial_last4}` : "프레임에 새겨진 번호를 적으면 수사에 도움이 돼요."}
+            hint={vehicle.serial_last4 ? `등록된 번호 끝 4자리: ${vehicle.serial_last4}` : "적으면 수사에 도움이 돼요."}
             value={serial}
             onChange={(e) => setSerial(e.target.value.toUpperCase())}
             autoCapitalize="characters"
@@ -205,8 +205,7 @@ export function PoliceReport({ alert, vehicle, stickerCodes, qrValue, photos, ma
         <footer className="space-y-1 border-t border-line pt-2 text-[11px] leading-relaxed text-ink-muted">
           <p className="break-all">지도: {mapUrl}</p>
           <p>
-            이 문서는 피해자가 B-LOCK에 등록한 정보를 정리한 참고 자료로, 경찰청 공식 서식이 아니에요. 실제 신고는 112 또는 가까운 경찰서·지구대에서 해 주세요. 등록
-            시각·소유 이력은 &lsquo;소유 증명서&rsquo;에서 확인할 수 있어요.
+            B-LOCK에 등록된 정보를 정리한 참고 자료로, 경찰청 공식 서식이 아니에요. 실제 신고는 112나 경찰서에서 해 주세요.
           </p>
         </footer>
       </article>

@@ -46,7 +46,7 @@ export default async function MaintenanceHubPage() {
           소모품·정비
         </h1>
         <p className="mt-1 text-sm leading-relaxed text-ink-muted">
-          라이딩한 거리와 날짜로 타이어·체인·브레이크 교체 시기를 알려 드려요. 이동수단을 누르면 정비 기록을 남기고 주기를 바꿀 수 있어요.
+          탄 거리와 날짜로 교체 시기를 알려 드려요.
         </p>
       </div>
 

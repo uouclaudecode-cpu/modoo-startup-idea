@@ -77,7 +77,7 @@ export function DeleteAccount({ email }: { email: string }) {
       >
         <div className="space-y-3">
           <p>
-            <b>{email}</b> 계정과 등록한 이동수단·QR·라이딩·정비 기록·커뮤니티 글과 댓글이 모두 지워져요. 붙여 둔 QR 스티커도 더 이상 쓸 수 없어요.
+            <b>{email}</b> 계정과 모든 기록이 지워지고, QR 스티커도 못 쓰게 돼요.
           </p>
           <Input label={`확인을 위해 '${CONFIRM_WORD}'라고 입력해 주세요`} value={word} onChange={(e) => setWord(e.target.value)} autoComplete="off" />
           <Input
@@ -86,7 +86,7 @@ export function DeleteAccount({ email }: { email: string }) {
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            hint="본인 확인을 위해 지금 쓰는 비밀번호를 적어 주세요. 기억나지 않으면 로그아웃한 뒤 '비밀번호를 잊었어요'로 다시 정할 수 있어요."
+            hint="본인 확인을 위해 지금 비밀번호를 적어 주세요."
           />
           {error && (
             <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2.5 text-sm text-rose-700">

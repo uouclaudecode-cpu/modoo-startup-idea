@@ -115,7 +115,7 @@ export function BadgeSection({ badges }: { badges: Badge[] }) {
             ))}
           </ul>
         ) : (
-          <p className="rounded-xl bg-slate-50 px-3 py-3 text-[14px] text-ink-soft">첫 라이딩을 기록하면 첫 배지를 받아요. 가볍게 한 바퀴 어때요?</p>
+          <p className="rounded-xl bg-slate-50 px-3 py-3 text-[14px] text-ink-soft">첫 라이딩을 기록하면 첫 배지를 받아요.</p>
         )}
 
         {next.length > 0 && (

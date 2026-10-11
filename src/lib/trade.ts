@@ -47,7 +47,7 @@ export const INVALID_REASON: Record<Exclude<TradeVerification, { valid: true }>[
 export const WARNING_TEXT: Record<"NEW_REGISTRATION" | "RECENT_TRANSFER" | "NO_SERIAL", string> = {
   NEW_REGISTRATION: "등록한 지 14일이 안 됐어요. 구매 영수증 등 다른 증빙도 확인하세요.",
   RECENT_TRANSFER: "최근 30일 안에 주인이 바뀐 기록이 있어요.",
-  NO_SERIAL: "차대번호가 등록되지 않아 도난 이력 대조가 약해요. 실물의 차대번호를 직접 확인하세요.",
+  NO_SERIAL: "차대번호가 없어요. 실물 번호를 직접 확인하세요.",
 };
 
 /** 양도 미리 보기 (peek_transfer) */

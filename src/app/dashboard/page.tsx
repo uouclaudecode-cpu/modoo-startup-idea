@@ -118,7 +118,7 @@ export default async function MyPage({ searchParams }: { searchParams: Promise<{
             ))}
           </Card>
         )}
-        <p className="px-1 text-[12px] leading-relaxed text-ink-faint">이동수단을 누르면 정보 고치기, 소유권 넘기기, 소유 증명, 삭제를 할 수 있어요.</p>
+        <p className="px-1 text-[12px] leading-relaxed text-ink-faint">이동수단을 누르면 수정·넘기기·삭제를 할 수 있어요.</p>
       </Section>
 
       {/* ③ QR 스티커 */}

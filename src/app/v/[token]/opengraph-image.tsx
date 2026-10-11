@@ -41,7 +41,7 @@ export default async function VerifyOgImage({ params }: { params: Promise<{ toke
               ]
             : []
         }
-        footer="눌러서 확인 코드와 자세한 이력을 보세요"
+        footer="눌러서 자세한 이력을 보세요"
       />
     ),
     { ...OG_SIZE, fonts: await ogFonts(), headers: { "cache-control": "public, max-age=0, s-maxage=300, stale-while-revalidate=600" } },

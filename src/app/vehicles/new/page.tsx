@@ -21,8 +21,8 @@ export default async function NewVehiclePage({ searchParams }: { searchParams: P
         <h1 className="text-2xl font-extrabold tracking-tight">이동수단 등록</h1>
         <p className="mt-1 text-sm text-ink-muted">
           {stickerCode
-            ? "등록하면 찍은 스티커가 이 이동수단에 연결되고, 앱 전용 QR도 함께 만들어져요."
-            : "등록을 마치면 이 이동수단만의 고유 QR이 자동으로 만들어져요. 받은 B-LOCK 스티커는 나중에 찍어서 연결할 수 있어요."}
+            ? "등록하면 찍은 스티커가 바로 연결돼요."
+            : "등록하면 내 QR이 바로 만들어져요."}
         </p>
       </div>
       <VehicleForm stickerCode={stickerCode} />

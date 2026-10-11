@@ -46,7 +46,7 @@ export function ClaimStickerForm({ code, vehicles }: { code: string; vehicles: C
   if (vehicles.length === 0) {
     return (
       <Card className="space-y-4 text-center">
-        <p className="text-[15px] leading-relaxed text-ink-soft">아직 등록한 이동수단이 없어요. 자전거·킥보드를 등록하면서 이 스티커를 함께 연결할게요.</p>
+        <p className="text-[15px] leading-relaxed text-ink-soft">등록하면서 이 스티커를 함께 연결해요.</p>
         <ButtonLink href={newHref} full size="lg" icon={<Plus aria-hidden className="h-5 w-5" />}>
           이동수단 등록하고 스티커 연결
         </ButtonLink>
@@ -82,8 +82,7 @@ export function ClaimStickerForm({ code, vehicles }: { code: string; vehicles: C
         <div className="flex items-start gap-2">
           <EyeOff aria-hidden className="mt-0.5 h-5 w-5 flex-none text-brand-600" />
           <p className="text-[13px] leading-relaxed text-ink-muted">
-            도둑이 떼어 버리지 못하게 <b className="text-ink">눈에 잘 안 띄는 곳</b>에 붙이는 게 좋아요. 붙인 위치는 나만 볼 수 있고, 커뮤니티에서
-            &ldquo;이건가요?&rdquo;라고 묻는 사람에게 비밀 답글로 알려 줄 때 써요.
+            <b className="text-ink">눈에 잘 안 띄는 곳</b>에 붙여 주세요. 위치는 나만 봐요.
           </p>
         </div>
         <StickerSpotInput value={spot} onChange={setSpot} placeholder={vehicle?.sticker_spot ?? undefined} />

@@ -52,10 +52,10 @@ export function RideExport({ rideId }: { rideId: string }) {
       </div>
       <div className="space-y-1 rounded-xl bg-slate-50 p-3 text-[12px] leading-relaxed text-ink-muted">
         <p>
-          <b className="text-ink-soft">공유 카드</b>: 달린 길과 거리를 사진 한 장으로 만들어 카톡·인스타에 올려요.
+          <b className="text-ink-soft">공유 카드</b>: 사진 한 장으로 만들어 공유해요.
         </p>
         <p>
-          <b className="text-ink-soft">경로 파일 저장</b>: 스트라바·가민 같은 다른 운동 앱에 이 라이딩을 옮길 때 쓰는 파일(GPX)이에요. 다른 앱을 안 쓰면 몰라도 괜찮아요.
+          <b className="text-ink-soft">경로 파일 저장</b>: 스트라바 같은 다른 앱으로 옮기는 파일(GPX)이에요.
         </p>
         <p>
           집·회사 위치가 드러나지 않게 출발·도착 근처와{" "}

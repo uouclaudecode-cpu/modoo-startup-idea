@@ -141,10 +141,10 @@ export function QrCard({
           복사
         </Button>
       </div>
-      <p className="text-[13px] leading-relaxed text-ink-muted">사려는 사람은 B-LOCK의 &lsquo;도난 조회&rsquo;에 이 번호를 넣으면 도난 여부를 볼 수 있어요.</p>
+      <p className="text-[13px] leading-relaxed text-ink-muted">사려는 사람이 &lsquo;도난 조회&rsquo;에 넣는 번호예요.</p>
       <p className="text-[15px] font-semibold leading-relaxed">이 QR은 이동수단의 디지털 신분증이에요.</p>
       <p className="text-[13px] leading-relaxed text-ink-muted">
-        QR에는 무작위 코드만 들어 있어요. 이름·연락처 같은 개인정보는 담기지 않아요.
+        QR에 개인정보는 담기지 않아요.
       </p>
       <div className="grid grid-cols-2 gap-2">
         <Button variant="secondary" full loading={busy === "save"} loadingText="저장 중..." icon={<Download aria-hidden className="h-4 w-4" />} onClick={onSave}>

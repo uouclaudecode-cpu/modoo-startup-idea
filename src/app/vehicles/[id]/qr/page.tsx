@@ -37,7 +37,7 @@ export default async function VehicleQrPage({
         <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 p-4 text-emerald-800 ring-1 ring-emerald-200">
           <PartyPopper aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
           <p className="text-[15px] leading-relaxed">
-            <b>등록이 끝났어요!</b> 받은 B-LOCK 스티커가 있으면 연결하고, 없다면 &lsquo;QR 출력하기&rsquo;로 뽑아 붙여 주세요.
+            <b>등록이 끝났어요!</b> 스티커를 연결하거나 QR을 뽑아 붙여 주세요.
           </p>
         </div>
       )}

@@ -64,7 +64,7 @@ export function SignupForm({ next = "/" }: { next?: string }) {
     }
     // 이미 가입(확인까지)한 이메일이면 Supabase가 오류 대신 빈 identities 를 돌려주고 메일은 보내지 않아요
     if (data.user && data.user.identities?.length === 0) {
-      setErrors({ form: "이미 가입된 이메일이에요. 로그인하거나 비밀번호 찾기를 해 주세요." });
+      setErrors({ form: "이미 가입된 이메일이에요. 로그인해 주세요." });
       return;
     }
     if (data.session) {
@@ -83,7 +83,7 @@ export function SignupForm({ next = "/" }: { next?: string }) {
         <EmptyState
           icon={<MailCheck className="h-7 w-7" />}
           title="가입 확인 메일을 보냈어요"
-          description={`${sentTo} 메일함(스팸함 포함)에서 확인 링크를 누르면 가입이 끝나요.${next === "/" ? "" : " 확인을 마치면 보던 화면으로 이어서 갈 수 있어요."}`}
+          description={`${sentTo} 메일함(스팸함 포함)에서 링크를 누르면 가입이 끝나요.`}
           action={
             <div className="space-y-3">
               <ButtonLink href={loginHref} full>
@@ -136,7 +136,7 @@ export function SignupForm({ next = "/" }: { next?: string }) {
           value={form.nickname}
           onChange={set("nickname")}
           error={errors.nickname}
-          hint="인사말과 커뮤니티 글·댓글에 보여요. 실명·전화번호는 쓰지 마세요."
+          hint="글·댓글에 보여요. 실명·전화번호는 쓰지 마세요."
           required
         />
         <div className="space-y-1.5">

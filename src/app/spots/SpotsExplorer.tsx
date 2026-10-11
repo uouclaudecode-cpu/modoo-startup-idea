@@ -114,7 +114,7 @@ export function SpotsExplorer({ loggedIn, initialKind }: { loggedIn: boolean; in
       </Link>
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">보관소·공기주입기</h1>
-        <p className="mt-1 text-sm text-ink-muted">내 주변 3km 안의 보관소·공기주입기·수리대를 가까운 순으로 보여 줘요. 장소를 누르면 길 안내를 받을 수 있어요.</p>
+        <p className="mt-1 text-sm text-ink-muted">내 주변 3km 안을 가까운 순으로 보여 줘요.</p>
       </div>
 
       <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
@@ -316,7 +316,7 @@ function SpotCard({
     setBusy(null);
     if (error) return toast.error(friendlyError(error, "저장하지 못했어요."));
     onRated(data as Partial<BikeSpot>);
-    toast.success(kind === "ok" ? "확인 고마워요!" : kind === "broken" ? "고장 제보를 남겼어요. 다른 분들이 헛걸음하지 않을 거예요." : "알려 주셔서 고마워요.");
+    toast.success(kind === "ok" ? "확인 고마워요!" : kind === "broken" ? "고장 제보를 남겼어요." : "알려 주셔서 고마워요.");
   }
 
   return (
@@ -407,7 +407,7 @@ function HazardCard({ h, onClose }: { h: MergedHazard; onClose: () => void }) {
         {h.years.length > 1 && `최근 3년 중 ${h.years.length}번(${hazardYearsLabel(h.years)}) 사고 다발 지역으로 뽑힌 곳이에요. `}
         {h.year}년 한 해 동안 자전거 사고 {h.accidents}건, 다친 사람 {h.casualties}명
         {h.deaths > 0 && `(사망 ${h.deaths}명)`}
-        {h.serious > 0 && `, 크게 다친 사람 ${h.serious}명`}이 있었어요. 지날 때 속도를 줄이고 주변을 살펴 주세요.
+        {h.serious > 0 && `, 크게 다친 사람 ${h.serious}명`}이 있었어요. 지날 때 속도를 줄여 주세요.
       </p>
       <p className="text-[12px] text-ink-faint">자료: 도로교통공단 자전거사고 다발지역 ({hazardYearsLabel(h.years)})</p>
     </Card>
@@ -418,19 +418,19 @@ function HazardCard({ h, onClose }: { h: MergedHazard; onClose: () => void }) {
 const ADD_TEXT: Record<Exclude<SpotKind, "all">, { title: string; desc: string; place: string; note: string }> = {
   pump: {
     title: "공기주입기 알려 주기",
-    desc: "자전거 가게 앞, 공원, 지하철역처럼 누구나 쓸 수 있는 공기주입기를 알려 주세요. 다른 회원에게 바로 보여요.",
+    desc: "누구나 쓸 수 있는 공기주입기를 알려 주세요.",
     place: "예: 태화강역 2번 출구 앞",
     note: "예: 프레스타·슈레더 둘 다 돼요, 밤 10시까지",
   },
   parking: {
     title: "자전거 보관소 알려 주기",
-    desc: "누구나 세울 수 있는 자전거 거치대나 보관소를 알려 주세요. 다른 회원에게 바로 보여요.",
+    desc: "누구나 세울 수 있는 거치대를 알려 주세요.",
     place: "예: 삼산동 롯데백화점 뒤 거치대",
     note: "예: CCTV가 있어요, 밤에는 어두워요",
   },
   repair: {
     title: "수리대 알려 주기",
-    desc: "공구가 달려 있어 누구나 쓸 수 있는 자전거 수리대를 알려 주세요. 다른 회원에게 바로 보여요.",
+    desc: "누구나 쓸 수 있는 수리대를 알려 주세요.",
     place: "예: 태화강 국가정원 자전거 쉼터",
     note: "예: 육각렌치·타이어 레버가 있어요",
   },

@@ -26,8 +26,8 @@ export const NOTICE_GROUPS: { title: string; items: NoticeInfo[] }[] = [
   {
     title: "🚨 급해요",
     items: [
-      { value: "taking", emoji: "🚨", label: "누가 가져가려는 것 같아요", urgent: true, hint: "직접 막지 말고 안전한 곳에서 알려 주세요. 위험하면 112에 신고해 주세요." },
-      { value: "tampering", emoji: "⚠️", label: "누가 자물쇠·부품을 만지고 있어요", urgent: true, hint: "직접 다가가지 말고 안전한 곳에서 알려 주세요." },
+      { value: "taking", emoji: "🚨", label: "누가 가져가려는 것 같아요", urgent: true, hint: "직접 막지 마세요. 위험하면 112에 신고해 주세요." },
+      { value: "tampering", emoji: "⚠️", label: "누가 자물쇠·부품을 만지고 있어요", urgent: true, hint: "직접 다가가지 마세요." },
       { value: "unlocked", emoji: "🔓", label: "잠금이 풀려 있어요", urgent: true },
     ],
   },

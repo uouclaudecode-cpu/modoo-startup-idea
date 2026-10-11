@@ -81,7 +81,7 @@ export default async function VehicleDetailPage({
         <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 p-4 text-emerald-800 ring-1 ring-emerald-200">
           <Tag aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
           <p className="text-[15px] leading-relaxed">
-            <b>소유권을 받았어요!</b> 이전 주인이 알던 스티커 위치는 지웠어요. 스티커를 새 곳에 숨기고 아래 &lsquo;QR · 스티커&rsquo; 칸의 &lsquo;위치 적기&rsquo;로 적어 두세요.
+            <b>소유권을 받았어요!</b> 스티커를 새 곳에 숨기고 위치를 적어 두세요.
           </p>
         </div>
       )}
@@ -90,7 +90,7 @@ export default async function VehicleDetailPage({
         <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 p-4 text-emerald-800 ring-1 ring-emerald-200">
           <Tag aria-hidden className="mt-0.5 h-5 w-5 flex-none" />
           <p className="text-[15px] leading-relaxed">
-            <b>스티커를 연결했어요!</b> 주인만 아는 곳에 붙여 주세요. 이제 누가 이 스티커를 찍으면 이 화면의 이동수단 정보가 보이고, 발견 제보가 나에게 와요.
+            <b>스티커를 연결했어요!</b> 주인만 아는 곳에 붙여 주세요.
           </p>
         </div>
       )}

@@ -17,7 +17,7 @@ type Confirm = { title: string; body: string; button: string; variant: "danger" 
 const CONFIRM: Record<Exclude<Action, "search">, Confirm> = {
   recover: {
     title: "회수 완료로 바꿀까요?",
-    body: "이동수단을 찾았나요? 상태를 '회수 완료'로 바꾸면 QR 화면의 분실 안내가 사라져요.",
+    body: "찾았나요? QR 화면의 분실 안내가 사라져요.",
     button: "회수 완료로 바꾸기",
     variant: "primary",
   },
@@ -29,7 +29,7 @@ const CONFIRM: Record<Exclude<Action, "search">, Confirm> = {
   },
   delete: {
     title: "이동수단 삭제",
-    body: "삭제하면 목록에서 사라지고, 이 QR을 찍으면 '지금은 쓸 수 없는 QR'로 보여요. 되돌릴 수 없어요.",
+    body: "이 QR도 더 이상 쓸 수 없어요. 되돌릴 수 없어요.",
     button: "삭제하기",
     variant: "danger",
   },

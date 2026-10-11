@@ -19,7 +19,7 @@ export function StickerActions({ withLink = false, title = "QR 스티커 준비�
     <section aria-label={title} className={cn("space-y-2.5", className)}>
       <div className="px-1">
         <h2 className="text-lg font-bold tracking-tight">{title}</h2>
-        <p className="text-[13px] text-ink-muted">QR을 붙여 둬야 찾은 사람이 주인에게 알려 줄 수 있어요.</p>
+        <p className="text-[13px] text-ink-muted">QR을 붙여야 찾은 사람이 알려 줄 수 있어요.</p>
       </div>
       <div className={cn("grid gap-2.5", withLink ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2")}>
         {tiles.map((t, i) => (

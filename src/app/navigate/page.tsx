@@ -5,7 +5,7 @@ import { Navigator } from "./Navigator";
 
 export const metadata: Metadata = {
   title: "자전거 길 안내",
-  description: "자전거로 가기 좋은 길을 찾고, 꺾는 곳과 자전거 사고가 잦은 곳을 미리 알려 줘요.",
+  description: "자전거 길을 찾고, 사고 잦은 곳을 미리 알려 줘요.",
 };
 
 /** 로그인 없이도 길 안내는 쓸 수 있어요. 로그인하면 라이딩 기록도 함께 남길 수 있어요. */

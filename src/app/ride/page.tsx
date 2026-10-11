@@ -50,7 +50,7 @@ export default async function RidePage() {
         <EmptyState
           icon={<Bike className="h-7 w-7" />}
           title="기록하려면 이동수단을 먼저 등록해 주세요"
-          description="라이딩 거리는 탄 자전거·킥보드의 소모품 수명에 자동으로 더해져요."
+          description="탄 거리가 소모품 수명에 더해져요."
           action={
             <ButtonLink href="/vehicles/new" full icon={<Plus aria-hidden className="h-4 w-4" />}>
               이동수단 등록

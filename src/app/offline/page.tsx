@@ -11,7 +11,7 @@ export default function OfflinePage() {
       <ErrorState
         icon={<WifiOff className="h-7 w-7" />}
         title="인터넷 연결을 확인해 주세요"
-        description="연결되면 다시 열어 주세요. QR 스캔과 제보는 인터넷이 있어야 보낼 수 있어요."
+        description="연결되면 다시 열어 주세요."
       />
     </div>
   );

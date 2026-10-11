@@ -50,7 +50,7 @@ async function readyRegistration() {
   if (!(await getRegistration())) await navigator.serviceWorker.register("/sw.js");
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error("알림 준비가 늦어지고 있어요. 화면을 새로고침한 뒤 다시 눌러 주세요.")), 10000);
+    timer = setTimeout(() => reject(new Error("알림 준비가 늦어요. 새로고침 후 다시 눌러 주세요.")), 10000);
   });
   try {
     return await Promise.race([navigator.serviceWorker.ready, timeout]);
@@ -108,7 +108,7 @@ export async function browserPushSubscription(): Promise<{ endpoint: string; p25
   sub ??= await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
   const json = sub.toJSON();
   if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth || !isAllowedPushEndpoint(json.endpoint)) {
-    throw new Error("이 브라우저의 알림은 아직 지원하지 않아요. 크롬·삼성 인터넷·Safari에서 열어 주세요.");
+    throw new Error("이 브라우저는 알림을 지원하지 않아요. 크롬·Safari에서 열어 주세요.");
   }
   return { endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth };
 }
@@ -138,7 +138,7 @@ export async function subscribePush(): Promise<void> {
   if (!json.endpoint || !p256dh || !auth) throw new Error("알림을 켜지 못했어요. 잠시 후 다시 시도해 주세요.");
   if (!isAllowedPushEndpoint(json.endpoint)) {
     await sub.unsubscribe().catch((e) => console.error(e));
-    throw new Error("이 브라우저의 알림은 아직 지원하지 않아요. 크롬·삼성 인터넷·Safari에서 열어 주세요.");
+    throw new Error("이 브라우저는 알림을 지원하지 않아요. 크롬·Safari에서 열어 주세요.");
   }
 
   // 같은 브라우저를 다른 계정이 쓰던 경우까지 처리하려고 함수(save_push_subscription)로 저장해요.

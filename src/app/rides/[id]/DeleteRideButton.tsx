@@ -49,7 +49,7 @@ export function DeleteRideButton({ rideId }: { rideId: string }) {
           </>
         }
       >
-        이 기록을 지우면 이동수단 누적 거리와, 이 라이딩 뒤로 정비하지 않은 소모품 거리에서도 그만큼 빠져요. 되돌릴 수 없어요.
+        누적 거리와 소모품 거리에서도 빠져요. 되돌릴 수 없어요.
       </Modal>
     </>
   );

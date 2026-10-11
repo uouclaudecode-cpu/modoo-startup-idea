@@ -49,7 +49,7 @@ export function MaintenanceOverview({ vehicles, parts, now }: { vehicles: Row[];
           );
         })}
       </ul>
-      <p className="text-[12px] text-ink-muted">라이딩을 기록하면 거리가 자동으로 쌓여요. 앱 없이 탄 거리는 정비 화면에서 직접 더할 수 있어요.</p>
+      <p className="text-[12px] text-ink-muted">라이딩을 기록하면 거리가 자동으로 쌓여요.</p>
     </Card>
   );
 }

@@ -134,7 +134,7 @@ export default async function PostPage({ params }: Params) {
           <EyeOff aria-hidden className="mt-0.5 h-5 w-5 flex-none text-amber-600" />
           {isAuthor ? (
             <p>
-              <b>신고가 많아 다른 사람에게는 숨겨졌어요.</b> 운영자가 내용을 확인한 뒤 문제가 없으면 다시 보이게 해요.
+              <b>신고가 많아 다른 사람에게는 숨겨졌어요.</b> 운영자가 확인할게요.
             </p>
           ) : (
             <p>
@@ -203,7 +203,7 @@ export default async function PostPage({ params }: Params) {
       {pins.length > 0 && (
         <section aria-label="지도" className="space-y-1.5">
           <PinMap pins={pins} className="h-60" />
-          <p className="text-[12px] text-ink-muted">빨간 핀은 {meta.place}, 파란·주황 핀은 댓글로 알려 준 본 곳이에요. 핀을 누르면 설명이 보여요.</p>
+          <p className="text-[12px] text-ink-muted">빨간 핀은 {meta.place}, 파란·주황 핀은 본 곳이에요.</p>
         </section>
       )}
 
@@ -212,13 +212,11 @@ export default async function PostPage({ params }: Params) {
           <Tag aria-hidden className="mt-0.5 h-5 w-5 flex-none text-brand-600" />
           {isAuthor ? (
             <p>
-              <b>QR 스티커가 붙은 이동수단이에요.</b> &ldquo;이건가요?&rdquo;라는 비밀 댓글이 오면 <b>비밀 답글</b>로 스티커 위치를 알려 주세요. 그
-              사람이 스티커를 찍으면 위치·사진이 나에게 와요. 스티커 위치는 공개 댓글에 쓰지 마세요.
+              <b>QR 스티커가 붙은 이동수단이에요.</b> 스티커 위치는 <b>비밀 답글</b>로만 알려 주세요.
             </p>
           ) : (
             <p>
-              <b>이 {vehicle.noun}에는 B-LOCK QR 스티커가 숨겨져 있어요.</b> 비슷한 {vehicle.obj} 봤다면 <b>비밀 댓글</b>로 &ldquo;이건가요?&rdquo;라고
-              물어보세요. 주인이 스티커 위치를 알려 주면, 그 스티커를 찍어서 위치와 사진을 주인에게 바로 보낼 수 있어요.
+              <b>이 {vehicle.noun}에는 QR 스티커가 숨겨져 있어요.</b> 비슷한 {vehicle.obj} 봤다면 <b>비밀 댓글</b>로 물어보세요.
             </p>
           )}
         </div>

@@ -19,12 +19,12 @@ const REASONS: { value: Reason; title: string; body: string }[] = [
   {
     value: "lost",
     title: "잃어버렸거나 망가졌어요",
-    body: "이 스티커는 다시 쓸 수 없게 막아요. 누가 주워서 찍어도 등록할 수 없어요.",
+    body: "이 스티커는 다시 쓸 수 없게 막아요.",
   },
   {
     value: "move",
     title: "다른 이동수단에 붙일래요",
-    body: "새 스티커로 돌아가요. 다시 연결하기 전에는 누구나 찍어서 등록할 수 있으니, 떼어 낸 뒤 바로 다시 찍어 원하는 이동수단에 연결해 주세요.",
+    body: "누구나 등록할 수 있게 돼요. 떼어 낸 뒤 바로 다시 연결해 주세요.",
   },
 ];
 
@@ -57,7 +57,7 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
       return toast.error(friendlyError(error, "연결을 끊지 못했어요. 잠시 후 다시 시도해 주세요."));
     }
     setTarget(null);
-    toast.success(reason === "move" ? "연결을 끊었어요. 스티커를 바로 다시 찍어서 원하는 이동수단에 연결해 주세요." : "연결을 끊었어요. 이 스티커는 이제 쓸 수 없어요.");
+    toast.success(reason === "move" ? "연결을 끊었어요. 바로 다시 찍어 연결해 주세요." : "연결을 끊었어요. 이 스티커는 이제 쓸 수 없어요.");
     router.refresh();
   }
 
@@ -106,7 +106,7 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
             붙인 위치 (나만 보기): <b className="text-ink">{stickerSpot}</b>
           </span>
         ) : (
-          <span>붙인 위치를 적어 두면, 커뮤니티에서 &ldquo;이건가요?&rdquo;라고 묻는 사람에게 비밀 답글로 바로 알려 줄 수 있어요.</span>
+          <span>붙인 위치를 적어 두면 내 것인지 확인할 때 좋아요.</span>
         )}
       </p>
       <div className="grid grid-cols-2 gap-2">
@@ -153,7 +153,7 @@ export function StickerCard({ vehicleId, stickers, stickerSpot }: { vehicleId: s
             ))}
           </div>
           <p className="rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
-            {reason === "lost" ? "되돌릴 수 없어요. " : ""}연결된 스티커가 하나도 남지 않으면, 소유권을 넘길 때 구매자는 차대번호로 확인해요. 차대번호도 없으면 사진과 실물을 눈으로 확인해요.
+            {reason === "lost" ? "되돌릴 수 없어요. " : ""}스티커가 없으면 넘길 때 차대번호로 확인해요.
           </p>
         </div>
       </Modal>

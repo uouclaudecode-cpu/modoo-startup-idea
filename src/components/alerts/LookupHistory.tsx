@@ -31,13 +31,13 @@ export function LookupHistory({ items, failed }: { items: VehicleLookup[]; faile
           </p>
         ) : items.length === 0 ? (
           <p className="text-[14px] leading-relaxed text-ink-muted">
-            아직 조회 기록이 없어요. 누군가 구매 전 도난 조회(QR·조회 번호·차대번호)로 이 이동수단을 확인하면 여기에 남아요.
+            아직 조회 기록이 없어요.
           </p>
         ) : (
           <>
             {stolen > 0 && (
               <p className="rounded-xl bg-orange-50 p-3 text-[14px] leading-relaxed text-orange-900">
-                <b>수색 중에 {stolen}번{more} 조회됐어요.</b> 중고로 거래되는 중일 수 있어요. 중고 앱에서 같은 모델 매물을 찾아보고, 찾으면 직접 만나러 가지 말고 112에 알려 주세요.
+                <b>수색 중에 {stolen}번{more} 조회됐어요.</b> 중고로 팔리는 중일 수 있어요. 매물을 찾으면 직접 만나지 말고 112에 알려 주세요.
               </p>
             )}
             <ul className="divide-y divide-line/70 text-[14px]">
@@ -56,7 +56,7 @@ export function LookupHistory({ items, failed }: { items: VehicleLookup[]; faile
             {items.length > SHOW && <p className="text-[13px] text-ink-muted">그 전에 {items.length - SHOW}번{more} 더 조회됐어요.</p>}
           </>
         )}
-        <p className="text-[12px] text-ink-muted">누가 조회했는지는 저장하지 않아요. 시간과 방법만 남아요.</p>
+        <p className="text-[12px] text-ink-muted">누가 조회했는지는 남기지 않아요.</p>
       </Card>
     </section>
   );

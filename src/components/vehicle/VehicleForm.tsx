@@ -106,7 +106,7 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
         const image_path = imagePath ?? (removeCurrent ? null : vehicle.image_path);
         const { error } = await supabase.from("vehicles").update({ ...fields, image_path }).eq("id", vehicle.id);
         if (error) throw error;
-        toast.success("정보를 수정했어요. QR은 그대로예요.");
+        toast.success("정보를 수정했어요.");
         router.replace(`/vehicles/${vehicle.id}`);
         router.refresh();
         return;
@@ -121,7 +121,7 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
         const { error: claimErr } = await supabase.rpc("claim_sticker", { p_code: stickerCode, p_vehicle: data.id, p_spot: null });
         if (claimErr) {
           console.error(claimErr);
-          toast.error(friendlyError(claimErr, "등록은 됐지만 스티커를 연결하지 못했어요. 스티커를 다시 찍어 주세요."));
+          toast.error(friendlyError(claimErr, "등록은 됐어요. 스티커를 다시 찍어 연결해 주세요."));
           router.replace(`/vehicles/${data.id}`);
           router.refresh();
           return;
@@ -194,7 +194,7 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
                 </button>
               ))}
             </div>
-            <p className="mt-1.5 text-[12px] text-ink-muted">고르면 권장 공기압을 알려 드리고, 전기자전거는 배터리도 기록할 수 있어요.</p>
+            <p className="mt-1.5 text-[12px] text-ink-muted">고르면 권장 공기압을 알려 드려요.</p>
           </fieldset>
         )}
         <Input label="이름" placeholder="예) 출퇴근용 자전거" value={form.name} onChange={set("name")} error={errors.name} maxLength={40} required />
@@ -206,7 +206,7 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
         <Textarea
           label="특징"
           placeholder="예) 안장 오른쪽에 작은 흠집이 있어요."
-          hint="흠집·스티커·부착물처럼 내 것임을 알아볼 수 있는 특징을 적어 주세요. 소유권을 확인할 때 쓰여요."
+          hint="흠집·스티커처럼 내 것임을 알 수 있는 특징을 적어요."
           value={form.description}
           onChange={set("description")}
           error={errors.description}
@@ -217,8 +217,8 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
       <Card className="space-y-3">
         <p className="text-[13px] leading-relaxed text-ink-muted">
           {stickerCode
-            ? "받은 스티커가 이 이동수단에 연결돼요. 주인만 아는 곳에 붙이고 위치를 적어 두세요."
-            : "QR 스티커(받은 스티커나 직접 출력한 QR)를 붙였다면 위치를 적어 두세요. 커뮤니티에서 비밀 답글로 알려 줄 때 써요."}
+            ? "주인만 아는 곳에 붙이고 위치를 적어 두세요."
+            : "QR 스티커를 붙였다면 위치를 적어 두세요."}
         </p>
         <StickerSpotInput value={spot} onChange={setSpot} />
       </Card>
@@ -240,7 +240,7 @@ export function VehicleForm({ vehicle, stickerCode }: { vehicle?: Vehicle; stick
         ) : (
           <PhotoPicker
             label="사진"
-            hint="전체가 잘 보이는 사진 1장. 발견한 사람이 알아볼 수 있게 도와줘요."
+            hint="전체가 잘 보이는 사진 1장이면 돼요."
             value={photo}
             onChange={(f) => {
               setPhoto(f);

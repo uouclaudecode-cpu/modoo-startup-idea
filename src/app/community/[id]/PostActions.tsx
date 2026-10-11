@@ -59,7 +59,7 @@ export function PostActions({ postId, status, vehicleId }: { postId: string; sta
       const { error: vErr } = await supabase.from("vehicles").update({ status: "recovered" }).eq("id", vehicleId).eq("status", "searching");
       if (vErr) {
         console.error(vErr);
-        toast.error("글은 '찾았어요'로 바꿨지만 이동수단 상태는 못 바꿨어요. 이동수단 화면에서 '회수 완료'를 눌러 주세요.");
+        toast.error("이동수단 상태는 못 바꿨어요. 이동수단 화면에서 '회수 완료'를 눌러 주세요.");
       }
     }
     setLoading(false);
@@ -88,20 +88,20 @@ export function PostActions({ postId, status, vehicleId }: { postId: string; sta
     resolve: alertId
       ? {
           title: "찾았어요",
-          body: "글을 '찾았어요'로 바꾸고 도난 경보 화면으로 가요. 거기서 도움 준 제보자를 골라 경보를 끝내 주세요. 그래야 제보자에게 고마움이 전해지고 약속한 사례금이 기록돼요.",
+          body: "도난 경보 화면에서 도움 준 제보자를 골라 경보를 끝내 주세요.",
           button: "경보 끝내러 가기",
           variant: "primary",
         }
       : {
           title: "찾았어요",
           body: vehicleId
-            ? "글을 '찾았어요'로 바꾸고, 연결된 이동수단이 수색 중이면 '회수 완료'로 함께 바꿔요."
+            ? "연결된 이동수단도 '회수 완료'로 바꿔요."
             : "글을 '찾았어요'로 바꿔요. 댓글은 그대로 남아요.",
           button: "'찾았어요'로 바꾸기",
           variant: "primary",
         },
     reopen: { title: "다시 찾는 중", body: "글을 다시 '찾는 중'으로 바꿔요.", button: "'찾는 중'으로 바꾸기", variant: "primary" },
-    delete: { title: "글 삭제", body: "글을 삭제하면 목록에서 사라지고 댓글도 볼 수 없어요. 되돌릴 수 없어요.", button: "삭제하기", variant: "danger" },
+    delete: { title: "글 삭제", body: "댓글도 함께 사라지고, 되돌릴 수 없어요.", button: "삭제하기", variant: "danger" },
   };
   const c = pending ? CONFIRM[pending] : null;
 

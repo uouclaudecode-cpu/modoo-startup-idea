@@ -43,7 +43,7 @@ export default async function AlertsPage() {
           <Siren aria-hidden className="h-6 w-6 text-rose-600" />
           근처 도난 경보
         </h1>
-        <p className="mt-1 text-[15px] text-ink-muted">지금 찾고 있는 자전거·킥보드예요. 비슷한 걸 보면 눌러서 제보해 주세요.</p>
+        <p className="mt-1 text-[15px] text-ink-muted">비슷한 걸 보면 눌러서 제보해 주세요.</p>
       </div>
 
       {todoCount > 0 && (
@@ -58,7 +58,7 @@ export default async function AlertsPage() {
         <Card className="flex items-center gap-3 bg-brand-50/60 p-4 ring-brand-100">
           <BellRing aria-hidden className="h-6 w-6 flex-none text-brand-600" />
           <p className="min-w-0 flex-1 text-[14px] leading-relaxed text-ink-soft">
-            관심 동네를 정하면 그 근처에서 도난 경보가 나올 때 알림을 받아요. 실시간 위치는 쓰지 않아요.
+            관심 동네에 도난 경보가 나면 알려 드려요.
           </p>
           <ButtonLink href={user ? "/settings#alerts" : "/login?next=/settings%23alerts"} className="h-10 flex-none px-3 text-sm">
             알림 켜기

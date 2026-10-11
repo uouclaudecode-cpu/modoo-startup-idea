@@ -13,9 +13,9 @@ export type NotifyPrefs = { notify_reports: boolean; notify_comments: boolean; n
 type PrefKey = keyof NotifyPrefs;
 
 const PREFS: { key: PrefKey; emoji: string; label: string; desc: string }[] = [
-  { key: "notify_reports", emoji: "🚨", label: "발견 제보·연락 요청", desc: "누군가 내 QR로 제보하면 바로 알려 드려요." },
-  { key: "notify_comments", emoji: "💬", label: "댓글·답글", desc: "내 분실 글의 새 댓글, 내 댓글에 달린 답글을 알려 드려요." },
-  { key: "notify_maintenance", emoji: "🔧", label: "정비 시기", desc: "소모품 점검·교체 시기가 되면 아침 9시에 알려 드려요." },
+  { key: "notify_reports", emoji: "🚨", label: "발견 제보·연락 요청", desc: "내 QR로 제보가 오면 알려 드려요." },
+  { key: "notify_comments", emoji: "💬", label: "댓글·답글", desc: "내 글·댓글에 답이 달리면 알려 드려요." },
+  { key: "notify_maintenance", emoji: "🔧", label: "정비 시기", desc: "교체 시기가 되면 아침 9시에 알려 드려요." },
 ];
 
 type Status = PushState | "checking" | "nokey";
@@ -85,7 +85,7 @@ export function PushSettings({ notify_reports, notify_comments, notify_maintenan
     try {
       await subscribePush();
       setStatus("on");
-      toast.success("알림을 켰어요. 테스트 알림으로 잘 오는지 확인해 보세요.");
+      toast.success("알림을 켰어요.");
     } catch (e) {
       console.error("알림 켜기 실패", e);
       setError(friendlyError(e, "알림을 켜지 못했어요. 잠시 후 다시 시도해 주세요."));
@@ -123,7 +123,7 @@ export function PushSettings({ notify_reports, notify_comments, notify_maintenan
         }
       } else if ((body.sent ?? 0) > 0) {
         const count = body.sent ?? 0;
-        toast.success(`테스트 알림을 보냈어요${count > 1 ? ` (기기 ${count}대)` : ""}. 잠시 뒤 알림을 확인해 보세요.`);
+        toast.success(`테스트 알림을 보냈어요${count > 1 ? ` (기기 ${count}대)` : ""}.`);
       } else {
         toast.error("알림을 보내지 못했어요. 알림을 껐다가 다시 켜 주세요.");
       }
@@ -173,7 +173,7 @@ export function PushSettings({ notify_reports, notify_comments, notify_maintenan
             <h2 className="text-lg font-bold tracking-tight text-ink">휴대폰 알림</h2>
             {status === "checking" ? <Skeleton className="h-6 w-14 rounded-full" /> : <Badge tone={BADGE[status].tone}>{BADGE[status].label}</Badge>}
           </div>
-          <p className="mt-0.5 text-[13px] leading-relaxed text-ink-muted">앱을 닫아 두어도 발견 제보·댓글·정비 시기를 휴대폰으로 알려 드려요.</p>
+          <p className="mt-0.5 text-[13px] leading-relaxed text-ink-muted">앱을 닫아도 제보·댓글을 알려 드려요.</p>
         </div>
       </div>
 
@@ -223,7 +223,7 @@ export function PushSettings({ notify_reports, notify_comments, notify_maintenan
             );
           })}
         </ul>
-        <p className="mt-1 text-[12px] leading-relaxed text-ink-muted">받을 알림 설정은 내 계정의 모든 기기에 똑같이 적용돼요.</p>
+        <p className="mt-1 text-[12px] leading-relaxed text-ink-muted">모든 기기에 똑같이 적용돼요.</p>
       </section>
     </Card>
   );
@@ -263,7 +263,7 @@ function DeviceSection({
       <Notice>
         이 브라우저는 알림을 지원하지 않아요. 크롬·삼성 인터넷·Safari에서 열어 주세요.
         <span className="mt-1 block text-[13px] text-ink-muted">
-          카카오톡 같은 앱 안에서 열었다면 오른쪽 위 메뉴의 <b>다른 브라우저로 열기</b>를 눌러 주세요.
+          카카오톡 안이라면 <b>다른 브라우저로 열기</b>를 눌러 주세요.
         </span>
       </Notice>
     );
@@ -280,7 +280,7 @@ function DeviceSection({
           <li>
             2. <SquarePlus aria-hidden className="inline h-4 w-4 align-[-2px] text-brand-600" /> <b>홈 화면에 추가</b>를 눌러요.
           </li>
-          <li>3. 홈 화면에 생긴 B-LOCK 앱을 열고, 이 화면에서 알림을 켜 주세요.</li>
+          <li>3. 홈 화면의 B-LOCK 앱에서 알림을 켜요.</li>
         </ol>
         <p className="text-[12px] text-ink-muted">iOS 16.4 이상에서 쓸 수 있어요.</p>
       </div>
@@ -290,7 +290,7 @@ function DeviceSection({
   if (status === "denied") {
     return (
       <div className="space-y-3 rounded-xl bg-rose-50/70 p-4 text-sm ring-1 ring-rose-200">
-        <p className="font-semibold text-rose-800">알림 권한이 거부돼 있어요. 아래처럼 다시 허용해 주세요.</p>
+        <p className="font-semibold text-rose-800">알림이 차단돼 있어요. 아래처럼 허용해 주세요.</p>
         <ul className="list-disc space-y-1.5 pl-5 text-ink-soft">
           <li>
             <b>안드로이드 브라우저</b>: 주소창 왼쪽 아이콘 → 권한(사이트 설정) → 알림 → 허용
@@ -305,7 +305,7 @@ function DeviceSection({
             <b>PC</b>: 주소창 왼쪽 자물쇠 → 알림 → 허용
           </li>
         </ul>
-        <p className="text-[13px] text-ink-muted">허용하고 이 화면으로 돌아오면 자동으로 다시 확인해요.</p>
+        <p className="text-[13px] text-ink-muted">허용 후 돌아오면 다시 확인해요.</p>
         <Button variant="secondary" full icon={<RefreshCw aria-hidden className="h-4 w-4" />} onClick={onRecheck}>
           다시 확인
         </Button>

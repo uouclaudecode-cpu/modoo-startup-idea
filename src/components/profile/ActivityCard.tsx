@@ -9,8 +9,8 @@ import { formatDistance } from "@/lib/ride/geo";
 export function ActivityCard({ a }: { a: Activity }) {
   const lv = activityLevel(a);
   const stats: { emoji: string; label: string; value: string; note: string }[] = [
-    { emoji: "🙌", label: "주인에게 알려 준 횟수", value: `${a.helped}번`, note: "QR을 찍어 알려 주거나 도난 경보에 본 곳을 알려 준 횟수" },
-    { emoji: "💛", label: "받은 감사 인사", value: `${a.thanked}번`, note: "주인이 내 제보에 '도움이 됐어요'를 눌렀어요" },
+    { emoji: "🙌", label: "주인에게 알려 준 횟수", value: `${a.helped}번`, note: "QR 제보·도난 경보 제보" },
+    { emoji: "💛", label: "받은 감사 인사", value: `${a.thanked}번`, note: "주인이 '도움이 됐어요'를 눌렀어요" },
     { emoji: "🎉", label: "되찾아 준 이동수단", value: `${a.returned}대`, note: "내가 알려 준 뒤 주인이 찾았어요" },
     { emoji: "🚲", label: "되찾은 내 이동수단", value: `${a.recovered}대`, note: "잃어버렸다가 다시 찾았어요" },
     { emoji: "📏", label: "라이딩 거리", value: a.ride_m > 0 ? formatDistance(a.ride_m) : "0 km", note: a.ride_count > 0 ? `모두 ${a.ride_count}번 탔어요` : "아직 탄 기록이 없어요" },

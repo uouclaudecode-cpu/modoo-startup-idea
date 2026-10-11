@@ -29,7 +29,7 @@ export function LostReportButton({ vehicleId, label = "분실·도난 신고", c
       return toast.error(friendlyError(error, "상태를 바꾸지 못했어요. 다시 시도해 주세요."));
     }
     setOpen(false);
-    toast.success("수색 중으로 바꿨어요. 누가 QR을 찍으면 바로 알려 드려요.");
+    toast.success("수색 중으로 바꿨어요.");
     router.refresh();
   }
 
@@ -62,7 +62,7 @@ export function LostReportButton({ vehicleId, label = "분실·도난 신고", c
               도둑맞았어요
             </ButtonLink>
             <p className="text-[13px] leading-relaxed text-ink-muted">
-              근처에 도난 경보를 보내요. 알림을 켠 근처 사람들에게 사진·특징이 바로 가고, 목격·중고 매물 제보를 받아요. 마지막으로 세운 곳이 있으면 미리 채워 드려요.
+              근처 사람들에게 도난 경보를 보내요.
             </p>
           </div>
           <div className="space-y-1.5">
@@ -70,11 +70,11 @@ export function LostReportButton({ vehicleId, label = "분실·도난 신고", c
               잃어버렸어요 (분실)
             </Button>
             <p className="text-[13px] leading-relaxed text-ink-muted">
-              근처 알림 없이 상태만 &lsquo;수색 중&rsquo;으로 바꿔요. QR을 스캔한 사람에게 분실 안내와 사진·특징이 보이고, 발견 제보를 받을 수 있어요.
+              알림 없이 &lsquo;수색 중&rsquo;으로만 바꿔요.
             </p>
           </div>
           <p className="rounded-xl bg-slate-50 p-3 text-[13px] leading-relaxed text-ink-soft">
-            이름·연락처 같은 개인정보는 공개되지 않아요. 수색 기록(수색 횟수)은 지워지지 않고, 나중에 중고로 팔 때 안심거래 인증 화면의 &lsquo;도난·분실 이력&rsquo;에 남아요.
+            개인정보는 공개되지 않아요. 수색 기록은 지워지지 않고 거래 인증에 남아요.
           </p>
         </div>
       </Modal>

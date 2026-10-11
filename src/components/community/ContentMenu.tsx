@@ -111,7 +111,7 @@ export function ContentMenu({ target, targetId, authorName, loggedIn, nextPath, 
       return;
     }
     setOpen(false);
-    toast.success(`${authorName}님을 차단했어요. 이제 이 사람의 글과 댓글이 보이지 않아요.`);
+    toast.success(`${authorName}님을 차단했어요.`);
     // 글쓴이를 차단하면(글에서든 글쓴이 댓글에서든) 이 글이 보이지 않으니 목록으로
     if (target === "post" || authorIsPostAuthor) router.replace("/community");
     router.refresh();
@@ -158,7 +158,7 @@ export function ContentMenu({ target, targetId, authorName, loggedIn, nextPath, 
       <Modal open={open} onClose={close} title={title} footer={footer}>
         {!loggedIn ? (
           <div className="space-y-4">
-            <p>신고하거나 차단하려면 로그인해 주세요. 로그인하면 이 화면으로 돌아와요.</p>
+            <p>신고·차단은 로그인 후에 할 수 있어요.</p>
             <ButtonLink href={`/login?next=${encodeURIComponent(nextPath)}`} full icon={<LogIn aria-hidden className="h-4 w-4" />}>
               로그인하고 계속하기
             </ButtonLink>
@@ -170,7 +170,7 @@ export function ContentMenu({ target, targetId, authorName, loggedIn, nextPath, 
                 icon={<Flag aria-hidden className="h-5 w-5" />}
                 tone="warning"
                 label="신고하기"
-                hint={`스팸·욕설·개인정보 노출 같은 문제가 있는 ${what}을 알려 주세요.`}
+                hint={`문제가 있는 ${what}을 알려 주세요.`}
                 onClick={() => go("report")}
               />
             </li>
@@ -179,7 +179,7 @@ export function ContentMenu({ target, targetId, authorName, loggedIn, nextPath, 
                 icon={<Ban aria-hidden className="h-5 w-5" />}
                 tone="danger"
                 label="이 사용자 차단"
-                hint={`${authorName}님의 글과 댓글을 더 이상 보지 않아요.`}
+                hint={`${authorName}님의 글·댓글을 숨겨요.`}
                 onClick={() => go("block")}
               />
             </li>
@@ -235,7 +235,7 @@ export function ContentMenu({ target, targetId, authorName, loggedIn, nextPath, 
               </p>
             )}
             <p className="text-[13px] leading-relaxed text-ink-muted">
-              누가 신고했는지는 글쓴이에게 알리지 않아요. 여러 사람이 신고하면 검토 전까지 잠시 숨겨져요.
+              누가 신고했는지는 알리지 않아요.
             </p>
           </div>
         ) : (
@@ -244,9 +244,9 @@ export function ContentMenu({ target, targetId, authorName, loggedIn, nextPath, 
               <b className="text-ink">{authorName}</b>님을 차단할까요?
             </p>
             <ul className="list-disc space-y-1.5 pl-5 text-[14px]">
-              <li>이 사람이 쓴 글과 댓글이 나에게 보이지 않아요.</li>
-              <li>상대방에게는 차단했다는 사실을 알리지 않아요.</li>
-              <li>설정의 &lsquo;차단한 사용자&rsquo;에서 언제든 해제할 수 있어요.</li>
+              <li>이 사람의 글·댓글이 안 보여요.</li>
+              <li>상대방에게 알리지 않아요.</li>
+              <li>설정에서 언제든 풀 수 있어요.</li>
             </ul>
             {error && (
               <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2.5 text-sm text-rose-700">

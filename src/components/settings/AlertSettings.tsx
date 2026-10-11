@@ -76,7 +76,7 @@ export function AlertSettings(p: Props) {
     try {
       await saveOptIn(next);
       setSaved((s) => ({ ...s, on: next }));
-      toast.success(next ? "도난 경보 알림을 켰어요. 휴대폰 알림도 켜져 있어야 받을 수 있어요." : "도난 경보 알림을 껐어요.");
+      toast.success(next ? "도난 경보를 켰어요. 휴대폰 알림도 켜 주세요." : "도난 경보 알림을 껐어요.");
     } catch (err) {
       console.error(err);
       setOn(!next);
@@ -106,7 +106,7 @@ export function AlertSettings(p: Props) {
         .single();
       if (e2) throw e2;
       setSaved({ on: true, lat: area.lat, lng: area.lng, label: trimmed, radius, quiet });
-      toast.success(pending ? "도난 경보 알림을 켰어요. 휴대폰 알림도 켜져 있어야 받을 수 있어요." : "경보 설정을 저장했어요.");
+      toast.success(pending ? "도난 경보를 켰어요. 휴대폰 알림도 켜 주세요." : "경보 설정을 저장했어요.");
     } catch (err) {
       console.error(err);
       setError(friendlyError(err, "저장하지 못했어요."));
@@ -125,7 +125,7 @@ export function AlertSettings(p: Props) {
               근처 도난 경보
             </h2>
             <p className="mt-0.5 text-[13px] leading-relaxed text-ink-muted">
-              관심 동네 근처에서 이동수단 도난 경보가 나오면 알려 드려요. 위치는 약 1km 단위로만 저장하고 실시간으로 추적하지 않아요. 하루 최대 3건이에요.
+              관심 동네의 도난 경보를 알려 드려요. 위치는 대략만 저장하고 추적하지 않아요.
             </p>
           </div>
           <span className="flex flex-none items-center gap-2">
@@ -150,7 +150,7 @@ export function AlertSettings(p: Props) {
 
         {pending && (
           <p className="rounded-xl bg-amber-50 px-3 py-2.5 text-sm leading-relaxed text-amber-900 ring-1 ring-amber-200">
-            아직 켜지지 않았어요. 관심 동네를 지도에서 고른 뒤 아래 <b>이 동네로 경보 받기</b>를 눌러 주세요.
+            동네를 고르고 <b>이 동네로 경보 받기</b>를 눌러 주세요.
           </p>
         )}
 

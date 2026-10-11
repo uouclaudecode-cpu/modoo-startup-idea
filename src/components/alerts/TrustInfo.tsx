@@ -46,7 +46,7 @@ export function MoneyWarning({ trust, anonymous = false }: { trust?: Trust | nul
     <div role="alert" className="space-y-2 rounded-xl bg-orange-50 p-3 text-[13px] leading-relaxed text-orange-900 ring-1 ring-orange-200">
       <p className="flex items-start gap-2 font-semibold">
         <TriangleAlert aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
-        돈·계좌·연락처를 먼저 요구하면 사기일 수 있어요. 물건을 직접 확인하기 전에는 돈을 보내지 마세요.
+        돈·계좌를 먼저 요구하면 사기일 수 있어요. 물건을 보기 전엔 돈을 보내지 마세요.
       </p>
       {(trust || anonymous) && (
         <div className="pl-6">

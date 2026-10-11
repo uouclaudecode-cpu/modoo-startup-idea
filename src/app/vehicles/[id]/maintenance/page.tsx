@@ -61,7 +61,7 @@ export default async function MaintenancePage({ params }: { params: Promise<{ id
         <ManualDistance vehicleId={vehicle.id} />
       </div>
       <p className="rounded-xl bg-slate-50 p-3 text-[13px] leading-relaxed text-ink-soft">
-        라이딩을 기록하면 거리가 자동으로 쌓여요. 앱 없이 탔다면 &lsquo;탄 거리 더하기&rsquo;로 직접 더해 주세요. 날짜로 정하는 항목(공기압 등)은 라이딩과 상관없이 계산돼요.
+        앱 없이 탔다면 &lsquo;탄 거리 더하기&rsquo;로 더해 주세요.
         <span className="mt-1 block font-semibold text-ink">공기압: {pressureTip(vehicle.type, vehicle.subtype)}</span>
       </p>
       <PartsBoard parts={(parts ?? []) as VehiclePart[]} now={now} lastLife={lastLife} />

@@ -112,7 +112,7 @@ export function PinMap({ pins, className }: { pins: MapPin[]; className?: string
       <div className="space-y-2 rounded-2xl bg-slate-50 p-4 ring-1 ring-line">
         <p className="flex items-start gap-1.5 text-[13px] text-ink-muted">
           <MapPinOff aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
-          지도를 불러오지 못했어요. 위치를 지도 앱에서 열 수 있어요.
+          지도를 불러오지 못했어요. 지도 앱에서 열어 보세요.
         </p>
         <ul className="space-y-1">
           {pins.map((p, i) => (

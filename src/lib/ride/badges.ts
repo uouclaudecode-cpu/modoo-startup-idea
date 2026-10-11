@@ -61,7 +61,7 @@ export const BADGE_DEFS: BadgeDef[] = [
   { id: "km50", emoji: "🌿", title: "누적 50km", description: "모두 합쳐 50km를 달렸어요.", goal: 50, unit: "km", value: km },
   { id: "km100", emoji: "🌳", title: "누적 100km", description: "모두 합쳐 100km를 달렸어요.", goal: 100, unit: "km", value: km },
   { id: "km500", emoji: "⛰️", title: "누적 500km", description: "서울에서 부산까지 가고도 남는 거리예요.", goal: 500, unit: "km", value: km },
-  { id: "km1000", emoji: "🌏", title: "누적 1,000km", description: "서울–부산을 왕복하고도 남는 거리를 달렸어요.", goal: 1000, unit: "km", value: km },
+  { id: "km1000", emoji: "🌏", title: "누적 1,000km", description: "서울–부산 왕복보다 멀리 달렸어요.", goal: 1000, unit: "km", value: km },
   { id: "rides10", emoji: "🎟️", title: "라이딩 10회", description: "라이딩을 10번 기록했어요.", goal: 10, unit: "회", value: (t) => t.count },
   { id: "rides50", emoji: "🏅", title: "라이딩 50회", description: "라이딩을 50번 기록했어요. 이제 생활이 됐네요!", goal: 50, unit: "회", value: (t) => t.count },
   { id: "single20", emoji: "⚡", title: "한 번에 20km", description: "한 번의 라이딩으로 20km를 달렸어요.", goal: 20, unit: "km", value: (t) => t.longest_m / 1000 },

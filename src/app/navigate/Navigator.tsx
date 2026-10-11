@@ -404,7 +404,7 @@ export function Navigator({ initialDest, ride }: { initialDest: Dest | null; rid
       </Link>
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">자전거 길 안내</h1>
-        <p className="mt-1 text-sm text-ink-muted">자전거로 가기 좋은 길을 찾고, 꺾는 곳과 사고가 잦은 곳을 진동으로 미리 알려 줘요.</p>
+        <p className="mt-1 text-sm text-ink-muted">꺾는 곳과 사고 잦은 곳을 진동으로 알려 줘요.</p>
       </div>
 
       <form onSubmit={search} className="flex gap-2">
@@ -427,7 +427,7 @@ export function Navigator({ initialDest, ride }: { initialDest: Dest | null; rid
       {results && (
         <Card className="divide-y divide-line/70 p-0">
           {results.length === 0 ? (
-            <p className="p-4 text-sm leading-relaxed text-ink-muted">찾는 곳이 없어요. 다른 이름이나 주소로 찾거나, 아래 지도를 눌러 도착지를 골라 주세요.</p>
+            <p className="p-4 text-sm leading-relaxed text-ink-muted">찾는 곳이 없어요. 지도를 눌러 골라도 돼요.</p>
           ) : (
             results.map((r, i) => (
               <button key={i} type="button" onClick={() => choose({ lat: r.lat, lng: r.lng, name: r.name })} className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-slate-50">
@@ -502,14 +502,14 @@ export function Navigator({ initialDest, ride }: { initialDest: Dest | null; rid
               </div>
               <p className={cn("flex items-start gap-1.5 text-sm", nextHazards ? "font-semibold text-orange-700" : "text-ink-muted")}>
                 <AlertTriangle aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
-                {nextHazards ? `가는 길에 자전거 사고가 잦은 곳이 ${nextHazards}곳 있어요. 가까워지면 알려 드려요.` : "가는 길에 알려진 자전거 사고가 잦은 곳은 없어요."}
+                {nextHazards ? `사고 잦은 곳 ${nextHazards}곳, 가까워지면 알려 드려요.` : "가는 길에 사고 잦은 곳은 없어요."}
               </p>
               {rec.options}
               <Button full size="lg" onClick={start} disabled={!me} icon={<Navigation aria-hidden className="h-5 w-5" />}>
                 안내 시작
               </Button>
               <p className="text-[12px] leading-relaxed text-ink-faint">
-                예상 시간은 자전거 평균 속도로 계산해요. 길 정보: © OpenStreetMap 기여자. 실제 도로 상황과 다를 수 있으니 신호와 표지판을 먼저 따라 주세요.
+                신호와 표지판을 먼저 따라 주세요. 길 정보: © OpenStreetMap 기여자
               </p>
             </>
           )}

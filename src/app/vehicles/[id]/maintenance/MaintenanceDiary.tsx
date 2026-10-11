@@ -58,7 +58,7 @@ export function MaintenanceDiary({ logs, ownedSince = null }: { logs: Maintenanc
         <EmptyState
           icon={<BookOpen className="h-7 w-7" />}
           title="아직 정비 기록이 없어요"
-          description="위에서 ‘정비 완료’를 누르면 날짜·비용·정비소·메모가 여기에 차곡차곡 쌓여요."
+          description="‘정비 완료’를 누르면 여기에 쌓여요."
         />
       ) : (
         <>
@@ -137,7 +137,7 @@ export function MaintenanceDiary({ logs, ownedSince = null }: { logs: Maintenanc
           </>
         }
       >
-        이 기록만 지워지고, 소모품의 현재 거리는 바뀌지 않아요. 되돌릴 수 없어요.
+        이 기록만 지워져요. 되돌릴 수 없어요.
       </Modal>
     </section>
   );

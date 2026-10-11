@@ -233,9 +233,9 @@ function PathSketch({ path, current, reason }: { path: LatLng[]; current: LatLng
   }
   const message =
     reason === "no-key"
-      ? "지금은 지도를 불러올 수 없어서 경로 모양만 보여 드려요."
+      ? "지도 없이 경로 모양만 보여 드려요."
       : reason === "auth"
-        ? "지금은 지도를 불러올 수 없어서 경로 모양만 보여 드려요."
+        ? "지도 없이 경로 모양만 보여 드려요."
         : "지도를 불러오지 못했어요. 경로 모양만 보여 드려요.";
   return (
     <div className="absolute inset-0 flex flex-col">

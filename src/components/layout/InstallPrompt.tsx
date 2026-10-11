@@ -141,12 +141,11 @@ export function InstallPrompt() {
                 오른쪽 위 <b>추가</b>를 누르면 홈 화면에 {site.name} 앱이 생겨요.
               </span>
             </li>
-            <li className="text-[13px] text-ink-muted">크롬 등 다른 브라우저라면 Safari에서 이 사이트를 열어 주세요.</li>
+            <li className="text-[13px] text-ink-muted">다른 브라우저라면 Safari로 열어 주세요.</li>
           </ol>
         ) : platform === "inapp" ? (
           <p>
-            카카오톡 같은 앱 안에서는 설치할 수 없어요. 오른쪽 위 메뉴에서 <b>다른 브라우저로 열기</b>(크롬·Safari·삼성 인터넷)를 누른 뒤 다시
-            설치 버튼을 눌러 주세요.
+            카카오톡 안에서는 설치할 수 없어요. 오른쪽 위 메뉴에서 <b>다른 브라우저로 열기</b>를 눌러 주세요.
           </p>
         ) : (
           <ol className="space-y-3">

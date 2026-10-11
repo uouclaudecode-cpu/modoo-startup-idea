@@ -120,7 +120,7 @@ export function EvidenceBoard({ vehicleId, items, signed, purchasedOn, purchaseP
           <div className="h-full rounded-full bg-brand-600 transition-[width]" style={{ width: `${Math.max(4, (done / EVIDENCE_SLOTS.length) * 100)}%` }} />
         </div>
         <p className="text-[13px] text-ink-muted">
-          차대번호 {serialLast4 ? `등록됨 (••••${serialLast4})` : "미등록 — 이동수단 화면의 ‘중고거래 → 차대번호’에서 등록해 주세요"}
+          차대번호 {serialLast4 ? `등록됨 (••••${serialLast4})` : "미등록 — ‘중고거래 → 차대번호’에서 등록해요"}
         </p>
       </Card>
 
@@ -200,9 +200,9 @@ export function EvidenceBoard({ vehicleId, items, signed, purchasedOn, purchaseP
         }
       >
         <p>
-          {confirming ? `${evidenceLabel(confirming.kind)} 사진` : "이 사진"}과 올린 시각 기록이 함께 지워지고, 소유 증명서에서도 빠져요. 되돌릴 수 없어요.
+          {confirming ? `${evidenceLabel(confirming.kind)} 사진` : "이 사진"}이 증명서에서도 지워져요. 되돌릴 수 없어요.
         </p>
-        <p className="mt-2 text-[13px] text-ink-muted">다시 올리면 오늘 날짜로 남아서, 예전부터 가지고 있었다는 증거가 약해져요.</p>
+        <p className="mt-2 text-[13px] text-ink-muted">다시 올리면 오늘 날짜로 남아 증거가 약해져요.</p>
       </Modal>
 
       <Card>
@@ -222,7 +222,7 @@ export function EvidenceBoard({ vehicleId, items, signed, purchasedOn, purchaseP
         소유 증명서 보기·인쇄
       </ButtonLink>
       <p className="text-center text-[12px] leading-relaxed text-ink-muted">
-        증명서는 경찰 신고·보험 청구 때 보여 줄 수 있어요. 소유권을 넘기면 이 자료(영수증 등)는 지워지고 새 주인에게 넘어가지 않아요.
+        경찰 신고·보험 청구 때 보여 줄 수 있어요. 소유권을 넘기면 지워져요.
       </p>
     </div>
   );

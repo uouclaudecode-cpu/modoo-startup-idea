@@ -122,7 +122,7 @@ export function TradeCard({ vehicleId, serialLast4, searching }: { vehicleId: st
           중고거래
         </p>
         <p className="mt-0.5 text-[13px] leading-relaxed text-ink-muted">
-          당근·번개장터 글에 인증 링크를 붙이고, 직거래 현장에서 QR 한 번으로 소유권을 넘겨요.
+          인증 링크를 붙이고, QR로 소유권을 넘겨요.
         </p>
       </div>
 
@@ -130,7 +130,7 @@ export function TradeCard({ vehicleId, serialLast4, searching }: { vehicleId: st
         <Hash aria-hidden className="h-4 w-4 flex-none text-ink-muted" />
         <p className="min-w-0 flex-1 text-[14px]">
           차대번호(프레임 번호) <b className="text-ink">{serialLast4 ? `••••${serialLast4}` : "등록 안 함"}</b>
-          <span className="block text-[12px] text-ink-muted">프레임에 새겨진 번호예요. 같은 번호는 다른 계정에 등록할 수 없어요.</span>
+          <span className="block text-[12px] text-ink-muted">프레임에 새겨진 번호예요.</span>
         </p>
         <Button variant="secondary" className="h-10 flex-none px-3 text-sm" onClick={() => setSerialOpen(true)}>
           {serialLast4 ? "바꾸기" : "등록"}
@@ -171,7 +171,7 @@ export function TradeCard({ vehicleId, serialLast4, searching }: { vehicleId: st
       >
         <form id="serial-form" onSubmit={saveSerial} className="space-y-3">
           <p className="text-[14px] leading-relaxed text-ink-soft">
-            흔히 &lsquo;프레임 번호&rsquo;·&lsquo;시리얼 번호&rsquo;라고 불러요. 자전거는 뒤집으면 페달 사이 프레임 아랫면(바텀 브래킷)에, 전동킥보드는 발판 아래나 핸들 기둥에 새겨져 있어요. 없는 자전거도 있는데, 그럴 땐 숨은 QR 스티커만으로도 충분해요. 번호 전체는 암호처럼 바꿔 저장하고, 화면에는 끝 4자리만 보여요. 비워서 저장하면 지워져요.
+            자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래에 있어요. 끝 4자리만 보여요.
           </p>
           <Input label="차대번호 (프레임 번호)" placeholder="예) WTU123A4567B" value={serial} onChange={(e) => setSerial(e.target.value)} error={serialError} autoComplete="off" autoCapitalize="characters" />
         </form>
@@ -189,7 +189,7 @@ export function TradeCard({ vehicleId, serialLast4, searching }: { vehicleId: st
               <p className="text-center text-[15px]">
                 확인 코드 <b className="text-xl tracking-[0.2em] text-brand-700">{currentWithId.check_code}</b>
               </p>
-              <p className="text-center text-[12px] text-ink-muted">구매자가 보는 인증 화면에 같은 코드가 떠요. 캡처로 속이는 걸 막아요.</p>
+              <p className="text-center text-[12px] text-ink-muted">구매자 화면에도 같은 코드가 떠요.</p>
               <div className="grid grid-cols-2 gap-2">
                 <Button icon={<Copy aria-hidden className="h-4 w-4" />} onClick={() => copy(currentWithId)}>
                   복사

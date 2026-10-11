@@ -134,7 +134,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ token: 
               ))}
             </ul>
           )}
-          <p className="text-[12px] leading-relaxed text-ink-muted">사면 정비 기록과 소모품 상태가 그대로 넘어와요. 비용·메모는 보여 주지 않아요.</p>
+          <p className="text-[12px] leading-relaxed text-ink-muted">사면 정비 기록이 그대로 넘어와요.</p>
         </Card>
       )}
 
@@ -162,11 +162,10 @@ export default async function VerifyPage({ params }: { params: Promise<{ token: 
 
       <div className="space-y-2 rounded-2xl bg-slate-100 p-4 text-[13px] leading-relaxed text-ink-soft">
         <p>
-          <b>주소가 b-lock-app.vercel.app인지 꼭 확인하세요.</b> 캡처 이미지는 믿지 말고 링크를 직접 열어 보세요.
+          <b>주소가 b-lock-app.vercel.app인지 꼭 확인하세요.</b> 캡처 이미지는 믿지 마세요.
         </p>
         <p>
-          이 화면은 B-LOCK에 등록된 정보를 보여 줄 뿐, 법적 소유권을 증명하지는 않아요. 직거래 때는 실물의 차대번호와 숨은 스티커를 확인하고, 앱의
-          &lsquo;소유권 넘기기&rsquo;로 소유권을 바로 넘겨받으세요.
+          법적 소유권 증명은 아니에요. 직거래 때 실물의 차대번호와 숨은 스티커를 확인하세요.
         </p>
       </div>
     </div>

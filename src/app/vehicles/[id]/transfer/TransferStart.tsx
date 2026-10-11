@@ -19,9 +19,9 @@ type Mode = "qr" | "link";
 // 넘기면 무엇이 어떻게 되는지 (accept_transfer 와 같게 유지)
 const FATE: [string, string][] = [
   ["함께 넘어가요", "정비 기록 · QR 스티커 · 차대번호 등록"],
-  ["새로 바뀌어요", "앱 QR (내가 출력해 붙여 둔 예전 앱 QR은 더 이상 안 돼요)"],
+  ["새로 바뀌어요", "앱 QR (예전에 출력한 앱 QR은 못 써요)"],
   ["나에게 남아요", "라이딩 기록"],
-  ["지워져요", "발견 제보·대화 · 구매 정보 · 등록 사진 · 소유 증명 자료 (발급한 증명서도 무효) · 스티커 위치 메모"],
+  ["지워져요", "제보·대화 · 구매 정보 · 사진 · 소유 증명 자료 · 스티커 위치"],
 ];
 
 /** 공유 문구: 확인 방법에 맞게 */
@@ -32,8 +32,8 @@ const SHARE_CHECK: Record<Check, string> = {
 };
 
 const CHECK_STEP: Record<Check, string> = {
-  sticker: "구매자가 숨은 스티커를 찍거나 QR 아래 조회 번호를 넣어 같은 이동수단인지 확인해요. 스티커 위치를 알려 주세요.",
-  serial: "구매자가 프레임에 새겨진 차대번호를 직접 보고 적어서 같은 이동수단인지 확인해요.",
+  sticker: "구매자가 숨은 스티커를 찍어 확인해요. 위치를 알려 주세요.",
+  serial: "구매자가 차대번호를 직접 보고 확인해요.",
   none: "구매자가 사진과 실물이 같은지 눈으로 확인해요.",
 };
 
@@ -223,7 +223,7 @@ export function TransferStart({
         <CircleCheck aria-hidden className="h-12 w-12 text-emerald-600" />
         <p className="text-xl font-extrabold">소유권을 넘겼어요</p>
         <p className="text-[15px] leading-relaxed text-ink-muted">
-          이제 {vehicleName}의 주인은 구매자예요. 정비 기록과 스티커는 함께 넘어갔고, 발견 제보·구매 정보·사진은 지웠어요. 라이딩 기록은 내 기록에 남아 있어요.
+          이제 {vehicleName}의 주인은 구매자예요. 라이딩 기록은 내게 남아요.
         </p>
         <ButtonLink href="/" full size="lg" className="mt-2">
           홈으로
@@ -287,8 +287,8 @@ export function TransferStart({
               <Package aria-hidden className="mt-0.5 h-4 w-4 flex-none text-brand-600" />
             )}
             {mode === "qr"
-              ? "구매자가 B-LOCK에 로그인하고 이 QR을 찍어요. (휴대폰 카메라나 앱의 QR 스캔)"
-              : "구매자가 물건을 받은 뒤, B-LOCK에 로그인하고 이 링크를 열어요."}
+              ? "구매자가 로그인하고 이 QR을 찍어요."
+              : "구매자가 물건을 받고 이 링크를 열어요."}
           </li>
           <li className="flex gap-2">
             <Tag aria-hidden className="mt-0.5 h-4 w-4 flex-none text-brand-600" />
@@ -296,7 +296,7 @@ export function TransferStart({
           </li>
           <li className="flex gap-2">
             <ArrowRightLeft aria-hidden className="mt-0.5 h-4 w-4 flex-none text-brand-600" />
-            {mode === "qr" ? "받기를 누르면 바로 넘어가고, 이 화면이 ‘소유권을 넘겼어요’로 바뀌어요." : "받기를 누르면 넘어가고, 나에게 알림이 와요. 이 화면을 닫아도 괜찮아요."}
+            {mode === "qr" ? "받기를 누르면 바로 넘어가요." : "받기를 누르면 넘어가고 알림이 와요."}
           </li>
         </ol>
         <Button variant="ghost" full loading={cancelling} loadingText="취소 중..." onClick={cancel}>
@@ -343,8 +343,8 @@ export function TransferStart({
               </>
             ) : (
               <>
-                <li>돈을 받은 뒤에 링크를 보내 주세요. 링크를 받은 사람은 물건을 받은 뒤 숨은 스티커(또는 차대번호)를 확인해야 받을 수 있어요.</li>
-                <li>링크는 7일 동안 쓸 수 있고, 그 전에는 언제든 취소할 수 있어요.</li>
+                <li>돈을 받은 뒤에 링크를 보내 주세요. 넘긴 뒤에는 되돌릴 수 없어요.</li>
+                <li>링크는 7일 동안 쓸 수 있고, 언제든 취소할 수 있어요.</li>
               </>
             )}
             <li>구매자가 받는 순간 나는 이 이동수단을 더 이상 볼 수 없어요.</li>
@@ -367,16 +367,16 @@ export function TransferStart({
           <Tag aria-hidden className="mt-0.5 h-4 w-4 flex-none text-brand-600" />
           {check === "sticker" ? (
             <p>
-              구매자가 {stickerCount > 1 ? `연결된 스티커 ${stickerCount}장 중 하나를` : "숨은 스티커를"} 찍어서 확인해요. 떨어졌거나 잃어버린 스티커가 있다면 먼저{" "}
+              구매자가 {stickerCount > 1 ? `연결된 스티커 ${stickerCount}장 중 하나를` : "숨은 스티커를"} 찍어서 확인해요. 잃어버린 스티커는 먼저{" "}
               <Link href={`/vehicles/${vehicleId}`} className="font-semibold text-brand-700 underline">
                 이동수단 화면
               </Link>
-              에서 그 스티커의 연결을 끊어 주세요. 이동수단에 붙은 스티커는 없는데 연결만 남아 있으면 구매자가 받을 수 없어요.
+              에서 연결을 끊어 주세요.
             </p>
           ) : check === "serial" ? (
-            <p>스티커가 없어서 구매자가 프레임에 새겨진 차대번호를 직접 보고 확인해요.</p>
+            <p>구매자가 차대번호를 직접 보고 확인해요.</p>
           ) : (
-            <p>스티커도 차대번호도 없어서 구매자가 사진과 실물을 눈으로만 확인해요. 넘기기 전에 이동수단 화면에서 차대번호를 등록하면 더 안전해요.</p>
+            <p>구매자가 사진과 실물을 눈으로 확인해요. 차대번호를 등록하면 더 안전해요.</p>
           )}
         </div>
         <Input

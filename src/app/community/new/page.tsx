@@ -41,8 +41,7 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">글 올리기</h1>
         <p className="mt-1 text-sm leading-relaxed text-ink-muted">
-          잃어버렸다면 잃어버린 곳과 특징을, 주인 없는 자전거·킥보드를 봤다면 발견한 곳과 모습을 자세히 적어 주세요. 연락처는 적지 마세요. 댓글이나
-          비밀 댓글로 이야기할 수 있어요.
+          장소와 특징을 자세히 적어 주세요. 연락처는 적지 마세요.
         </p>
       </div>
       <NewPostForm vehicles={vehicles} initialVehicleId={initial} initialKind={kind} />

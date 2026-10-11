@@ -106,7 +106,7 @@ export function OwnerPanel({
     }
     setResolveOpen(false);
     toast.success(
-      `다행이에요! 경보를 끝냈어요.${picked.length ? " 도움 준 분들께 알림을 보냈어요." : ""}${sticker && missing ? " 이동수단 화면에서 도둑이 떼어 간 스티커는 연결을 끊고 새 스티커를 붙여 주세요." : ""}`,
+      `다행이에요! 경보를 끝냈어요.${picked.length ? " 도움 준 분들께 알림을 보냈어요." : ""}${sticker && missing ? " 없어진 스티커는 연결을 끊고 새로 붙여 주세요." : ""}`,
     );
     router.refresh();
   }
@@ -118,7 +118,7 @@ export function OwnerPanel({
       return toast.error(friendlyError(error, "취소하지 못했어요."));
     }
     setCancelOpen(false);
-    toast.success("경보를 취소했어요. 이동수단 상태는 이동수단 화면에서 바꿀 수 있어요.");
+    toast.success("경보를 취소했어요.");
     router.refresh();
   }
 
@@ -167,7 +167,7 @@ export function OwnerPanel({
             </div>
           ))}
           <p className="text-[12px] leading-relaxed text-ink-muted">
-            제보자 연락처는 B-LOCK이 공개하지 않아요. 제보 메모에 적힌 방법이나 문의하기로 전달해 주세요. 계좌를 먼저 묻는 사람은 조심하세요.
+            제보 메모에 적힌 방법으로 전해 주세요. 계좌부터 묻는 사람은 조심하세요.
           </p>
         </Card>
       )}
@@ -274,13 +274,13 @@ export function OwnerPanel({
               {alert.vehicle.has_serial ? (
                 <>
                   <p className="font-bold">차대번호로 확인해요</p>
-                  <p>도둑이 숨은 스티커를 떼어 갔다면, 등록해 둔 차대번호로 되찾았는지 확인해요. 이 경보에는 &lsquo;스티커 없이 회수&rsquo;로 기록돼요. 끝낸 뒤 새 스티커를 붙이고 위치를 적어 두세요.</p>
-                  <Input label="차대번호 (프레임 번호 전체)" hint="자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
+                  <p>등록한 차대번호로 확인해요. 끝낸 뒤 새 스티커를 붙여 주세요.</p>
+                  <Input label="차대번호 (프레임 번호 전체)" hint="자전거는 페달 사이 아랫면, 킥보드는 발판 아래에 있어요" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
                 </>
               ) : (
                 <>
                   <p className="font-bold">스티커 확인 없이 끝내요</p>
-                  <p>도둑이 숨은 스티커를 떼어 갔다면 이대로 끝낼 수 있어요. 이 경보에는 &lsquo;스티커 없이 회수&rsquo;로 기록돼요. 끝낸 뒤 새 스티커를 붙이고 위치를 적어 두세요.</p>
+                  <p>이대로 끝낼 수 있어요. 끝낸 뒤 새 스티커를 붙여 주세요.</p>
                 </>
               )}
               <button type="button" onClick={() => { setMissing(false); setCode(""); setResolveError(""); }} className="font-semibold underline">
@@ -289,7 +289,7 @@ export function OwnerPanel({
             </div>
           ) : alert.vehicle.has_sticker ? (
             <div className="space-y-2">
-              <p className="text-[14px] leading-relaxed text-ink-soft">되찾은 이동수단의 숨은 스티커를 찍어 주세요. 실제로 되찾았는지 확인해요.</p>
+              <p className="text-[14px] leading-relaxed text-ink-soft">되찾은 이동수단의 숨은 스티커를 찍어 주세요.</p>
               {scanned ? (
                 <p className="flex items-center gap-2 rounded-xl bg-emerald-50 p-3 text-[14px] font-semibold text-emerald-800">
                   <CircleCheck aria-hidden className="h-5 w-5" />
@@ -316,7 +316,7 @@ export function OwnerPanel({
               </button>
             </div>
           ) : alert.vehicle.has_serial ? (
-            <Input label="차대번호 (프레임 번호 전체)" hint="자전거는 페달 사이 프레임 아랫면, 킥보드는 발판 아래·핸들 기둥에 새겨진 영문·숫자예요" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
+            <Input label="차대번호 (프레임 번호 전체)" hint="자전거는 페달 사이 아랫면, 킥보드는 발판 아래에 있어요" maxLength={40} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
           ) : (
             <p className="text-[14px] text-ink-soft">스티커·차대번호가 없어 바로 끝낼 수 있어요.</p>
           )}
@@ -361,7 +361,7 @@ export function OwnerPanel({
           </>
         }
       >
-        <p className="text-[15px] leading-relaxed text-ink-soft">더 이상 근처 사람들에게 보이지 않아요. 되찾았다면 취소 대신 &lsquo;찾았어요&rsquo;를 눌러 도움 준 분들께 알려 주세요.</p>
+        <p className="text-[15px] leading-relaxed text-ink-soft">되찾았다면 취소 대신 &lsquo;찾았어요&rsquo;를 눌러 주세요.</p>
       </Modal>
     </div>
   );

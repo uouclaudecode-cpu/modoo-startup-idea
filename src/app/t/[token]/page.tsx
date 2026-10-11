@@ -15,7 +15,7 @@ const MESSAGES: Record<string, string> = {
   not_found: "소유권 받기 QR을 찾을 수 없어요. 판매자 화면의 QR을 다시 찍어 주세요.",
   self: "내가 만든 소유권 넘기기 QR이에요. 구매자의 휴대폰으로 찍어야 해요.",
   cancelled: "판매자가 소유권 넘기기를 취소했어요.",
-  expired: "QR·링크를 쓸 수 있는 시간이 지났어요. 판매자에게 다시 만들어 달라고 해 주세요.",
+  expired: "시간이 지났어요. 판매자에게 다시 만들어 달라고 해 주세요.",
 };
 
 export default async function ReceivePage({ params }: { params: Promise<{ token: string }> }) {

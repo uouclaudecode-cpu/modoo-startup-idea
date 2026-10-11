@@ -45,7 +45,7 @@ export default async function CertificateVerifyPage({ params }: { params: Promis
         <div className="mx-auto max-w-md">
           <ErrorState
             title="증명서 정보를 불러오지 못했어요"
-            description="증명서가 잘못됐다는 뜻은 아니에요. 인터넷 연결을 확인하고 잠시 후 다시 시도해 주세요."
+            description="인터넷 연결을 확인하고 다시 시도해 주세요."
             action={
               <a href={`/c/${encodeURIComponent(token)}`} className={buttonClass("primary", "md", true)}>
                 <RotateCw aria-hidden className="h-4 w-4" />
@@ -103,7 +103,7 @@ export default async function CertificateVerifyPage({ params }: { params: Promis
         </p>
       </Card>
       <p className="rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
-        이 화면은 증명서가 B-LOCK에서 발급됐고 지금도 같은 사람이 등록 주인이라는 것만 보여 줘요. 사진·연락처 같은 개인정보는 공개하지 않아요.
+        발급 사실과 지금 등록 주인만 보여 줘요. 개인정보는 공개하지 않아요.
       </p>
     </div>
   );

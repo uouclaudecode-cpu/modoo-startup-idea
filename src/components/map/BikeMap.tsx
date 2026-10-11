@@ -267,7 +267,7 @@ export function BikeMap({ pins = [], circles = [], onPinClick, route, passedInde
         <div className="absolute inset-0 grid place-items-center p-6 text-center">
           <p className="flex items-center gap-1.5 text-[13px] text-ink-muted">
             <MapPinOff aria-hidden className="h-4 w-4 flex-none" />
-            지금은 지도를 불러올 수 없어요. 아래 목록과 안내는 그대로 볼 수 있어요.
+            지도를 불러올 수 없어요. 아래 목록은 볼 수 있어요.
           </p>
         </div>
       )}

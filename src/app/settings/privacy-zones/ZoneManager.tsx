@@ -90,7 +90,7 @@ export function ZoneManager({ zones, suggestions, shareTrim }: { zones: PrivacyZ
       <Card className="space-y-3">
         <div>
           <p className="font-bold">출발·도착 근처 가리기</p>
-          <p className="text-[13px] leading-relaxed text-ink-muted">가림 장소를 정하지 않아도, 공유할 때 라이딩의 처음과 끝을 이만큼 빼요.</p>
+          <p className="text-[13px] leading-relaxed text-ink-muted">공유할 때 처음과 끝을 이만큼 빼요.</p>
         </div>
         <MeterPicker value={trim} onChange={saveTrim} options={TRIMS} min={0} max={1000} zeroLabel="안 가림" disabled={busy === "trim"} />
       </Card>
@@ -100,7 +100,7 @@ export function ZoneManager({ zones, suggestions, shareTrim }: { zones: PrivacyZ
           내 가림 장소 <span className="text-ink-muted">{zones.length}/{MAX}</span>
         </p>
         {zones.length === 0 ? (
-          <p className="rounded-xl bg-slate-50 p-3 text-[14px] text-ink-muted">아직 없어요. 집이나 회사를 정해 두면 공유할 때 그 근처 길이 빠져요.</p>
+          <p className="rounded-xl bg-slate-50 p-3 text-[14px] text-ink-muted">아직 정한 곳이 없어요.</p>
         ) : (
           <ul className="divide-y divide-line/70">
             {zones.map((z) => (
@@ -192,7 +192,7 @@ export function ZoneManager({ zones, suggestions, shareTrim }: { zones: PrivacyZ
             <Sparkles aria-hidden className="h-5 w-5 text-brand-600" />
             자주 출발·도착하는 곳이 있어요
           </p>
-          <p className="text-[13px] leading-relaxed text-ink-muted">내 라이딩 기록에서 찾았어요. 집이나 회사라면 가림 장소로 정해 두세요. 이 추천은 나에게만 보여요.</p>
+          <p className="text-[13px] leading-relaxed text-ink-muted">집이나 회사라면 가림 장소로 정해 두세요.</p>
           <ul className="space-y-2">
             {suggestions.map((s, i) => (
               <li key={i} className="flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-line">

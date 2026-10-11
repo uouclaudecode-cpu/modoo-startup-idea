@@ -74,7 +74,7 @@ export default async function StatsPage() {
           <BarChart3 aria-hidden className="h-6 w-6 text-brand-600" />
           도난 다발 지도·통계
         </h1>
-        <p className="mt-1 text-[15px] text-ink-muted">B-LOCK에 쌓인 실제 데이터로 계산해요. 개인을 알아볼 수 있는 정보는 없어요.</p>
+        <p className="mt-1 text-[15px] text-ink-muted">B-LOCK 실제 데이터로 계산해요.</p>
       </div>
 
       {sErr ? (
@@ -107,11 +107,11 @@ export default async function StatsPage() {
           <>
             <PinMap pins={pins} className="h-80" />
             <p className="text-[13px] leading-relaxed text-ink-muted">
-              도난 경보 위치를 약 500m 칸으로 묶은 개수예요. 숫자가 큰 곳에 세울 땐 기둥에 U자 자물쇠로 프레임까지 묶고, 사람 많은 곳에 세워 주세요.
+              약 500m 안의 도난 경보 수예요. 많은 곳에선 U자 자물쇠로 프레임까지 묶어 주세요.
             </p>
           </>
         ) : (
-          <Card className="text-[15px] text-ink-muted">아직 도난 경보가 쌓이지 않았어요. 경보가 생기면 여기에 지도로 보여요.</Card>
+          <Card className="text-[15px] text-ink-muted">아직 쌓인 도난 경보가 없어요.</Card>
         )}
       </section>
 
@@ -124,7 +124,7 @@ export default async function StatsPage() {
         </ButtonLink>
       </div>
       <p className="text-center text-[12px] text-ink-muted">
-        이 통계는 B-LOCK에 등록된 데이터만 집계해요. 전체 도난 건수는 <Link href="https://www.police.go.kr" className="underline">경찰청</Link> 통계를 참고해 주세요.
+        B-LOCK 데이터만 집계해요. 전체 통계는 <Link href="https://www.police.go.kr" className="underline">경찰청</Link>에서 볼 수 있어요.
       </p>
     </div>
   );

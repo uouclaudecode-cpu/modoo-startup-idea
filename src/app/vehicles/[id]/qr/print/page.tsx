@@ -29,7 +29,7 @@ export default async function QrPrintPage({ params }: { params: Promise<{ id: st
           {vehicle.name} QR
         </Link>
         <h1 className="text-2xl font-extrabold tracking-tight">QR 출력하기</h1>
-        <p className="text-[15px] leading-relaxed text-ink-muted">크기와 개수를 골라 집 프린터나 편의점에서 뽑아요. 여러 곳에 숨겨 붙여 두면 더 좋아요.</p>
+        <p className="text-[15px] leading-relaxed text-ink-muted">크기와 개수를 골라 뽑아요.</p>
       </div>
       <PrintStudio vehicleId={vehicle.id} vehicleName={vehicle.name} sources={sources} />
     </div>

@@ -44,7 +44,7 @@ export default async function AlertOgImage({ params }: { params: Promise<{ id: s
               ]
             : []
         }
-        footer={open ? "비슷한 걸 보면 눌러서 알려 주세요 · 이름·번호 비공개" : "함께 찾아 주셔서 고마워요"}
+        footer={open ? "비슷한 걸 보면 알려 주세요" : "함께 찾아 주셔서 고마워요"}
       />
     ),
     { ...OG_SIZE, fonts: await ogFonts(), headers: { "cache-control": "public, max-age=0, s-maxage=300, stale-while-revalidate=600" } },

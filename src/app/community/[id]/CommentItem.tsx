@@ -124,7 +124,7 @@ function CommentBody({ comment: c, imageUrl, avatarUrl, canDelete, loggedIn, pos
     return (
       <div className="flex items-center gap-2 rounded-2xl bg-slate-100 px-4 py-3 text-sm text-ink-muted">
         {reply ? <CornerDownRight aria-hidden className="h-4 w-4" /> : <Lock aria-hidden className="h-4 w-4" />}
-        {reply ? "비밀 답글이에요." : "비밀 댓글이에요. 글쓴이와 댓글 쓴 사람만 볼 수 있어요."}
+        {reply ? "비밀 답글이에요." : "비밀 댓글이에요."}
         <span className="ml-auto text-[13px] text-ink-faint" suppressHydrationWarning>
           {/* "N분 전"은 서버와 브라우저 시각이 조금 달라 1분 차이가 날 수 있어요 */}
           {timeAgo(c.created_at)}
@@ -181,7 +181,7 @@ function CommentBody({ comment: c, imageUrl, avatarUrl, canDelete, loggedIn, pos
       {c.hidden_at && (
         <p role="status" className="flex items-start gap-1.5 rounded-xl bg-amber-50 px-3 py-2 text-[13px] leading-relaxed text-amber-900 ring-1 ring-amber-200">
           <EyeOff aria-hidden className="mt-0.5 h-3.5 w-3.5 flex-none text-amber-600" />
-          {c.is_mine ? "신고가 많아 다른 사람에게는 숨겨졌어요." : "숨김 처리된 댓글이에요. 관리자와 쓴 사람에게만 보여요."}
+          {c.is_mine ? "신고가 많아 다른 사람에게는 숨겨졌어요." : "숨김 처리된 댓글이에요."}
         </p>
       )}
 
@@ -243,7 +243,7 @@ function CommentBody({ comment: c, imageUrl, avatarUrl, canDelete, loggedIn, pos
           </>
         }
       >
-        {reply ? "이 답글을 지울까요? 되돌릴 수 없어요." : "이 댓글을 지울까요? 답글도 함께 사라지고, 되돌릴 수 없어요."}
+        {reply ? "이 답글을 지울까요? 되돌릴 수 없어요." : "답글도 함께 사라지고, 되돌릴 수 없어요."}
       </Modal>
     </div>
   );

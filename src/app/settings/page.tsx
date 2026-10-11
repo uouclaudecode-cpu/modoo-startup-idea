@@ -35,7 +35,7 @@ export default async function SettingsPage() {
         <p className="mt-1 text-sm text-ink-muted">{user.email}</p>
       </div>
 
-      <SettingsSection title="프로필" description="사진과 닉네임을 바꿀 수 있어요. 닉네임은 커뮤니티 글·댓글에도 보여요.">
+      <SettingsSection title="프로필" description="닉네임은 커뮤니티에도 보여요.">
         <ProfileForm
           userId={user.id}
           nickname={profile?.nickname || user.email?.split("@")[0] || ""}
@@ -60,7 +60,7 @@ export default async function SettingsPage() {
         quiet={profile?.alert_quiet ?? true}
       />
 
-      <SettingsSection title="집·회사 가림" description="공유 카드·경로 파일에서 집이나 회사 근처 길을 빼요. 정한 곳은 나만 볼 수 있어요.">
+      <SettingsSection title="집·회사 가림" description="공유할 때 집·회사 근처 길을 빼요.">
         <Link
           href="/settings/privacy-zones"
           className="flex h-12 items-center justify-between rounded-xl bg-slate-50 px-4 text-[15px] font-semibold ring-1 ring-inset ring-line hover:bg-slate-100"
@@ -82,7 +82,7 @@ export default async function SettingsPage() {
         <LogoutButton />
       </SettingsSection>
 
-      <SettingsSection title="회원 탈퇴" description="계정과 등록한 이동수단·라이딩·정비 기록·커뮤니티 글과 댓글이 모두 지워지고 되돌릴 수 없어요." danger>
+      <SettingsSection title="회원 탈퇴" description="모든 기록이 지워지고 되돌릴 수 없어요." danger>
         <DeleteAccount email={user.email ?? ""} />
       </SettingsSection>
     </div>

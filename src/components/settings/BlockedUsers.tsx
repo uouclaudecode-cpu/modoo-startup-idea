@@ -53,7 +53,7 @@ export function BlockedUsers() {
       return;
     }
     setState((s) => (s.status === "ready" ? { status: "ready", items: s.items.filter((x) => x.user_id !== u.user_id) } : s));
-    toast.success(`${u.nickname}님의 차단을 해제했어요. 이제 글과 댓글이 다시 보여요.`);
+    toast.success(`${u.nickname}님의 차단을 풀었어요.`);
   }
 
   return (
@@ -62,7 +62,7 @@ export function BlockedUsers() {
         <h2 id="blocked-users-title" className="text-lg font-bold">
           차단한 사용자
         </h2>
-        <p className="mt-0.5 text-sm leading-relaxed text-ink-muted">차단한 사람의 글과 댓글은 나에게 보이지 않아요. 해제하면 다시 보여요.</p>
+        <p className="mt-0.5 text-sm leading-relaxed text-ink-muted">차단한 사람의 글·댓글은 안 보여요.</p>
       </div>
 
       {state.status === "loading" ? (
@@ -81,7 +81,7 @@ export function BlockedUsers() {
         <EmptyState
           icon={<UserX className="h-7 w-7" />}
           title="차단한 사용자가 없어요"
-          description="커뮤니티 글이나 댓글의 ⋯ 메뉴에서 불편한 사용자를 차단할 수 있어요."
+          description="글·댓글의 ⋯ 메뉴에서 차단할 수 있어요."
         />
       ) : (
         <ul className="space-y-2">

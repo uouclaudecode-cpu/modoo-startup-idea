@@ -118,7 +118,7 @@ export function useNavRide(ctx: NavRideCtx, { onKeepGoing }: { onKeepGoing: () =
       <Link href="/login?next=/navigate" className="font-semibold text-brand-700 hover:underline">
         로그인
       </Link>
-      하면 길 안내를 받으면서 라이딩 기록도 함께 남길 수 있어요.
+      하면 라이딩 기록도 함께 남겨요.
     </p>
   ) : !canRecord ? null : (
     <div className="space-y-2 rounded-xl bg-slate-50 p-3">
@@ -151,7 +151,7 @@ export function useNavRide(ctx: NavRideCtx, { onKeepGoing }: { onKeepGoing: () =
           {typeEmoji(resumeVehicle.type)} {resumeVehicle.name} · 지금까지 {formatDistance(t.distance)}
         </p>
       )}
-      <p className="text-[12px] text-ink-muted">도착해서 저장하면 내 기록에 남고, 탄 거리가 소모품 수명에 더해져요.</p>
+      <p className="text-[12px] text-ink-muted">탄 거리가 소모품 수명에 더해져요.</p>
     </div>
   );
 
@@ -203,7 +203,7 @@ export function useNavRide(ctx: NavRideCtx, { onKeepGoing }: { onKeepGoing: () =
               </div>
             ))}
           </div>
-          <p className="text-[13px] leading-relaxed text-ink-muted">저장하면 내 기록에 남고, 탄 거리가 소모품 수명에 더해져요. 마지막 위치는 주차 위치로 저장돼요.</p>
+          <p className="text-[13px] leading-relaxed text-ink-muted">마지막 위치는 주차 위치로 저장돼요.</p>
           {error && <p className="text-[13px] text-rose-600">{error}</p>}
         </div>
       )}

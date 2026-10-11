@@ -82,7 +82,7 @@ export function RideTracker({ vehicles, userId, recent = [], careTip = null }: {
       if (!a || a.target === "_blank") return;
       const url = new URL(a.href, location.href);
       if (url.origin !== location.origin || url.pathname === location.pathname) return;
-      if (window.confirm("라이딩을 기록하는 중이에요. 다른 화면으로 가면 기록이 일시정지돼요. 이동할까요?")) {
+      if (window.confirm("다른 화면으로 가면 기록이 일시정지돼요. 이동할까요?")) {
         pause();
       } else {
         e.preventDefault();
@@ -201,14 +201,14 @@ export function RideTracker({ vehicles, userId, recent = [], careTip = null }: {
       {t.restored && t.status === "paused" && (
         <div className="rounded-2xl bg-amber-50 p-4 text-[14px] leading-relaxed text-amber-900 ring-1 ring-amber-200">
           <b>끝내지 않은 라이딩이 있어요.</b> {formatDistance(t.restored.distance)} · {formatDuration(t.elapsedSec)} 기록돼 있어요.{" "}
-          {t.canResume ? "이어서 타거나 종료해서 저장할 수 있어요." : "시작한 지 오래돼서 이어 탈 수 없어요. 종료해서 저장하거나 버릴 수 있어요."}
+          {t.canResume ? "이어서 타거나 종료해서 저장할 수 있어요." : "오래돼서 이어 탈 수 없어요. 저장하거나 버려 주세요."}
         </div>
       )}
 
       {vehicleMissing && (
         <div className="space-y-2 rounded-2xl bg-rose-50 p-4 text-[14px] text-rose-800 ring-1 ring-rose-200">
           <p>
-            <b>기록하던 이동수단을 찾을 수 없어요.</b> 삭제됐을 수 있어요. 이 기록을 어느 이동수단에 저장할지 골라 주세요.
+            <b>기록하던 이동수단이 없어요.</b> 저장할 이동수단을 골라 주세요.
           </p>
           <div className="flex flex-wrap gap-2">
             {vehicles.map((v) => (
@@ -299,12 +299,12 @@ export function RideTracker({ vehicles, userId, recent = [], careTip = null }: {
 
       {t.gps === "denied" && (
         <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2.5 text-sm leading-relaxed text-rose-700">
-          위치 권한이 꺼져 있어요. 브라우저 주소창 왼쪽 자물쇠(또는 설정 → 사이트 권한)에서 <b>위치</b>를 허용한 뒤 새로고침해 주세요.
+          위치 권한이 꺼져 있어요. 주소창 자물쇠에서 <b>위치</b>를 허용해 주세요.
         </p>
       )}
       {t.gps === "unsupported" && (
         <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
-          이 브라우저는 위치 기능을 지원하지 않아요. 크롬이나 사파리로 열어 주세요.
+          위치 기능이 안 돼요. 크롬이나 사파리로 열어 주세요.
         </p>
       )}
 
@@ -323,7 +323,7 @@ export function RideTracker({ vehicles, userId, recent = [], careTip = null }: {
         {t.status === "riding" && !t.wakeLocked && (
           <p className="mt-3 flex items-start gap-1.5 text-[12px] leading-relaxed text-ink-muted">
             <SunMedium aria-hidden className="mt-0.5 h-3.5 w-3.5 flex-none" />
-            화면이 꺼지면 위치 기록이 멈출 수 있어요. 기록하는 동안 화면을 켜 두세요.
+            기록하는 동안 화면을 켜 두세요.
           </p>
         )}
       </Card>
@@ -369,7 +369,7 @@ export function RideTracker({ vehicles, userId, recent = [], careTip = null }: {
           </div>
           {recent.length === 0 ? (
             <p className="rounded-2xl bg-slate-50 p-4 text-[14px] leading-relaxed text-ink-muted">
-              아직 기록이 없어요. 라이딩을 마치면 여기에 쌓이고, 눌러서 지도를 보거나 사진으로 공유할 수 있어요.
+              아직 기록이 없어요. 라이딩을 마치면 여기에 쌓여요.
             </p>
           ) : (
             <ul className="space-y-2">
@@ -506,7 +506,7 @@ export function RideTracker({ vehicles, userId, recent = [], careTip = null }: {
           <li>🪪 원동기장치자전거 면허 이상이 있어요</li>
           <li>🚫 보도(인도)가 아닌 자전거도로·차도 가장자리로 다녀요</li>
         </ul>
-        <p className="mt-3 text-[13px] text-ink-muted">개인형 이동장치는 도로교통법에 따라 위 내용을 지켜야 해요. 어기면 범칙금이 있어요.</p>
+        <p className="mt-3 text-[13px] text-ink-muted">어기면 범칙금이 있어요(도로교통법).</p>
       </Modal>
 
       <Modal

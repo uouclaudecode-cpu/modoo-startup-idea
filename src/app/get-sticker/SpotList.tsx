@@ -24,7 +24,7 @@ export function SpotList({ spots, printHref }: { spots: Spot[]; printHref: strin
         {noneNear ? "근처에 받는 곳이 없나요? 직접 출력해도 돼요" : "직접 출력해도 돼요"}
       </p>
       <p className="text-[14px] leading-relaxed text-ink-soft">
-        B-LOCK 스티커와 똑같이 쓸 수 있어요. 크기를 1.5cm부터 A4 한 장 가득까지 골라서 집 프린터나 편의점에서 뽑으면 돼요. 라벨지에 뽑으면 바로 붙일 수 있고, 일반 종이는 투명 테이프로 덮어 주세요.
+        스티커와 똑같이 쓸 수 있어요. 집이나 편의점에서 뽑아요.
       </p>
       <ButtonLink href={printHref} full icon={<Printer aria-hidden className="h-4 w-4" />}>
         QR 출력하기
@@ -47,7 +47,7 @@ export function SpotList({ spots, printHref }: { spots: Spot[]; printHref: strin
         </div>
         {loc.error && <p className="text-[13px] text-rose-600">{loc.error}</p>}
         {spots.length === 0 ? (
-          <p className="rounded-xl bg-slate-50 p-4 text-[14px] leading-relaxed text-ink-muted">아직 스티커를 놓아 둔 곳이 없어요. 곧 학교·가게에 놓을 예정이에요. 그 전까지는 직접 출력해서 써 주세요.</p>
+          <p className="rounded-xl bg-slate-50 p-4 text-[14px] leading-relaxed text-ink-muted">아직 받는 곳이 없어요. 직접 출력해서 써 주세요.</p>
         ) : (
           <ul className="divide-y divide-line/70">
             {list.map((s) => (
@@ -75,7 +75,7 @@ export function SpotList({ spots, printHref }: { spots: Spot[]; printHref: strin
             ))}
           </ul>
         )}
-        <p className="text-[12px] text-ink-muted">스티커는 무료예요. 놓인 수량이 다 떨어졌을 수도 있으니 헛걸음이 걱정되면 직접 출력을 추천해요.</p>
+        <p className="text-[12px] text-ink-muted">무료예요. 다 떨어졌을 수도 있어요.</p>
       </Card>
 
       {!noneNear && printCard}

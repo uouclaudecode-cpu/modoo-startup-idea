@@ -138,7 +138,7 @@ export function ProfileForm({ userId, nickname, avatarPath, onSaved }: Props) {
             </Button>
           )}
         </div>
-        <p className="text-center text-[13px] text-ink-muted">사진은 MY와 커뮤니티 글·댓글에 보여요. 얼굴 사진이 아니어도 괜찮아요.</p>
+        <p className="text-center text-[13px] text-ink-muted">얼굴 사진이 아니어도 괜찮아요.</p>
       </div>
 
       <Input
@@ -146,7 +146,7 @@ export function ProfileForm({ userId, nickname, avatarPath, onSaved }: Props) {
         value={name}
         onChange={(e) => setName(e.target.value)}
         maxLength={20}
-        hint={`커뮤니티 글·댓글에 보여요. 실명이나 전화번호는 쓰지 마세요. (${Array.from(trimmed).length}/20)`}
+        hint={`실명·전화번호는 쓰지 마세요. (${Array.from(trimmed).length}/20)`}
         error={error}
       />
       <Button type="submit" full loading={loading} loadingText="저장 중..." disabled={!trimmed || !changed}>

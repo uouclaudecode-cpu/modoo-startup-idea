@@ -78,7 +78,7 @@ export function AlertForm({
         <Input label="잃어버린 시각" type="datetime-local" value={lostAt} max={localNow()} onChange={(e) => setLostAt(e.target.value)} />
         <LocationPicker label="잃어버린 곳 (지도를 눌러 핀 꽂기)" value={place} onChange={setPlace} />
         {parking && (
-          <p className="-mt-2 rounded-xl bg-brand-50 px-3 py-2 text-[13px] text-brand-800">마지막으로 세운 곳을 미리 넣어 뒀어요. 다른 곳에서 잃어버렸다면 지도에서 옮겨 주세요.</p>
+          <p className="-mt-2 rounded-xl bg-brand-50 px-3 py-2 text-[13px] text-brand-800">마지막으로 세운 곳을 넣어 뒀어요. 다르면 옮겨 주세요.</p>
         )}
         <Input label="장소 설명 (선택)" placeholder="예) 지하철역 2번 출구 앞 거치대" value={placeLabel} maxLength={100} onChange={(e) => setPlaceLabel(e.target.value)} />
         <Textarea
@@ -94,7 +94,7 @@ export function AlertForm({
       <Card className="space-y-4">
         <Input
           label="경찰 신고 번호 (선택)"
-          hint="112에 신고하면 받는 접수 번호예요. 넣으면 '경찰 신고 완료'로 보이고 알림 반경을 3km까지 넓힐 수 있어요."
+          hint="112 접수 번호를 넣으면 반경을 3km까지 넓혀요."
           value={police}
           maxLength={40}
           onChange={(e) => setPolice(e.target.value)}
@@ -116,7 +116,7 @@ export function AlertForm({
             ))}
           </div>
           <p className="mt-1.5 text-[12px] text-ink-muted">
-            {isNew ? "등록한 지 하루가 안 된 이동수단은 1km까지만 보낼 수 있어요." : "경찰 신고 번호가 없으면 1km까지 보낼 수 있어요."}
+            {isNew ? "등록 첫날은 1km까지 보낼 수 있어요." : "신고 번호가 없으면 1km까지예요."}
           </p>
         </div>
         <div>
@@ -154,14 +154,13 @@ export function AlertForm({
           </label>
           {bountyText && bountyError && <p className="mt-1 text-[13px] text-rose-600">{bountyError}</p>}
           <p className="mt-1.5 text-[12px] leading-relaxed text-ink-muted">
-            B-LOCK이 돈을 맡지 않는 &lsquo;약속&rsquo;이에요. 찾으면 도움 된 제보자에게 직접 보내고 앱에서 &lsquo;보냈어요&rsquo;를 눌러 주세요. 약속을 안
-            지키면 프로필에 미지급 기록이 남아요.
+            찾으면 제보자에게 직접 보내는 약속이에요. 안 지키면 기록이 남아요.
           </p>
         </div>
       </Card>
 
       <p className="rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
-        경보는 72시간 동안 진행돼요. 이동수단 상태가 &lsquo;수색 중&rsquo;으로 바뀌고, 인증 링크와 소유권 넘기기는 멈춰요. 경보는 30일에 2번까지 보낼 수 있어요.
+        경보는 72시간 동안 가요. 30일에 2번까지 보낼 수 있어요.
       </p>
       {error && (
         <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2.5 text-sm text-rose-700">

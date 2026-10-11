@@ -31,13 +31,13 @@ export default async function PrivacyZonesPage() {
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">집·회사 가림</h1>
         <p className="mt-1 text-[15px] leading-relaxed text-ink-muted">
-          정해 둔 곳 근처의 길은 <b className="text-ink">공유 카드와 경로 파일에서 빠져요.</b> 라이딩 기록과 거리 계산은 그대로라 정비 알림도 정확해요.
+          정해 둔 곳 근처 길은 <b className="text-ink">공유할 때 빠져요.</b>
         </p>
       </div>
       <ZoneManager zones={(zones ?? []) as PrivacyZone[]} suggestions={(sugg ?? []) as ZoneSuggestion[]} shareTrim={(prof as { share_trim_m?: number } | null)?.share_trim_m ?? 300} />
       <p className="flex items-start gap-2 rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
         <ShieldCheck aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
-        가림 장소는 나만 볼 수 있어요. 라이딩 기록도 원래 나만 보이고, 남에게 보이는 건 내가 직접 공유한 사진·파일뿐이에요. 출발·도착 근처는 위에서 정한 거리만큼 빠져요(‘안 가림’이면 그대로 보여요).
+        가림 장소와 라이딩 기록은 나만 볼 수 있어요.
       </p>
     </div>
   );

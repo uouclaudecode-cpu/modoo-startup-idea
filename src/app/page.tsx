@@ -90,7 +90,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     <div className="space-y-8 sm:space-y-12">
       {bye === "1" && !user && (
         <p role="status" className="rounded-2xl bg-slate-100 p-4 text-[15px] leading-relaxed text-ink-soft">
-          탈퇴가 끝났어요. 계정과 기록을 모두 지웠어요. 그동안 {site.name}을 이용해 주셔서 고마워요.
+          탈퇴가 끝났어요. 그동안 고마웠어요.
         </p>
       )}
 
@@ -188,7 +188,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             디지털 신분증을 만들어 주세요.
           </h1>
           <p className="mt-4 text-[15px] leading-relaxed text-brand-50/90">
-            QR 스티커 하나로 등록하고, 잃어버렸을 때 주변 사람의 제보를 받을 수 있어요. 라이딩 기록과 정비 알림도 함께요.
+            QR 스티커 하나로, 잃어버려도 주변 제보를 받아요.
           </p>
           <div className="mt-7">
             <ButtonLink href="/vehicles/new" size="lg" full variant="light" icon={<Bike aria-hidden className="h-5 w-5" />}>
@@ -206,18 +206,18 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <p className="mt-1 text-sm text-ink-muted">무료예요. 5분이면 잃어버렸을 때 찾을 준비가 끝나요.</p>
           </div>
           <ol className="space-y-3">
-            <StepCard n={1} icon={Bike} title="내 이동수단 등록" text="자전거·킥보드 사진과 특징을 넣으면 QR 신분증이 만들어져요.">
+            <StepCard n={1} icon={Bike} title="내 이동수단 등록" text="사진과 특징을 넣으면 QR이 만들어져요.">
               <ButtonLink href="/vehicles/new" full icon={<Plus aria-hidden className="h-4 w-4" />}>
                 등록하기
               </ButtonLink>
             </StepCard>
-            <StepCard n={2} icon={Tag} title="QR 준비 후 연결" text="QR을 출력하거나 스티커를 받아서 내 이동수단에 연결하고, 안장 밑처럼 주인만 아는 곳에 붙여요.">
+            <StepCard n={2} icon={Tag} title="QR 준비 후 연결" text="QR을 주인만 아는 곳에 붙여요.">
               <ul className="mb-3 space-y-1.5 rounded-xl bg-slate-50 p-3 text-[13px] leading-relaxed text-ink-soft">
                 <li>
-                  <b className="text-ink">출력한 QR</b> · 처음부터 내 이동수단 QR이라 바로 붙이면 끝이에요.
+                  <b className="text-ink">출력한 QR</b> · 바로 붙이면 끝이에요.
                 </li>
                 <li>
-                  <b className="text-ink">받은 스티커</b> · 아직 주인이 없는 스티커예요. 붙이기 전에 한 번 찍어서 내 것으로 연결해요.
+                  <b className="text-ink">받은 스티커</b> · 붙이기 전에 한 번 찍어 연결해요.
                 </li>
               </ul>
               <div className="grid grid-cols-2 gap-2">
@@ -236,7 +236,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               n={3}
               icon={Siren}
               title="잃어버리면 알리기"
-              text="'수색 중'으로 바꾸고 도난 경보를 보내면 근처 사용자에게 알림이 가요. 누가 QR을 찍으면 위치·사진이 나에게만 와요."
+              text="도난 경보를 보내면 근처 사람들에게 알림이 가요."
             />
           </ol>
         </section>
@@ -300,7 +300,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         ) : (
           <Card className="flex flex-col items-center gap-3 py-8 text-center">
             <MessagesSquare aria-hidden className="h-8 w-8 text-brand-600" />
-            <p className="text-[15px] text-ink-soft">지금 찾는 중인 글이 없어요. 잃어버렸다면 분실 글을 올려 보세요.</p>
+            <p className="text-[15px] text-ink-soft">지금 찾는 중인 글이 없어요.</p>
             <ButtonLink href="/community/new" variant="secondary">
               분실 글 올리기
             </ButtonLink>
@@ -334,7 +334,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         <p className="flex items-start gap-2 rounded-2xl bg-slate-100 p-4 text-[13px] leading-relaxed text-ink-soft">
           <Lock aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
           <span>
-            QR에는 무작위 코드만 들어 있어요. 주인의 이름·전화번호·주소는 공개하지 않고, 실시간 위치 추적이 아니라 발견한 사람이 그 자리에서 알려 주는 방식이에요.
+            QR에는 무작위 코드만 있어요. 이름·연락처는 공개되지 않아요.
           </span>
         </p>
       )}

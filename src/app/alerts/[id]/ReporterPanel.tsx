@@ -66,7 +66,7 @@ export function ReporterPanel({ alert, mySightings, myRewards, photos }: { alert
         p_seen_at: new Date().toISOString(),
       });
       if (err) throw err;
-      toast.success("제보를 보냈어요. 주인에게 바로 알림이 갔어요. 고마워요!");
+      toast.success("제보를 보냈어요. 고마워요!");
       setPhoto(null);
       setUrl("");
       setPrice("");
@@ -88,7 +88,7 @@ export function ReporterPanel({ alert, mySightings, myRewards, photos }: { alert
       return toast.error(friendlyError(err, "신고하지 못했어요."));
     }
     setFlagOpen(false);
-    toast.success("신고했어요. 여러 명이 신고하면 경보를 숨기고 운영자가 확인해요.");
+    toast.success("신고했어요. 운영자가 확인할게요.");
   }
 
   async function reward(r: Reward, action: "confirm" | "unpaid") {
@@ -99,7 +99,7 @@ export function ReporterPanel({ alert, mySightings, myRewards, photos }: { alert
       console.error(err);
       return toast.error(friendlyError(err, "처리하지 못했어요."));
     }
-    toast.success(action === "confirm" ? "받음을 확인했어요. 고마워요!" : "못 받았다고 기록했어요. 주인 프로필에 미지급 기록이 남아요.");
+    toast.success(action === "confirm" ? "받음을 확인했어요. 고마워요!" : "못 받았다고 기록했어요.");
     router.refresh();
   }
 
@@ -157,7 +157,7 @@ export function ReporterPanel({ alert, mySightings, myRewards, photos }: { alert
 
             {kind === "street" ? (
               <>
-                <PhotoPicker label="지금 찍은 사진 (필수)" hint="이동수단만 찍어 주세요. 사람 얼굴은 찍지 않아도 돼요." value={photo} onChange={setPhoto} />
+                <PhotoPicker label="지금 찍은 사진 (필수)" hint="사람 말고 이동수단만 찍어 주세요." value={photo} onChange={setPhoto} />
                 <div className="space-y-1.5">
                   <Button variant="secondary" full loading={loc.locating} loadingText="위치 찾는 중..." icon={<LocateFixed aria-hidden className="h-4 w-4" />} onClick={loc.locate}>
                     {loc.coords ? `위치 넣음 (정확도 ±${loc.coords.accuracy}m)` : "지금 위치 넣기"}
@@ -190,7 +190,7 @@ export function ReporterPanel({ alert, mySightings, myRewards, photos }: { alert
             <Button type="submit" full size="lg" loading={sending} loadingText="보내는 중..." icon={<Send aria-hidden className="h-5 w-5" />}>
               주인에게 제보 보내기
             </Button>
-            <p className="text-center text-[12px] text-ink-muted">주인에게 내 이름·이메일은 보이지 않아요. 닉네임 대신 신뢰 정보(도운 횟수 등)만 보여요.</p>
+            <p className="text-center text-[12px] text-ink-muted">내 이름·이메일은 주인에게 보이지 않아요.</p>
           </form>
         </Card>
       )}

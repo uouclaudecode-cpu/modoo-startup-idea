@@ -108,7 +108,7 @@ export function CommentForm({ postId, isAuthor }: { postId: string; isAuthor: bo
             <span>
               <Lock aria-hidden className="mr-1 inline h-4 w-4 align-[-3px]" />
               <b>비밀 댓글</b>로 남기기
-              <span className="mt-0.5 block text-[13px] opacity-80">글쓴이(주인)에게만 내용·위치·사진이 보여요. 정확한 위치를 알려 줄 때 써 주세요.</span>
+              <span className="mt-0.5 block text-[13px] opacity-80">글쓴이(주인)에게만 보여요.</span>
             </span>
           </label>
         )}

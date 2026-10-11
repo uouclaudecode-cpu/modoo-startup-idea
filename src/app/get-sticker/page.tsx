@@ -20,7 +20,7 @@ export default async function GetStickerPage() {
     <div className="mx-auto max-w-md space-y-4">
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">스티커 받는 곳</h1>
-        <p className="mt-1 text-[15px] leading-relaxed text-ink-muted">B-LOCK QR 스티커를 무료로 받을 수 있어요. 근처에 없으면 앱에서 바로 출력해도 똑같이 쓸 수 있어요.</p>
+        <p className="mt-1 text-[15px] leading-relaxed text-ink-muted">QR 스티커를 무료로 받을 수 있어요.</p>
       </div>
       <SpotList spots={(data ?? []) as Spot[]} printHref="/print" />
     </div>

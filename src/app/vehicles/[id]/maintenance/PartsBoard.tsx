@@ -78,8 +78,7 @@ export function PartsBoard({ parts, now, lastLife = {} }: { parts: VehiclePart[]
       )}
       <p className="flex items-start gap-1.5 text-[12px] leading-relaxed text-ink-muted">
         <Info aria-hidden className="mt-0.5 h-3.5 w-3.5 flex-none" />
-        주기의 80%가 되면 &lsquo;점검 필요&rsquo;, 100%가 되면 &lsquo;교체 권장&rsquo;으로 알려 드려요. 기본값은 일반 라이더 기준이라, 타는 환경에 맞게 바꿔도
-        돼요.
+        주기의 80%면 &lsquo;점검 필요&rsquo;, 100%면 &lsquo;교체 권장&rsquo;이에요.
       </p>
 
       <ServiceModal part={servicing} onClose={() => setServicing(null)} />
@@ -356,7 +355,7 @@ function IntervalModal({ part, turnOn = false, onClose }: { part: VehiclePart | 
         </label>
         <div className="space-y-2 rounded-xl ring-1 ring-line p-3">
           <p className="text-sm font-semibold">지금 상태 맞추기 (선택)</p>
-          <p className="text-[12px] leading-relaxed text-ink-muted">이미 타던 이동수단이면, 마지막으로 교체한 날과 그 뒤로 대략 탄 거리를 적어 주세요. 그 기준으로 다시 계산해요. (정비 기록은 남기지 않아요)</p>
+          <p className="text-[12px] leading-relaxed text-ink-muted">마지막 교체일과 그 뒤로 탄 거리를 적어 주세요.</p>
           <div className="grid grid-cols-2 gap-3">
             <Input label="마지막 교체일" type="date" max={todayKst()} value={baseDate} onChange={(e) => setBaseDate(e.target.value)} />
             <Input label="그 뒤로 탄 거리 (km)" inputMode="decimal" placeholder="예) 800" value={baseKm} onChange={(e) => setBaseKm(e.target.value)} />

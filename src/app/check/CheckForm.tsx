@@ -116,7 +116,7 @@ export function CheckForm({ initial }: { initial: string }) {
           </div>
           <VehicleImage src={vehicleImageUrl(v.image_path)} type={v.type} alt={title} className="aspect-[4/3] rounded-xl" />
           <p className="text-lg font-bold">{title}</p>
-          <p className="text-[14px] leading-relaxed text-ink-soft">주인에게 조회 사실이 알림으로 갔어요. 아래 버튼으로 위치·상황을 몰래 전하면 주인이 바로 확인해요. 이름·번호는 주인에게 보이지 않아요.</p>
+          <p className="text-[14px] leading-relaxed text-ink-soft">주인에게 알림이 갔어요. 아래 버튼으로 위치를 몰래 전해 주세요.</p>
           {res.report_token && (
             <ButtonLink href={`/report/${encodeURIComponent(res.report_token)}`} variant="danger" full size="lg" icon={<Siren aria-hidden className="h-5 w-5" />}>
               주인에게 몰래 알리기
@@ -128,7 +128,7 @@ export function CheckForm({ initial }: { initial: string }) {
             </ButtonLink>
           )}
           <p className="rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-soft">
-            판매자와 다투거나 혼자 붙잡으려 하지 마세요. 위험하거나 지금 거래 현장이면 112에 신고하세요.
+            혼자 붙잡으려 하지 마세요. 위험하면 112에 신고하세요.
           </p>
         </Card>
       )}
@@ -158,12 +158,12 @@ export function CheckForm({ initial }: { initial: string }) {
           </ul>
           <p className="flex items-start gap-2 rounded-xl bg-brand-50 p-3 text-[14px] leading-relaxed text-brand-900">
             <ArrowRightLeft aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
-            살 거라면 판매자에게 B-LOCK &lsquo;소유권 넘기기&rsquo;를 요청하세요. 진짜 주인만 넘길 수 있어서, 넘겨받으면 내 것으로 바로 등록돼요.
+            살 거라면 &lsquo;소유권 넘기기&rsquo;를 요청하세요. 진짜 주인만 할 수 있어요.
           </p>
           <ol className="list-decimal space-y-1 pl-5 text-[13px] leading-relaxed text-ink-soft">
             <li>B-LOCK에 가입·로그인해요.</li>
-            <li>판매자가 앱에서 &lsquo;소유권 넘기기&rsquo;를 누르면 QR이 떠요. 그 QR을 휴대폰 카메라로 찍어요.</li>
-            <li>판매자에게 숨은 스티커 위치를 물어 직접 찍으면(또는 차대번호 입력) 바로 내 이동수단이 돼요.</li>
+            <li>판매자 화면에 뜬 QR을 찍어요.</li>
+            <li>숨은 스티커(또는 차대번호)를 확인하면 끝이에요.</li>
           </ol>
         </Card>
       )}
@@ -179,17 +179,15 @@ export function CheckForm({ initial }: { initial: string }) {
           </div>
           <ul className="list-disc space-y-1 pl-5 text-[14px] leading-relaxed text-ink-soft">
             <li>번호를 정확히 넣었는지 확인해 주세요. (QR 아래 조회 번호는 8자리)</li>
-            <li>시세보다 너무 싸거나, 판매자가 차대번호 보여 주기를 꺼리면 의심해 보세요.</li>
-            <li>프레임의 차대번호가 갈려 있거나 스티커를 뗀 흔적이 있으면 사지 마세요.</li>
+            <li>너무 싸거나 차대번호를 안 보여 주면 의심하세요.</li>
+            <li>차대번호가 갈려 있거나 스티커를 뗀 흔적이 있으면 사지 마세요.</li>
             <li>산 뒤에는 B-LOCK에 등록하고 차대번호를 적어 두세요.</li>
           </ul>
         </Card>
       )}
 
       <p className="text-center text-[12px] leading-relaxed text-ink-muted">
-        조회한 번호는 알아볼 수 없게 바꾼 값(해시)으로만 남겨 조회 횟수 제한·통계에 쓰고, 조회한 사람의 정보는 저장하지 않아요. 도난 신고된
-        이동수단이면 주인에게 조회 사실(방법·시각)만 알려요. 판매자·주인의 개인정보는 보여 주지 않고, 경찰에 접수된 도난 여부는 B-LOCK에서 알 수
-        없어요.{" "}
+        조회한 사람의 정보는 저장하지 않아요. 도난 신고된 이동수단이면 주인에게 조회 사실만 알려요. 경찰 신고 여부는 알 수 없어요.{" "}
         <Link href="/privacy" className="underline underline-offset-2 hover:text-ink">
           개인정보처리방침
         </Link>

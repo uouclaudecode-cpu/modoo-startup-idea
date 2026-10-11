@@ -28,7 +28,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight">소유 증명</h1>
         <p className="mt-1 text-[15px] leading-relaxed text-ink-muted">
-          잃어버린 뒤 찾았을 때 &ldquo;내 것&rdquo;이라는 걸 증명하는 자료예요. 사진은 나만 볼 수 있고, 올린 시각은 B-LOCK에 자동으로 남아 바꿀 수 없어요.
+          찾았을 때 &ldquo;내 것&rdquo;임을 증명해요. 사진은 나만 봐요.
         </p>
       </div>
       <EvidenceBoard
