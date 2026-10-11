@@ -13,13 +13,23 @@ import { typeLabel, type Vehicle } from "@/lib/types";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "대화" };
 
-type Row = { key: string; href: string; title: string; sub: string; at: string; isNew: boolean; img: string | null; type: Vehicle["type"] };
+type Tab = "all" | "in" | "out" | "new";
+const TABS: { value: Tab; label: string }[] = [
+  { value: "all", label: "전체" },
+  { value: "new", label: "새 메시지" },
+  { value: "in", label: "받은 대화" },
+  { value: "out", label: "보낸 대화" },
+];
+
+type Row = { dir: "in" | "out"; key: string; href: string; title: string; sub: string; at: string; isNew: boolean; img: string | null; type: Vehicle["type"] };
 
 /**
  * 대화 모아 보기 (머리글 💬): 내 이동수단에 온 제보 대화 + 내가 보낸 제보 대화
  * 누르면 바로 그 대화로 가요.
  */
-export default async function ChatsPage() {
+export default async function ChatsPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  const { tab: rawTab } = await searchParams;
+  const tab: Tab = TABS.some((t) => t.value === rawTab) ? (rawTab as Tab) : "all";
   const supabase = await createClient();
   const {
     data: { user },
@@ -55,6 +65,7 @@ export default async function ChatsPage() {
       const v = myVehicles.find((x) => x.id === r.vehicle_id)!;
       const last = (msgs ?? []).find((m) => m.report_id === r.id);
       return {
+        dir: "in" as const,
         key: `in-${r.id}`,
         href: `/vehicles/${r.vehicle_id}/reports#r-${r.id}`,
         title: v?.name ?? "내 이동수단",
@@ -72,6 +83,7 @@ export default async function ChatsPage() {
   const mine: Row[] = ((sent ?? []) as MyReport[])
     .filter((r) => r.chat)
     .map((r) => ({
+      dir: "out" as const,
       key: `out-${r.id}`,
       href: `/r#rid=${r.id}`,
       title: [r.color, r.brand, typeLabel(r.type)].filter(Boolean).join(" "),
@@ -82,7 +94,10 @@ export default async function ChatsPage() {
       type: r.type,
     }));
 
-  const sortRows = (rows: Row[]) => rows.sort((a, b) => Number(b.isNew) - Number(a.isNew) || b.at.localeCompare(a.at));
+  // 받은 대화와 보낸 대화를 한 목록에, 최근 순으로
+  const all = [...received, ...mine].sort((a, b) => b.at.localeCompare(a.at));
+  const rows = all.filter((r) => (tab === "all" ? true : tab === "new" ? r.isNew : r.dir === tab));
+  const newCount = all.filter((r) => r.isNew).length;
 
   return (
     <div className="mx-auto max-w-md space-y-5">
@@ -90,28 +105,49 @@ export default async function ChatsPage() {
         <MessageCircle aria-hidden className="h-6 w-6 text-brand-600" />
         대화
       </h1>
-      {received.length === 0 && mine.length === 0 ? (
-        <EmptyState icon={<MessageCircle className="h-7 w-7" />} title="아직 대화가 없어요" description="QR 제보로 시작된 대화가 여기에 모여요." />
+      {/* 거르기 */}
+      <nav aria-label="대화 거르기" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+        {TABS.map((t) => (
+          <Link
+            key={t.value}
+            href={t.value === "all" ? "/chats" : `/chats?tab=${t.value}`}
+            replace
+            scroll={false}
+            aria-current={tab === t.value ? "true" : undefined}
+            className={`inline-flex h-9 flex-none items-center gap-1 whitespace-nowrap rounded-full px-3.5 text-sm font-semibold ring-1 ring-inset ${
+              tab === t.value ? "bg-ink text-white ring-ink" : "bg-white text-ink-soft ring-line hover:bg-slate-50"
+            }`}
+          >
+            {t.label}
+            {t.value === "new" && newCount > 0 && <span className="rounded-full bg-rose-600 px-1.5 text-[11px] font-bold text-white">{newCount}</span>}
+          </Link>
+        ))}
+      </nav>
+      {rows.length === 0 ? (
+        <EmptyState
+          icon={<MessageCircle className="h-7 w-7" />}
+          title={tab === "new" ? "새 메시지가 없어요" : tab === "out" ? "보낸 제보 대화가 없어요" : tab === "in" ? "받은 대화가 없어요" : "아직 대화가 없어요"}
+          description={tab === "out" ? "로그인한 채로 QR 제보를 보내면 여기에 모여요." : "QR 제보로 시작된 대화가 여기에 모여요."}
+        />
       ) : (
-        <>
-          {received.length > 0 && <ChatList title="내 이동수단에 온 대화" rows={sortRows(received)} />}
-          {mine.length > 0 && <ChatList title="내가 보낸 제보 대화" rows={sortRows(mine)} />}
-        </>
+        <ChatList rows={rows} />
       )}
     </div>
   );
 }
 
-function ChatList({ title, rows }: { title: string; rows: Row[] }) {
+function ChatList({ rows }: { rows: Row[] }) {
   return (
-    <section className="space-y-2">
-      <h2 className="px-1 text-[13px] font-bold text-ink-muted">{title}</h2>
+    <section>
       <Card className="divide-y divide-line/70 p-0">
         {rows.map((r) => (
           <Link key={r.key} href={r.href} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50">
             <VehicleImage thumb src={vehicleImageUrl(r.img)} type={r.type} alt={r.title} className="h-12 w-12 flex-none rounded-xl" />
             <span className="min-w-0 flex-1">
               <span className="flex items-center gap-1.5">
+                <span className={`flex-none rounded px-1 py-px text-[11px] font-bold ${r.dir === "in" ? "bg-brand-50 text-brand-700" : "bg-amber-50 text-amber-800"}`}>
+                  {r.dir === "in" ? "받음" : "보냄"}
+                </span>
                 <span className="min-w-0 truncate text-[15px] font-bold">{r.title}</span>
                 {r.isNew && <span className="flex-none rounded-full bg-rose-600 px-1.5 py-0.5 text-[11px] font-bold text-white">새 메시지</span>}
               </span>
