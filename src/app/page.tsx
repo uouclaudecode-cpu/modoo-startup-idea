@@ -25,10 +25,8 @@ import { loadPostAvatars, POST_LIST_COLUMNS } from "@/lib/community";
 import { PushPrompt } from "@/components/onboarding/PushPrompt";
 import { WelcomeGuide, welcomeGuideVisible } from "@/components/onboarding/WelcomeGuide";
 import { HomeVehicleCard } from "@/components/vehicle/HomeVehicleCard";
-import { InboxCard } from "@/components/vehicle/InboxCard";
 import { loadMyHome } from "@/lib/myHome";
 import { createClient, getUser } from "@/lib/supabase/server";
-import { typeLabel } from "@/lib/types";
 import { UnfinishedRideCard } from "./dashboard/UnfinishedRideCard";
 
 /**
@@ -87,6 +85,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const urgentPush = me ? me.list.some((v) => v.status === "searching") || me.myAlerts.length > 0 : false;
   const showPushPrompt = me ? me.list.length > 0 && !me.hasPush && (urgentPush || !guideOpen) : false;
   const waitingInbox = me ? me.inbox.filter((i) => i.needsReply) : [];
+  const chatTodo = me ? waitingInbox.length + me.replies.length : 0;
 
   return (
     <div className="space-y-8 sm:space-y-12">
@@ -127,23 +126,22 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               <ChevronRight aria-hidden className="h-5 w-5 flex-none" />
             </Link>
           ))}
-          {/* 내가 보낸 제보에 주인이 답장했어요 → 누르면 바로 대화 */}
-          {me.replies.map((r) => (
+          {/* 확인할 대화 한 줄: 내 이동수단에 온 답장 기다림 + 내가 보낸 제보의 새 답장 (자세한 건 💬 대화에서) */}
+          {chatTodo > 0 && (
             <Link
-              key={r.id}
-              href={`/r#rid=${r.id}`}
+              href="/chats?tab=new"
               className="flex min-h-14 w-full items-center gap-3 rounded-2xl bg-brand-600 px-4 py-3 text-white transition-colors hover:bg-brand-700 active:bg-brand-800"
             >
               <MessageCircle aria-hidden className="h-5 w-5 flex-none" />
               <span className="min-w-0 flex-1">
-                <span className="block font-semibold">주인이 답장했어요</span>
-                <span className="block truncate text-[13px] text-white/85">{[r.color, r.brand, typeLabel(r.type)].filter(Boolean).join(" ")} · 대화 보기</span>
+                <span className="block font-semibold">확인할 대화 {chatTodo}개</span>
+                <span className="block truncate text-[13px] text-white/85">
+                  {[waitingInbox.length ? `답장 기다림 ${waitingInbox.length}` : "", me.replies.length ? `새 답장 ${me.replies.length}` : ""].filter(Boolean).join(" · ")}
+                </span>
               </span>
               <ChevronRight aria-hidden className="h-5 w-5 flex-none" />
             </Link>
-          ))}
-          {/* 답장을 기다리는 제보·대화만 */}
-          <InboxCard items={waitingInbox} />
+          )}
           {showPushPrompt && <PushPrompt userId={user!.id} urgent={urgentPush} />}
           <UnfinishedRideCard userId={user!.id} />
 

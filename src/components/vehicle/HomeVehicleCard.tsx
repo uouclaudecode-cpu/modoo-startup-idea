@@ -83,14 +83,10 @@ export function HomeVehicleCard({ vehicle: v, foundReports, waiting, care }: { v
       {/* 잃어버렸을 때 / 찾고 있을 때 */}
       <div className="mt-auto p-4 pt-1">
         {searching ? (
-          <div className="grid grid-cols-2 gap-2">
-            <ButtonLink href={`/vehicles/${v.id}/reports`} variant="danger" icon={<Inbox aria-hidden className="h-4 w-4" />} className="h-11">
-              제보 보기
-            </ButtonLink>
-            <ButtonLink href={`/vehicles/${v.id}#status`} variant="secondary" icon={<ShieldCheck aria-hidden className="h-4 w-4" />} className="h-11">
-              찾았어요
-            </ButtonLink>
-          </div>
+          // 제보 보기는 위 '받은 제보'와 같아서, 여기엔 찾았을 때 누를 버튼만
+          <ButtonLink href={`/vehicles/${v.id}#status`} variant="secondary" full icon={<ShieldCheck aria-hidden className="h-4 w-4" />} className="h-11">
+            찾았어요
+          </ButtonLink>
         ) : (
           <LostReportButton vehicleId={v.id} label="잃어버렸어요" compact soft />
         )}
