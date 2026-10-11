@@ -91,6 +91,8 @@ export function FinderChat() {
       : await createClient().rpc("finder_thread_mine", { p_report: rid });
     if (error) {
       console.error(error);
+      // 계정으로 여는데 로그인 전이면(권한 없음) '로그인하기' 안내로
+      if (!token && error.code === "42501") return setThread("missing");
       setLoadError(true);
       return;
     }
@@ -167,7 +169,7 @@ export function FinderChat() {
   async function copyLink() {
     if (!token) return;
     const ok = await copyText(`${window.location.origin}/r#t=${token}`);
-    if (ok) toast.success("대화 주소를 복사했어요. 메모장 등에 저장해 두면 다른 기기에서도 들어올 수 있어요.");
+    if (ok) toast.success("대화 주소를 복사했어요. 저장해 두면 다른 기기에서도 열 수 있어요.");
     else toast.error("복사하지 못했어요. 주소창의 주소를 직접 저장해 주세요.");
   }
 
@@ -178,7 +180,7 @@ export function FinderChat() {
       <EmptyState
         icon={<MessageCircle className="h-7 w-7" />}
         title="이 기기에서 보낸 제보 대화가 없어요"
-        description="QR을 찍고 제보할 때 '익명 대화'를 고르면 여기서 주인과 대화할 수 있어요. 로그인해서 보낸 제보는 '내 경보·제보'에서 볼 수 있어요."
+        description="로그인해서 보낸 제보는 '내 경보·제보'에서 볼 수 있어요."
         action={
           <ButtonLink href="/alerts#mine" variant="secondary">
             내 경보·제보 보기
@@ -203,7 +205,7 @@ export function FinderChat() {
       <EmptyState
         icon={<MessageCircle className="h-7 w-7" />}
         title="대화를 찾을 수 없어요"
-        description="제보를 보낸 계정으로 로그인하면 볼 수 있어요. 로그인 없이 보냈다면 제보를 보낸 기기에서 열어 주세요."
+        description="제보를 보낸 계정으로 로그인하거나, 제보를 보낸 기기에서 열어 주세요."
         action={
           <ButtonLink href={`/login?next=${encodeURIComponent(`/r#rid=${rid}`)}`} variant="secondary">
             로그인하기
@@ -238,13 +240,11 @@ export function FinderChat() {
           제보를 보냈어요. 고마워요!
         </p>
         <p className="text-[14px] leading-relaxed text-ink-soft">
-          {[thread.vehicle.color, thread.vehicle.brand].filter(Boolean).join(" ") || "이동수단"} 주인에게 알림이 갔어요.{" "}
           {thread.chat === false
-            ? "이 제보는 대화 없이 보냈어요."
+            ? "주인에게 알림이 갔어요."
             : rid
-              ? "주인이 답장하면 내 계정으로 알림이 오고 이 화면에 보여요."
-              : "주인이 답장하면 이 화면에 보여요."}{" "}
-          내 이름·번호는 주인에게 보이지 않아요.
+              ? "주인이 답장하면 알림으로 알려 드려요."
+              : "주인이 답장하면 여기에 보여요."}
         </p>
         {token && (
         <div className="grid gap-2 pt-1 min-[400px]:grid-cols-2">
@@ -279,7 +279,7 @@ export function FinderChat() {
             </li>
           ))}
         </ul>
-        {thread.messages.length === 0 && thread.chat !== false && <p className="text-center text-[13px] text-ink-muted">아직 답장이 없어요. 주인이 확인하면 여기에 답장이 와요.</p>}
+        {thread.messages.length === 0 && thread.chat !== false && <p className="text-center text-[13px] text-ink-muted">아직 답장이 없어요.</p>}
         <div ref={endRef} className="scroll-mb-28" />
         {thread.open ? (
           <form onSubmit={send} className="space-y-2">
@@ -292,7 +292,7 @@ export function FinderChat() {
           <p className="text-center text-[13px] text-ink-muted">{thread.blocked ? "주인이 대화를 끝냈어요." : "대화가 끝났어요 (제보 후 14일)."}</p>
         )}
       </Card>
-      <p className="text-center text-[12px] leading-relaxed text-ink-muted">직접 만나서 돌려줄 때는 사람이 많은 곳에서 만나세요. 돈을 먼저 요구하거나 주는 건 피하세요.</p>
+      <p className="text-center text-[12px] leading-relaxed text-ink-muted">만날 때는 사람 많은 곳에서, 돈 거래는 피해 주세요.</p>
     </>
   );
 }

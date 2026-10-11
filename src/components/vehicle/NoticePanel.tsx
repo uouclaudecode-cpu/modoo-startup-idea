@@ -84,7 +84,7 @@ export function NoticePanel({ token, vehicleLabel }: { token: string; vehicleLab
           <BellRing aria-hidden className="h-5 w-5 text-brand-600" />
           주인에게 알리기
         </h2>
-        <p className="mt-0.5 text-[13px] leading-relaxed text-ink-muted">하나만 누르면 주인 휴대폰으로 바로 알림이 가요. 주인 정보도, 내 정보도 서로 보이지 않아요.</p>
+        <p className="mt-0.5 text-[13px] leading-relaxed text-ink-muted">누르면 주인에게 바로 알림이 가요. 서로의 정보는 보이지 않아요.</p>
       </div>
       {NOTICE_GROUPS.map((g) => (
         <div key={g.title} className="space-y-1.5">
@@ -157,7 +157,7 @@ export function NoticePanel({ token, vehicleLabel }: { token: string; vehicleLab
             />
             {picked.value !== "nice" &&
               (showPhoto ? (
-                <PhotoPicker label="사진 (선택)" hint="사진이 있으면 주인이 더 빨리 알아봐요." value={photo} onChange={setPhoto} />
+                <PhotoPicker label="사진 (선택)" value={photo} onChange={setPhoto} />
               ) : (
                 <button
                   type="button"
@@ -172,7 +172,7 @@ export function NoticePanel({ token, vehicleLabel }: { token: string; vehicleLab
               <input type="checkbox" checked={wantReply} onChange={(e) => setWantReply(e.target.checked)} className="mt-0.5 h-5 w-5 flex-none rounded accent-brand-600" />
               <span>
                 <b>주인의 답장 받기</b>
-                <span className="block text-[12px] text-ink-muted">번호 없이 앱 안에서 &ldquo;확인했어요&rdquo; 같은 답장을 받을 수 있어요.</span>
+                <span className="block text-[12px] text-ink-muted">번호 없이 앱에서 받아요</span>
               </span>
             </label>
             {error && <p className="text-[13px] text-rose-600">{error}</p>}
@@ -185,15 +185,13 @@ export function NoticePanel({ token, vehicleLabel }: { token: string; vehicleLab
             </span>
             {sent.merged ? (
               <p className="text-[15px] leading-relaxed text-ink-soft">
-                {sent.again ? "이미 알려 주셨어요." : `다른 분도 방금 같은 내용을 알렸어요. 함께 알려 주셔서 고마워요! (${sent.count ?? 2}명)`}
-                <br />
-                주인이 곧 확인할 거예요.
+                {sent.again ? "이미 알려 주셨어요." : `다른 분도 같은 내용을 알렸어요 (${sent.count ?? 2}명). 고마워요!`}
               </p>
             ) : (
               <p className="text-[15px] leading-relaxed text-ink-soft">
                 <b>{picked.label}</b>
                 <br />
-                주인에게 알렸어요. 도와주셔서 고마워요! 🙌
+                주인에게 알렸어요. 고마워요! 🙌
               </p>
             )}
             {sent.finderToken && (

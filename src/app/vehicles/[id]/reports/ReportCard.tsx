@@ -73,7 +73,7 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: ReportRow; 
       return toast.error(friendlyError(error, "표시하지 못했어요. 잠시 후 다시 시도해 주세요."));
     }
     setHandledAt(next ? ((data as string | null) ?? new Date().toISOString()) : null);
-    toast.success(next ? `'${handledLabel}'으로 표시했어요. 홈의 답장 기다림에서 빠져요.` : "표시를 풀었어요.");
+    toast.success(next ? `'${handledLabel}'으로 표시했어요.` : "표시를 풀었어요.");
   }
 
   const hasCoords = r.latitude != null && r.longitude != null;
@@ -197,7 +197,7 @@ export function ReportCard({ report: r, imageUrl, trust }: { report: ReportRow; 
               ) : (
                 <>
                   <span className="min-w-0 flex-1">
-                    {r.contact_mode === "callback" ? "전화했다면 표시해 두세요. 홈의 답장 기다림에서 빠져요." : "더 답장하지 않아도 되면 표시해 두세요."}
+                    {r.contact_mode === "callback" ? "전화했다면 눌러 주세요." : "답장이 끝났다면 눌러 주세요."}
                   </span>
                   <Button variant="secondary" loading={marking} loadingText="표시 중..." icon={<CheckCheck aria-hidden className="h-4 w-4" />} onClick={() => markHandled(true)}>
                     {r.contact_mode === "callback" ? "연락했어요" : "확인했어요"}

@@ -33,7 +33,7 @@ export function NoticeMute({ vehicleId, mutedUntil }: { vehicleId: string; muted
           : "QR로 받는 알림 (자리·상태 알림)"}
       </p>
       <p className="text-[12px] leading-relaxed text-ink-muted">
-        일부러 오래 세워 둘 때는 잠시 꺼 두세요. 꺼 둔 동안에도 여기 목록에는 쌓이고, 급한 알림(잠금 풀림·누가 가져가려 함)과 발견 제보는 그대로 와요.
+        오래 세워 둘 때 잠시 꺼 두세요. 급한 알림과 발견 제보는 그대로 와요.
       </p>
       <div className="flex flex-wrap gap-2">
         {until ? (

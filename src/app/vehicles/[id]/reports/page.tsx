@@ -112,7 +112,7 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
         {pins.length > 0 && (
           <section aria-label="제보 위치 지도" className="space-y-1.5">
             <PinMap pins={pins} className="h-64" />
-            <p className="text-[12px] text-ink-muted">핀 번호는 최신 제보부터예요. 핀을 누르면 시간과 장소가 보여요.</p>
+            <p className="text-[12px] text-ink-muted">1번이 가장 최근 제보예요.</p>
           </section>
         )}
         <ul className="space-y-3">

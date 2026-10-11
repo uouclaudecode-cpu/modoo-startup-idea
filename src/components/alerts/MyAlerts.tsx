@@ -6,7 +6,7 @@ import { ALERT_STATUS, vehicleTitle, type MyAlert } from "@/lib/alerts";
 import { timeAgo } from "@/lib/format";
 import { vehicleImageUrl } from "@/lib/images";
 import { noticeInfo } from "@/lib/notices";
-import type { VehicleType } from "@/lib/types";
+import { typeLabel, type VehicleType } from "@/lib/types";
 
 /** 내가 보낸 QR 제보 (041_my_reports_chat.sql 의 my_reports) */
 export type MyReport = {
@@ -97,7 +97,7 @@ export function MyAlerts({ items, failed, reports = [] }: { items: MyAlert[]; fa
               {reports.map((r) => {
                 const notice = noticeInfo(r.reason);
                 const what = r.kind === "found" ? "📍 발견 제보" : notice ? `${notice.emoji} ${notice.label}` : "📣 주인에게 알림";
-                const title = vehicleTitle({ type: r.type, brand: r.brand, model: null, color: r.color });
+                const title = [r.color, r.brand, typeLabel(r.type)].filter(Boolean).join(" ");
                 const state = r.recovered
                   ? "🎉 주인이 되찾았어요"
                   : reportTodo(r)
@@ -119,7 +119,7 @@ export function MyAlerts({ items, failed, reports = [] }: { items: MyAlert[]; fa
                         <span className="block truncate text-[15px] font-bold">{title}</span>
                         <span className="block text-[13px] text-ink-muted">
                           {state && <span className={reportTodo(r) ? "font-bold text-rose-600" : ""}>{state}</span>}
-                          {r.thanked && <span className="ml-1.5 font-semibold text-amber-700">{state ? "· " : ""}💛 고맙다는 인사를 받았어요</span>}
+                          {r.thanked && <span className="ml-1.5 font-semibold text-amber-700">{state ? "· " : ""}💛 감사 인사</span>}
                           {!state && !r.thanked && "보낸 제보 보기"}
                         </span>
                       </span>

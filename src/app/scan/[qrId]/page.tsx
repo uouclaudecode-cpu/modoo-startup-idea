@@ -67,7 +67,7 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
       <BadgeCheck aria-hidden className="h-6 w-6 flex-none" />
       <p className="flex-1 text-[15px] leading-snug">
         <b>내 이동수단이에요</b>
-        <span className="block text-[13px] text-emerald-700">이 QR은 내 계정에 등록돼 있어요.</span>
+        
       </p>
       <ButtonLink href={`/vehicles/${ownVehicleId}`} variant="secondary" className="h-10 flex-none px-3 text-sm">
         관리
@@ -110,7 +110,7 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
   const privacy = (
     <p className="flex items-start gap-2 rounded-xl bg-slate-100 p-3 text-[13px] leading-relaxed text-ink-muted">
       <Lock aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
-      주인 정보는 개인정보 보호를 위해 공개하지 않아요. 제보는 주인에게만 전달돼요.
+      주인 정보는 공개되지 않고, 제보는 주인에게만 가요.
     </p>
   );
 
@@ -132,14 +132,13 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
           <Siren aria-hidden className="h-9 w-9" />
           <h1 className="mt-3 text-2xl font-extrabold leading-snug">현재 분실·도난 수색 중이에요</h1>
           <p className="mt-2 text-[15px] leading-relaxed text-rose-50">
-            이 이동수단을 발견했다면 위치와 사진을 제보해 주세요. 주인에게 바로 전달돼요.
+            발견했다면 위치를 알려 주세요. 주인에게 바로 가요.
           </p>
           {bounty ? (
             <p className="mt-3 flex items-start gap-2 rounded-xl bg-white/15 p-3 text-[14px] leading-relaxed ring-1 ring-inset ring-white/25">
               <Gift aria-hidden className="mt-0.5 h-4 w-4 flex-none" />
               <span>
-                찾아 주면 주인이 사례금 <b>{wonLabel(bounty)}</b>을 직접 주기로 했어요. 사례금은 아래 &lsquo;도난 경보 보기&rsquo;에서 목격 제보(로그인
-                필요)를 남긴 사람 중에서 주인이 골라요.
+                사례금 <b>{wonLabel(bounty)}</b> · &lsquo;도난 경보 보기&rsquo;에서 목격 제보를 남기면 받을 수 있어요.
               </span>
             </p>
           ) : null}
@@ -184,9 +183,7 @@ export default async function ScanResultPage({ params }: { params: Promise<{ qrI
             <MapPinned aria-hidden className="h-5 w-5" />
             혹시 주인이 잃어버린 것 같나요?
           </p>
-          <p className="mt-1.5 text-[14px] leading-relaxed text-white/90">
-            엉뚱한 곳에 버려져 있거나 이상해 보이면, 주인이 아직 모를 수 있어요. 지금 위치와 사진을 보내 주세요.
-          </p>
+          <p className="mt-1.5 text-[14px] leading-relaxed text-white/90">엉뚱한 곳에 있다면 위치를 알려 주세요.</p>
           <ButtonLink href={`${reportHref}?kind=found`} variant="light" size="lg" full className="mt-4" icon={<MapPinned aria-hidden className="h-5 w-5" />}>
             발견 제보하기
           </ButtonLink>

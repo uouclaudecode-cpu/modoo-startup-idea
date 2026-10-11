@@ -144,7 +144,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
               발견 위치<span className="ml-0.5 text-rose-600">*</span>
             </p>
             <p className="mt-0.5 text-[13px] text-ink-muted">
-              지금 있는 곳의 위치를 가져오거나, 아래에 장소를 적어 주세요. 위치는 한 번만 보내고 실시간으로 추적하지 않아요.
+              위치는 이번 한 번만 보내요.
             </p>
           </div>
           {coords ? (
@@ -162,7 +162,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
                   이대로 바로 보내기
                 </Button>
                 <p className="text-[12px] leading-relaxed text-ink-muted">
-                  통화나 글쓰기가 곤란하면 위치만 바로 보내요. 이름·번호는 보내지 않고, 보낸 뒤 원하면 익명으로 대화할 수 있어요. 사진·설명을 더하려면 아래를 채워 주세요.
+                  위치만 바로 보내요. 사진·설명은 아래에 더할 수 있어요.
                 </p>
               </div>
             </>
@@ -175,7 +175,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
           {/* 현재 위치가 있으면 선택, 없으면 이 칸이 위치를 대신해요 */}
           <Input
             label={coords ? "장소 설명 (선택)" : "장소 설명"}
-            hint={coords ? undefined : "현재 위치를 쓸 수 없으면 이 칸만 적어도 보낼 수 있어요."}
+            hint={coords ? undefined : "위치를 못 가져오면 이 칸만 적어도 돼요."}
             placeholder="예) ○○역 2번 출구 자전거 거치대"
             value={locationText}
             onChange={(e) => setLocationText(e.target.value)}
@@ -189,7 +189,6 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
         {mode === "found" && (
           <PhotoPicker
             label="사진 (선택)"
-            hint="찍기 곤란하면 건너뛰어도 돼요."
             value={photo}
             onChange={(f) => {
               setPhoto(f);
@@ -234,7 +233,7 @@ export function ReportForm({ token, mode, vehicleLabel }: { token: string; mode:
             type="tel"
             inputMode="tel"
             placeholder="010-0000-0000"
-            hint="이 번호는 이 이동수단의 주인에게만 보여요."
+            hint="주인에게만 보여요."
             value={contact}
             onChange={(e) => setContact(e.target.value)}
             error={errors.contact}

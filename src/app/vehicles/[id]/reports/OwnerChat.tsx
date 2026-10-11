@@ -82,7 +82,7 @@ export function OwnerChat({ reportId, createdAt, trust, anonymous, blockedAt, on
     }
     setConfirmBlock(false);
     onBlockedChange(next ? ((data as string | null) ?? new Date().toISOString()) : null);
-    toast.success(next ? "이 대화를 차단했어요. 발견자는 더 보낼 수 없고, 알림도 오지 않아요." : "차단을 풀었어요. 다시 대화할 수 있어요.");
+    toast.success(next ? "대화를 차단했어요." : "차단을 풀었어요.");
   }
 
   return (
@@ -100,7 +100,7 @@ export function OwnerChat({ reportId, createdAt, trust, anonymous, blockedAt, on
           <p className="text-[13px] text-ink-muted">불러오는 중...</p>
         )
       ) : msgs.length === 0 ? (
-        <p className="text-[13px] text-ink-muted">아직 대화가 없어요. 먼저 고맙다는 인사를 보내 보세요.</p>
+        <p className="text-[13px] text-ink-muted">먼저 고맙다는 인사를 보내 보세요.</p>
       ) : (
         <ul className="space-y-2">
           {msgs.map((m) => (
@@ -184,9 +184,8 @@ export function OwnerChat({ reportId, createdAt, trust, anonymous, blockedAt, on
         }
       >
         <ul className="list-disc space-y-1.5 pl-5">
-          <li>발견자는 이 대화로 더는 메시지를 보낼 수 없고, 나에게 알림도 오지 않아요.</li>
-          <li>지금까지 받은 제보와 대화는 그대로 남아요.</li>
-          <li>장난이나 돈 요구, 욕설이 계속될 때 써 주세요. 나중에 차단을 풀 수 있어요.</li>
+          <li>발견자가 더 보낼 수 없고, 알림도 오지 않아요.</li>
+          <li>받은 내용은 남고, 나중에 풀 수 있어요.</li>
         </ul>
       </Modal>
     </div>
