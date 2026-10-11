@@ -11,6 +11,7 @@ import {
   Gauge,
   History,
   MapPin,
+  MessageCircle,
   MessageCircleQuestion,
   Navigation,
   Plus,
@@ -147,6 +148,7 @@ export default async function MyPage({ searchParams }: { searchParams: Promise<{
             <MenuRow href="/spots" icon={Wind} label="보관소·공기주입기" />
           </MenuGroup>
           <MenuGroup title="도난·안전">
+            <MenuRow href="/r" icon={MessageCircle} label="내 제보 대화" />
             <MenuRow href="/alerts#mine" icon={History} label="내 경보·제보 기록" />
             <MenuRow href="/check" icon={Search} label="도난 조회·중고 매물 확인" />
             <MenuRow href="/get-sticker" icon={MapPin} label="스티커 받는 곳" />

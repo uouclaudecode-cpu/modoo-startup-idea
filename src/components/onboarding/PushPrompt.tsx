@@ -57,6 +57,9 @@ export function PushPrompt({ userId, urgent }: { userId: string; urgent: boolean
     setError("");
     try {
       await subscribePush();
+      try {
+        localStorage.removeItem("b-lock:push-off");
+      } catch {}
       setShown(null);
       toast.success("알림을 켰어요.");
       router.refresh();

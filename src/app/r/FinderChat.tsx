@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Bell, CircleCheck, Copy, MessageCircle, Send } from "lucide-react";
+import { reportTodo, type MyReport } from "@/components/alerts/MyAlerts";
 import { MoneyWarning } from "@/components/alerts/TrustInfo";
 import { ChatSkeleton } from "@/components/skeletons/PageSkeletons";
 import { Button, ButtonLink, Card, EmptyState, ErrorState, Textarea, useToast } from "@/components/ui";
@@ -11,6 +12,7 @@ import { loadFinderThreads, saveFinderThread, type FinderThreadRef } from "@/lib
 import { formatDateTime, friendlyError, timeAgo } from "@/lib/format";
 import { browserPushSubscription } from "@/lib/push";
 import { createClient } from "@/lib/supabase/client";
+import { typeLabel } from "@/lib/types";
 
 type Thread = {
   report_id: string;
@@ -45,6 +47,8 @@ export function FinderChat() {
   const [token, setToken] = useState<string | null>(null);
   // 대화 열쇠가 이 기기에 없을 때: 로그인한 계정으로 보낸 제보면 제보 번호로 열어요
   const [rid, setRid] = useState<string | null>(null);
+  // 로그인해서 보낸 제보 대화 (이 기기에 열쇠가 없어도 계정으로 열 수 있어요)
+  const [mine, setMine] = useState<MyReport[] | null>(null);
   const [refs, setRefs] = useState<FinderThreadRef[]>([]);
   const [ready, setReady] = useState(false);
   const [thread, setThread] = useState<Thread | null | "missing">(null);
@@ -74,6 +78,14 @@ export function FinderChat() {
     window.addEventListener("hashchange", read);
     return () => window.removeEventListener("hashchange", read);
   }, []);
+
+  // 대화 목록 화면일 때만: 내 계정으로 보낸 제보 중 대화가 있는 것
+  useEffect(() => {
+    if (!ready || token || rid || mine) return;
+    createClient()
+      .rpc("my_reports")
+      .then(({ data, error }) => setMine(error ? [] : ((data ?? []) as MyReport[]).filter((r) => r.chat)));
+  }, [ready, token, rid, mine]);
 
   // 다른 대화로 바뀌면 이전 대화 내용·알림 상태를 지워요
   useEffect(() => {
@@ -176,11 +188,13 @@ export function FinderChat() {
   if (!ready) return <ChatSkeleton />;
 
   if (!token && !rid) {
-    return refs.length === 0 ? (
+    if (mine === null) return <ChatSkeleton />;
+    const local = refs.filter((r) => !mine.some((m) => m.id === r.reportId));
+    return local.length === 0 && mine.length === 0 ? (
       <EmptyState
         icon={<MessageCircle className="h-7 w-7" />}
-        title="이 기기에서 보낸 제보 대화가 없어요"
-        description="로그인해서 보낸 제보는 '내 경보·제보'에서 볼 수 있어요."
+        title="아직 보낸 제보 대화가 없어요"
+        description="QR을 찍어 제보하면 여기서 주인과 대화할 수 있어요."
         action={
           <ButtonLink href="/alerts#mine" variant="secondary">
             내 경보·제보 보기
@@ -190,7 +204,14 @@ export function FinderChat() {
     ) : (
       <Card className="space-y-3">
         <p className="font-bold">내가 보낸 제보 대화</p>
-        {refs.map((r) => (
+        {mine.map((m) => (
+          <a key={m.id} href={`/r#rid=${m.id}`} className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 text-[14px] hover:bg-slate-100">
+            <span className="min-w-0 flex-1 truncate font-semibold">{[m.color, m.brand, typeLabel(m.type)].filter(Boolean).join(" ")}</span>
+            {reportTodo(m) && <span className="flex-none rounded-full bg-rose-600 px-2 py-0.5 text-[12px] font-bold text-white">새 답장</span>}
+            <span className="flex-none text-ink-muted">{timeAgo(m.created_at)}</span>
+          </a>
+        ))}
+        {local.map((r) => (
           <a key={r.token} href={`/r#t=${r.token}`} className="block rounded-xl bg-slate-50 p-3 text-[14px] hover:bg-slate-100">
             <span className="font-semibold">{r.label}</span>
             <span className="ml-2 text-ink-muted">{timeAgo(r.createdAt)}</span>

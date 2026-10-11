@@ -3,6 +3,7 @@
  * 내 이동수단 · 받은 제보·대화 · 진행 중인 도난 경보 · 시작 안내 단계 · 소모품 알림
  */
 import type { User } from "@supabase/supabase-js";
+import { reportTodo, type MyReport } from "@/components/alerts/MyAlerts";
 import type { InboxItem } from "@/components/vehicle/InboxCard";
 import { partsNeedingCare, type VehiclePart } from "./parts";
 import type { createClient } from "./supabase/server";
@@ -25,13 +26,15 @@ type InboxRow = {
 export type CareItem = { part: VehiclePart; ratio: number };
 
 export async function loadMyHome(supabase: Supabase, user: User) {
-  const [{ data: profile }, { data: vehicles, error }, { data: allParts, error: partsErr }, { count: pushCount }, { data: myAlerts }] = await Promise.all([
+  const [{ data: profile }, { data: vehicles, error }, { data: allParts, error: partsErr }, { count: pushCount }, { data: myAlerts }, { data: myReports }] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("vehicles").select("*").is("deleted_at", null).order("created_at", { ascending: false }),
     supabase.from("vehicle_parts").select("id, vehicle_id, kind, interval_km, interval_days, distance_m, last_serviced_at, enabled"),
     // 알림 받는 기기가 내 계정에 하나라도 있는지 (시작 안내·알림 안내용)
     supabase.from("push_subscriptions").select("id", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("theft_alerts").select("id, vehicle_id").eq("owner_id", user.id).eq("status", "open"),
+    // 내가 보낸 QR 제보 (주인이 답장했는지 홈에서 바로 보이게, 041이 없으면 빈 목록)
+    supabase.rpc("my_reports"),
   ]);
   if (partsErr) console.error(partsErr);
   if (error) console.error(error);
@@ -127,6 +130,7 @@ export async function loadMyHome(supabase: Supabase, user: User) {
     inbox,
     myAlerts: (myAlerts ?? []) as { id: string; vehicle_id: string }[],
     hasPush: (pushCount ?? 0) > 0,
+    replies: ((myReports ?? []) as MyReport[]).filter(reportTodo).slice(0, 3),
     hasSticker,
     now,
   };

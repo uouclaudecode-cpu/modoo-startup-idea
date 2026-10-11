@@ -5,6 +5,7 @@ import {
   Lock,
   MapPin,
   MapPinned,
+  MessageCircle,
   MessagesSquare,
   Navigation,
   Plus,
@@ -27,6 +28,7 @@ import { HomeVehicleCard } from "@/components/vehicle/HomeVehicleCard";
 import { InboxCard } from "@/components/vehicle/InboxCard";
 import { loadMyHome } from "@/lib/myHome";
 import { createClient, getUser } from "@/lib/supabase/server";
+import { typeLabel } from "@/lib/types";
 import { UnfinishedRideCard } from "./dashboard/UnfinishedRideCard";
 
 /**
@@ -121,6 +123,21 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                   <span className="flex-none">&nbsp;도난 경보 진행 중</span>
                 </span>
                 <span className="block text-[13px] text-white/85">받은 목격 제보 보기</span>
+              </span>
+              <ChevronRight aria-hidden className="h-5 w-5 flex-none" />
+            </Link>
+          ))}
+          {/* 내가 보낸 제보에 주인이 답장했어요 → 누르면 바로 대화 */}
+          {me.replies.map((r) => (
+            <Link
+              key={r.id}
+              href={`/r#rid=${r.id}`}
+              className="flex min-h-14 w-full items-center gap-3 rounded-2xl bg-brand-600 px-4 py-3 text-white transition-colors hover:bg-brand-700 active:bg-brand-800"
+            >
+              <MessageCircle aria-hidden className="h-5 w-5 flex-none" />
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold">주인이 답장했어요</span>
+                <span className="block truncate text-[13px] text-white/85">{[r.color, r.brand, typeLabel(r.type)].filter(Boolean).join(" ")} · 대화 보기</span>
               </span>
               <ChevronRight aria-hidden className="h-5 w-5 flex-none" />
             </Link>

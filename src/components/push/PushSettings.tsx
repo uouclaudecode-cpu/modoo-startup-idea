@@ -84,6 +84,9 @@ export function PushSettings({ notify_reports, notify_comments, notify_maintenan
     start("on");
     try {
       await subscribePush();
+      try {
+        localStorage.removeItem("b-lock:push-off");
+      } catch {}
       setStatus("on");
       toast.success("알림을 켰어요.");
     } catch (e) {
@@ -100,6 +103,9 @@ export function PushSettings({ notify_reports, notify_comments, notify_maintenan
     start("off");
     try {
       await unsubscribePush();
+      try {
+        localStorage.setItem("b-lock:push-off", "1");
+      } catch {}
       setStatus("off");
       toast.success("이 기기의 알림을 껐어요.");
     } catch (e) {
