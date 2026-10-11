@@ -24,8 +24,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return { title: data?.name ? `${data.name} · 받은 제보·대화` : "받은 제보·대화" };
 }
 
-export default async function VehicleReportsPage({ params }: { params: Promise<{ id: string }> }) {
+/** 받은 제보는 최근 14일 것만 먼저 보여요 (대화도 14일이면 끝나요). 지난 것은 '지난 제보 보기'로 */
+const RECENT_DAYS = 14;
+
+export default async function VehicleReportsPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ all?: string }> }) {
   const { id } = await params;
+  const showAll = (await searchParams).all === "1";
   const { supabase, vehicle } = await getOwnedVehicle(id, `/vehicles/${id}/reports`);
   const COLS = "id, vehicle_id, reporter_id, contact_mode, kind, latitude, longitude, location_text, description, image_path, contact, created_at";
   const [first, { data: lookupRows, error: lookupErr }, { data: muteRow }] = await Promise.all([
@@ -48,7 +52,10 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
     console.error(error);
     return <ErrorState title="제보를 불러오지 못했어요" description="인터넷 연결을 확인하고 새로고침해 주세요." />;
   }
-  const reports = (data ?? []) as Report[];
+  const allReports = (data ?? []) as Report[];
+  const cutoff = Date.now() - RECENT_DAYS * 86400e3;
+  const reports = showAll ? allReports : allReports.filter((r) => new Date(r.created_at).getTime() >= cutoff);
+  const olderCount = allReports.length - reports.length;
   // 이 화면을 열면 이 이동수단의 대화 알림은 읽은 것으로 (머리글 💬 빨간 점이 꺼지게)
   if (reports.length) {
     const { error: readErr } = await supabase
@@ -76,7 +83,7 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
   const { data: trustRows } = reporterIds.length ? await supabase.rpc("get_user_trust", { p_users: reporterIds }) : { data: [] };
   const trust = (trustRows ?? []) as Trust[];
 
-  const found = reports.filter((r) => r.kind === "found").length;
+  const found = allReports.filter((r) => r.kind === "found").length;
   // 위치가 있는 제보를 지도 핀으로 (최신이 1번)
   const pins: MapPin[] = reports
     .filter((r) => r.latitude != null && r.longitude != null)
@@ -98,7 +105,7 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">받은 제보·대화</h1>
           <p className="mt-1 text-sm text-ink-muted">
-            발견 제보 {found}건 · 연락 {reports.length - found}건
+            발견 제보 {found}건 · 연락 {allReports.length - found}건
           </p>
         </div>
         <StatusBadge status={displayStatus(vehicle.status, found)} />
@@ -112,7 +119,7 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
       {reports.length === 0 ? (
         <EmptyState
           icon={<Inbox className="h-7 w-7" />}
-          title="아직 받은 제보가 없어요"
+          title={olderCount ? `최근 ${RECENT_DAYS}일 동안 받은 제보가 없어요` : "아직 받은 제보가 없어요"}
           description={
             vehicle.status === "searching"
               ? "누군가 QR을 찍어 제보하면 여기에 바로 보여요."
@@ -135,6 +142,26 @@ export default async function VehicleReportsPage({ params }: { params: Promise<{
           ))}
         </ul>
         </>
+      )}
+
+      {/* 지난 제보: 기본은 접어 두고, 누르면 다 보여요 */}
+      {olderCount > 0 && (
+        <Link
+          href={`/vehicles/${vehicle.id}/reports?all=1`}
+          scroll={false}
+          className="flex h-12 items-center justify-center gap-1 rounded-2xl bg-slate-100 text-sm font-semibold text-ink-soft hover:bg-slate-200"
+        >
+          지난 제보 {olderCount}건 보기
+        </Link>
+      )}
+      {showAll && allReports.length > 0 && (
+        <Link
+          href={`/vehicles/${vehicle.id}/reports`}
+          scroll={false}
+          className="flex h-12 items-center justify-center gap-1 rounded-2xl bg-slate-100 text-sm font-semibold text-ink-soft hover:bg-slate-200"
+        >
+          최근 {RECENT_DAYS}일만 보기
+        </Link>
       )}
 
       {showLookups && !lookupsFirst && <LookupHistory items={lookups} failed={Boolean(lookupErr)} />}

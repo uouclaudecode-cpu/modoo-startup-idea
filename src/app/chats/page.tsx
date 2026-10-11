@@ -36,14 +36,14 @@ export default async function ChatsPage({ searchParams }: { searchParams: Promis
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/chats");
 
-  const since = new Date(Date.now() - 30 * 86400e3).toISOString();
+  const since = new Date(Date.now() - 14 * 86400e3).toISOString();
   const [{ data: vehicles }, { data: sent }] = await Promise.all([
     supabase.from("vehicles").select("id, name, type, image_path").eq("owner_id", user.id).is("deleted_at", null),
     supabase.rpc("my_reports"),
   ]);
   const myVehicles = (vehicles ?? []) as Pick<Vehicle, "id" | "name" | "type" | "image_path">[];
 
-  // ① 받은 대화: 내 이동수단에 온 '익명 대화' 제보 (최근 30일)
+  // ① 받은 대화: 내 이동수단에 온 '익명 대화' 제보 (최근 14일, 대화 기간과 같아요)
   let received: Row[] = [];
   if (myVehicles.length) {
     const { data: reports } = await supabase

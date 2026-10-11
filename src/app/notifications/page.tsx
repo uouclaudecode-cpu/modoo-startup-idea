@@ -30,6 +30,8 @@ export default async function NotificationsPage() {
   const { data, error } = await supabase
     .from("notifications")
     .select("id, title, body, url, created_at, read_at")
+    // 대화 알림은 머리글 💬 대화에서만 봐요 (알림함과 겹치지 않게)
+    .or("tag.is.null,tag.not.like.chat-%")
     .order("created_at", { ascending: false })
     .limit(LIMIT);
   if (error) console.error(error);
@@ -40,7 +42,8 @@ export default async function NotificationsPage() {
       .from("notifications")
       .update({ read_at: new Date().toISOString() })
       .eq("user_id", user.id)
-      .is("read_at", null);
+      .is("read_at", null)
+      .or("tag.is.null,tag.not.like.chat-%");
     if (readErr) console.error(readErr);
   }
 

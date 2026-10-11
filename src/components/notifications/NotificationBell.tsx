@@ -19,7 +19,7 @@ export function NotificationBell({ initialCount }: { initialCount: number }) {
   useEffect(() => setCount(initialCount), [initialCount]);
 
   const refresh = useCallback(async () => {
-    const { count: n, error } = await createClient().from("notifications").select("id", { count: "exact", head: true }).is("read_at", null);
+    const { count: n, error } = await createClient().from("notifications").select("id", { count: "exact", head: true }).is("read_at", null).or("tag.is.null,tag.not.like.chat-%");
     if (!error) setCount(n ?? 0);
   }, []);
 
