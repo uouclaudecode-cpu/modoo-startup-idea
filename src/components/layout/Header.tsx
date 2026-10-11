@@ -43,10 +43,10 @@ export async function Header() {
             <Link
               href="/chats"
               aria-label={chatUnread ? `대화 (새 메시지 ${chatUnread}개)` : "대화"}
-              className={cn(buttonClass("ghost"), "relative h-10 w-10 px-0")}
+              className="relative ml-1 grid h-10 w-10 flex-none place-items-center rounded-full text-ink-soft transition-colors hover:bg-slate-100 active:bg-slate-200"
             >
-              <MessageCircle aria-hidden className="h-5 w-5" />
-              {chatUnread > 0 && <span aria-hidden className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-rose-600 ring-2 ring-white" />}
+              <MessageCircle aria-hidden className="h-[22px] w-[22px]" />
+              {chatUnread > 0 && <span aria-hidden className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-rose-600 ring-2 ring-white" />}
             </Link>
             <NotificationBell initialCount={unread} />
           </>
