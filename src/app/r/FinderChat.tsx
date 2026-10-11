@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Bell, CircleCheck, Copy, MessageCircle, Send } from "lucide-react";
 import { MoneyWarning } from "@/components/alerts/TrustInfo";
 import { ChatSkeleton } from "@/components/skeletons/PageSkeletons";
-import { Button, Card, EmptyState, ErrorState, Textarea, useToast } from "@/components/ui";
+import { Button, ButtonLink, Card, EmptyState, ErrorState, Textarea, useToast } from "@/components/ui";
 import { hasMoneyRequest } from "@/lib/alerts";
 import { copyText } from "@/lib/clipboard";
 import { loadFinderThreads, saveFinderThread, type FinderThreadRef } from "@/lib/finderThreads";
@@ -21,7 +21,15 @@ type Thread = {
   open: boolean;
   vehicle: { type: string; brand: string | null; color: string | null };
   messages: { id: string; sender: "owner" | "finder"; body: string; created_at: string }[];
+  blocked?: boolean;
+  /** 계정으로 연 대화만: 대화를 고른 제보인지 */
+  chat?: boolean;
 };
+
+/** 주소의 #rid=… (답장 알림·내 경보·제보 목록에서 와요) */
+function ridFromHash() {
+  return window.location.hash.match(/rid=([0-9a-f-]{36})/)?.[1] ?? null;
+}
 
 /** 주소 # 뒤의 t=… 를 읽어요 (주소창 기록·서버에 남지 않게 해시로) */
 function tokenFromHash(list: FinderThreadRef[]) {
@@ -35,6 +43,8 @@ function tokenFromHash(list: FinderThreadRef[]) {
 export function FinderChat() {
   const toast = useToast();
   const [token, setToken] = useState<string | null>(null);
+  // 대화 열쇠가 이 기기에 없을 때: 로그인한 계정으로 보낸 제보면 제보 번호로 열어요
+  const [rid, setRid] = useState<string | null>(null);
   const [refs, setRefs] = useState<FinderThreadRef[]>([]);
   const [ready, setReady] = useState(false);
   const [thread, setThread] = useState<Thread | null | "missing">(null);
@@ -55,8 +65,9 @@ export function FinderChat() {
       const t = tokenFromHash(list);
       setRefs(list);
       // 답장 알림(#rid=…)으로 왔는데 이 기기에 없는 대화면 다른 대화를 대신 열지 않아요
-      const ridMiss = !t && /rid=/.test(window.location.hash);
-      setToken(t ?? (!ridMiss && list.length === 1 ? list[0].token : null));
+      const r = t ? null : ridFromHash();
+      setToken(t ?? (!r && list.length === 1 ? list[0].token : null));
+      setRid(r);
       setReady(true);
     };
     read();
@@ -71,11 +82,13 @@ export function FinderChat() {
     setBody("");
     setLoadError(false);
     seenCountRef.current = null;
-  }, [token]);
+  }, [token, rid]);
 
   const load = useCallback(async () => {
-    if (!token) return;
-    const { data, error } = await createClient().rpc("finder_thread", { p_finder: token });
+    if (!token && !rid) return;
+    const { data, error } = token
+      ? await createClient().rpc("finder_thread", { p_finder: token })
+      : await createClient().rpc("finder_thread_mine", { p_report: rid });
     if (error) {
       console.error(error);
       setLoadError(true);
@@ -84,11 +97,11 @@ export function FinderChat() {
     setLoadError(false);
     setThread(data ? (data as Thread) : "missing");
     // 다른 기기에서 저장한 대화 주소로 열었어도 이 기기에 기억해 둬요 (답장 알림을 누르면 바로 열리게)
-    const rid = (data as { report_id?: string } | null)?.report_id;
-    if (rid && !loadFinderThreads().some((t) => t.token === token)) {
-      saveFinderThread({ token, reportId: rid, createdAt: (data as { created_at?: string }).created_at ?? new Date().toISOString(), label: "발견 제보" });
+    const reportId = (data as { report_id?: string } | null)?.report_id;
+    if (token && reportId && !loadFinderThreads().some((t) => t.token === token)) {
+      saveFinderThread({ token, reportId, createdAt: (data as { created_at?: string }).created_at ?? new Date().toISOString(), label: "발견 제보" });
     }
-  }, [token]);
+  }, [token, rid]);
 
   async function retry() {
     setRetrying(true);
@@ -98,13 +111,13 @@ export function FinderChat() {
 
   // 화면이 보일 때만 5초마다 새 답장 확인
   useEffect(() => {
-    if (!token) return;
+    if (!token && !rid) return;
     load();
     const id = setInterval(() => {
       if (document.visibilityState === "visible") load();
     }, 5000);
     return () => clearInterval(id);
-  }, [token, load]);
+  }, [token, rid, load]);
 
   // 새 메시지가 오면 마지막 메시지가 보이게 내려요.
   // 처음 열 때는 내리지 않아요 (위의 '답장 알림 받기' 안내가 먼저 보이게).
@@ -120,9 +133,11 @@ export function FinderChat() {
 
   async function send(e: React.FormEvent) {
     e.preventDefault();
-    if (!token || !body.trim()) return;
+    if ((!token && !rid) || !body.trim()) return;
     setSending(true);
-    const { error } = await createClient().rpc("finder_send", { p_finder: token, p_body: body.trim() });
+    const { error } = token
+      ? await createClient().rpc("finder_send", { p_finder: token, p_body: body.trim() })
+      : await createClient().rpc("finder_send_mine", { p_report: rid, p_body: body.trim() });
     setSending(false);
     if (error) {
       console.error(error);
@@ -158,9 +173,18 @@ export function FinderChat() {
 
   if (!ready) return <ChatSkeleton />;
 
-  if (!token) {
+  if (!token && !rid) {
     return refs.length === 0 ? (
-      <EmptyState icon={<MessageCircle className="h-7 w-7" />} title="이 기기에서 보낸 제보 대화가 없어요" description="QR을 찍고 제보할 때 '익명 대화'를 고르면 여기서 주인과 대화할 수 있어요." />
+      <EmptyState
+        icon={<MessageCircle className="h-7 w-7" />}
+        title="이 기기에서 보낸 제보 대화가 없어요"
+        description="QR을 찍고 제보할 때 '익명 대화'를 고르면 여기서 주인과 대화할 수 있어요. 로그인해서 보낸 제보는 '내 경보·제보'에서 볼 수 있어요."
+        action={
+          <ButtonLink href="/alerts#mine" variant="secondary">
+            내 경보·제보 보기
+          </ButtonLink>
+        }
+      />
     ) : (
       <Card className="space-y-3">
         <p className="font-bold">내가 보낸 제보 대화</p>
@@ -175,7 +199,20 @@ export function FinderChat() {
   }
 
   if (thread === "missing") {
-    return <EmptyState icon={<MessageCircle className="h-7 w-7" />} title="대화를 찾을 수 없어요" description="주소가 잘못됐거나, 주인이 이동수단을 지워 대화가 끝났어요." />;
+    return rid ? (
+      <EmptyState
+        icon={<MessageCircle className="h-7 w-7" />}
+        title="대화를 찾을 수 없어요"
+        description="제보를 보낸 계정으로 로그인하면 볼 수 있어요. 로그인 없이 보냈다면 제보를 보낸 기기에서 열어 주세요."
+        action={
+          <ButtonLink href={`/login?next=${encodeURIComponent(`/r#rid=${rid}`)}`} variant="secondary">
+            로그인하기
+          </ButtonLink>
+        }
+      />
+    ) : (
+      <EmptyState icon={<MessageCircle className="h-7 w-7" />} title="대화를 찾을 수 없어요" description="주소가 잘못됐거나, 주인이 이동수단을 지워 대화가 끝났어요." />
+    );
   }
   if (!thread) {
     return loadError ? (
@@ -201,8 +238,15 @@ export function FinderChat() {
           제보를 보냈어요. 고마워요!
         </p>
         <p className="text-[14px] leading-relaxed text-ink-soft">
-          {[thread.vehicle.color, thread.vehicle.brand].filter(Boolean).join(" ") || "이동수단"} 주인에게 알림이 갔어요. 주인이 답장하면 이 화면에 보여요. 내 이름·번호는 주인에게 보이지 않아요.
+          {[thread.vehicle.color, thread.vehicle.brand].filter(Boolean).join(" ") || "이동수단"} 주인에게 알림이 갔어요.{" "}
+          {thread.chat === false
+            ? "이 제보는 대화 없이 보냈어요."
+            : rid
+              ? "주인이 답장하면 내 계정으로 알림이 오고 이 화면에 보여요."
+              : "주인이 답장하면 이 화면에 보여요."}{" "}
+          내 이름·번호는 주인에게 보이지 않아요.
         </p>
+        {token && (
         <div className="grid gap-2 pt-1 min-[400px]:grid-cols-2">
           <Button variant={subscribed ? "secondary" : "primary"} loading={subscribing} loadingText="켜는 중..." icon={<Bell aria-hidden className="h-4 w-4" />} onClick={subscribe} disabled={subscribed}>
             {subscribed ? "알림 켜짐" : "답장 알림 받기"}
@@ -211,10 +255,13 @@ export function FinderChat() {
             대화 주소 저장
           </Button>
         </div>
+        )}
       </Card>
 
       <Card className="space-y-3">
-        <p className="text-[13px] font-semibold text-ink-muted">익명 대화 · {formatDateTime(thread.created_at)} 제보</p>
+        <p className="text-[13px] font-semibold text-ink-muted">
+          {thread.chat === false ? "내가 보낸 제보" : "익명 대화"} · {formatDateTime(thread.created_at)} 제보
+        </p>
         <div className="rounded-xl bg-slate-50 p-3 text-[14px]">
           <p className="text-[12px] font-semibold text-ink-muted">내가 보낸 제보</p>
           <p className="mt-0.5 whitespace-pre-line">{thread.description}</p>
@@ -232,7 +279,7 @@ export function FinderChat() {
             </li>
           ))}
         </ul>
-        {thread.messages.length === 0 && <p className="text-center text-[13px] text-ink-muted">아직 답장이 없어요. 주인이 확인하면 여기에 답장이 와요.</p>}
+        {thread.messages.length === 0 && thread.chat !== false && <p className="text-center text-[13px] text-ink-muted">아직 답장이 없어요. 주인이 확인하면 여기에 답장이 와요.</p>}
         <div ref={endRef} className="scroll-mb-28" />
         {thread.open ? (
           <form onSubmit={send} className="space-y-2">
@@ -241,8 +288,8 @@ export function FinderChat() {
               보내기
             </Button>
           </form>
-        ) : (
-          <p className="text-center text-[13px] text-ink-muted">대화가 끝났어요 (제보 후 14일).</p>
+        ) : thread.chat === false ? null : (
+          <p className="text-center text-[13px] text-ink-muted">{thread.blocked ? "주인이 대화를 끝냈어요." : "대화가 끝났어요 (제보 후 14일)."}</p>
         )}
       </Card>
       <p className="text-center text-[12px] leading-relaxed text-ink-muted">직접 만나서 돌려줄 때는 사람이 많은 곳에서 만나세요. 돈을 먼저 요구하거나 주는 건 피하세요.</p>

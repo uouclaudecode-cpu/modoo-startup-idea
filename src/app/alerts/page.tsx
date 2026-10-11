@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BellRing, ChevronRight, ClipboardList, Siren } from "lucide-react";
-import { MyAlerts, alertTodo } from "@/components/alerts/MyAlerts";
+import { MyAlerts, alertTodo, reportTodo, type MyReport } from "@/components/alerts/MyAlerts";
 import { ButtonLink, Card, ErrorState } from "@/components/ui";
 import type { MyAlert, NearbyAlert } from "@/lib/alerts";
 import { createClient } from "@/lib/supabase/server";
@@ -22,15 +22,19 @@ export default async function AlertsPage() {
     optIn = Boolean(p?.alert_opt_in);
     if (p?.alert_lat != null && p?.alert_lng != null) area = { lat: p.alert_lat, lng: p.alert_lng, label: p.alert_area_label };
   }
-  const [{ data, error }, mine] = await Promise.all([
+  const [{ data, error }, mine, myRep] = await Promise.all([
     supabase.rpc("nearby_alerts", { p_lat: area?.lat ?? null, p_lng: area?.lng ?? null, p_km: 10 }),
     // 내 경보·제보: 끝난 경보도 다시 열어 사례금을 처리할 수 있게 (로그인했을 때만)
     user ? supabase.rpc("my_alert_activity") : Promise.resolve(null),
+    // 내가 보낸 QR 제보 (041이 아직 없으면 빈 목록)
+    user ? supabase.rpc("my_reports") : Promise.resolve(null),
   ]);
+  if (myRep?.error) console.error(myRep.error);
+  const myReports = (myRep?.error ? [] : (myRep?.data ?? [])) as MyReport[];
   if (error) console.error(error);
   if (mine?.error) console.error(mine.error);
   const myAlerts = (mine?.data ?? []) as MyAlert[];
-  const todoCount = myAlerts.filter(alertTodo).length;
+  const todoCount = myAlerts.filter(alertTodo).length + myReports.filter(reportTodo).length;
 
   return (
     <div className="space-y-5">
@@ -69,7 +73,7 @@ export default async function AlertsPage() {
         <AlertList initial={(data ?? []) as NearbyAlert[]} areaLabel={area ? (area.label ?? "관심 동네") : null} />
       )}
 
-      {user && <MyAlerts items={myAlerts} failed={Boolean(mine?.error)} />}
+      {user && <MyAlerts items={myAlerts} failed={Boolean(mine?.error)} reports={myReports} />}
 
       <p className="text-center text-[13px] text-ink-muted">
         내 이동수단을 잃어버렸나요?{" "}
